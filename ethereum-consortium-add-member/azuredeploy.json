@@ -17,7 +17,7 @@
     },
     "adminUsername": {
       "type": "string",
-      "defaultValue": "gethadmin",
+      "defaultValue": "azureuser",
       "metadata": {
         "description": "Administrator username of each deployed VM"
       }
@@ -26,12 +26,6 @@
       "type": "securestring",
       "metadata": {
         "description": "Administrator password for each deployed VM"
-      }
-    },
-    "privateKeyForPrefundedAccount": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Private key used to generate account prefunded with Ether.  Use myetherwallet.com to generate a private key."
       }
     },
     "ethereumNetworkID": {
