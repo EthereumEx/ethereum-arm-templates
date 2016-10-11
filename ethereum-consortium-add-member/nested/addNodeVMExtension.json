@@ -15,7 +15,7 @@
       "type": "string"
     },
     "genesisPort": {
-      "type": "string"
+      "type": "int"
     },
     "mnNode": {
       "type": "int"
