@@ -11,19 +11,10 @@
     "adminPassword": {
       "value": "GEN-PASSWORD"
     },
-    "ethereumAccountPsswd": {
-      "value": "GEN-PASSWORD"
-    },
-    "privateKeyForPrefundedAccount": {
-      "value": "changeme"
-    },
     "ethereumNetworkID": {
       "value": "1010101"
     },
-    "numConsortiumMembers": {
-      "value": "2"
-    },
-    "numAdditionalMiningNodesPerMember": {
+    "miningNodesPerMember":{
       "value": "1"
     },
     "mnNodeVMSize": {

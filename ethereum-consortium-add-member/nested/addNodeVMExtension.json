@@ -35,9 +35,6 @@
     "ethereumAccountPsswd": {
       "type": "securestring"
     },
-    "privateKeyForPrefundedAccount": {
-      "type": "securestring"
-    },
     "ethereumNetworkID": {
       "type": "int"
     },
@@ -45,6 +42,7 @@
       "type": "int"
     }
   },
+
   "resources": [
     {
       "apiVersion": "[parameters('apiVersion')]",

@@ -28,12 +28,6 @@
         "description": "Administrator password for each deployed VM"
       }
     },
-    "ethereumAccountPsswd": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Administrator password used to secure the generated private key file associated with the created Ethereum account"
-      }
-    },
     "privateKeyForPrefundedAccount": {
       "type": "securestring",
       "metadata": {
@@ -47,16 +41,7 @@
         "description": "Private Ethereum network ID to which to connect"
       }
     },
-    "numConsortiumMembers": {
-      "type": "int",
-      "defaultValue": 1,
-      "metadata": {
-        "description": "Number of members within the network.  Each member receives a subnet with one mining node."
-      },
-      "minValue": 1,
-      "maxValue": 1
-    },
-    "numAdditionalMiningNodesPerMember": {
+    "miningNodesPerMember": {
       "type": "int",
       "defaultValue": 1,
       "metadata": {
@@ -117,7 +102,7 @@
     "adminSitePort": 3000,
     "gethRPCPort": 8545,
     "gethIPCPort": 30303,
-    "numMNNodes": "[add(parameters('numConsortiumMembers'), mul(parameters('numConsortiumMembers'), parameters('numAdditionalMiningNodesPerMember')))]",
+    "numMNNodes": "[parameters('miningNodesPerMember')]",
     "maxVMsPerStorageAcct": 20,
     "mnStorageAcctCount": "[add(div(variables('numMNNodes'), variables('maxVMsPerStorageAcct')), 1)]",
     "mnStorageAcctSuffix": "[variables('namingInfix')]",
@@ -619,8 +604,8 @@
           "numMNNodes":{"value": "[variables('numMNNodes')]"},
           "artifactsLocationURL":{"value": "[variables('artifactsLocationURL')]"},
           "adminUsername":{"value": "[parameters('adminUsername')]"},
-          "ethereumAccountPsswd":{"value": "[parameters('ethereumAccountPsswd')]"},
-          "privateKeyForPrefundedAccount": {"value": "[parameters('privateKeyForPrefundedAccount')]"},
+          "ethereumAccountPsswd": {"value" : "NOTUSED"},
+          "privateKeyForPrefundedAccount": {"value": "NOTUSED"},
           "ethereumNetworkID":{"value": "[parameters('ethereumNetworkID')]"},
           "maxPeers":{"value": "[variables('maxPeers')]"},
           "mnNIPrefix":{"value": "[variables('mnNIPrefix')]"},
