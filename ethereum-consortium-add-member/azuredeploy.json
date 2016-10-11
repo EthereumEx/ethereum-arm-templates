@@ -601,9 +601,7 @@
           "ethereumAccountPsswd": {"value" : "NOTUSED"},
           "privateKeyForPrefundedAccount": {"value": "NOTUSED"},
           "ethereumNetworkID":{"value": "[parameters('ethereumNetworkID')]"},
-          "maxPeers":{"value": "[variables('maxPeers')]"},
-          "mnNIPrefix":{"value": "[variables('mnNIPrefix')]"},
-          "gethIPCPort":{"value": "[variables('gethIPCPort')]"}
+          "maxPeers":{"value": "[variables('maxPeers')]"}
         }
       }
     },
