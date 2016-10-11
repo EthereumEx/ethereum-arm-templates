@@ -123,13 +123,11 @@
     "mnVMNamePrefix": "[concat(variables('namingInfix'), '-mn')]",
     "mnNIPrefix": "nic-mn",
 
-    "vnetCidrPrefix" : "10.0.",
-
     "txStorageAcctName": "[concat(uniqueString(resourceGroup().id, variables('namingInfix')), 'tx')]",
     "txPublicIPAddressNamePrefix": "[concat(variables('namingInfix'), '-tx-publicip')]",
     "txVMNamePrefix": "[concat(variables('namingInfix'), '-tx')]",
     "txSubnetName": "[concat(uniqueString(concat(resourceGroup().id, concat(variables('namingInfix'), 'subnet')), 'tx'))]",
-    "txSubnetPrefix": "[concat(variables('vnetCidrPrefix'), '.10.0/24')]", 
+    "txSubnetPrefix": "[concat(parameters('vnetPrefix'), '.10.0/24')]", 
     "txSubnetRef": "[concat(variables('vnetID'),'/subnets/', variables('txSubnetName'))]",
     "txNIPrefix": "nic-tx",
     "virtualNetworkName": "[concat(variables('namingInfix'), 'vnet')]",
@@ -146,11 +144,11 @@
       "[concat(uniqueString(concat(resourceGroup().id, concat(variables('namingInfix'), 'subnet')), 'mn4'))]"
     ],
     "mnSubnetPrefixArray": [
-      "[concat(variables('vnetCidrPrefix'),'.0.0/24')]",
-      "[concat(variables('vnetCidrPrefix'),'.1.0/24')]",
-      "[concat(variables('vnetCidrPrefix'),'.2.0/24')]",
-      "[concat(variables('vnetCidrPrefix'),'.3.0/24')]",
-      "[concat(variables('vnetCidrPrefix'),'.4.0/24')]"],
+      "[concat(parameters('vnetPrefix'),'.0.0/24')]",
+      "[concat(parameters('vnetPrefix'),'.1.0/24')]",
+      "[concat(parameters('vnetPrefix'),'.2.0/24')]",
+      "[concat(parameters('vnetPrefix'),'.3.0/24')]",
+      "[concat(parameters('vnetPrefix'),'.4.0/24')]"],
     "mnSubnetRefArray": [
       "[concat(variables('vnetID'),'/subnets/', variables('mnSubnetNameArray')[0])]",
       "[concat(variables('vnetID'),'/subnets/', variables('mnSubnetNameArray')[1])]",
