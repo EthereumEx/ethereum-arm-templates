@@ -85,19 +85,19 @@ wget -N ${ARTIFACTS_URL_PREFIX}/data/genesis.json;
 ####################
 # Setup Genesis file and pre-allocated account
 ####################
-PASSWD_FILE="$GETH_HOME/passwd.info";
-printf %s $PASSWD > $PASSWD_FILE;
+#PASSWD_FILE="$GETH_HOME/passwd.info";
+#printf %s $PASSWD > $PASSWD_FILE;
 
-printf "%s" $PRIV_KEY > $HOMEDIR/priv_genesis.key;
-PREFUND_ADDRESS=`geth --datadir $GETH_HOME --password $PASSWD_FILE account import $HOMEDIR/priv_genesis.key | grep -oP '\{\K[^}]+'`;
-rm $HOMEDIR/priv_genesis.key;
+#printf "%s" $PRIV_KEY > $HOMEDIR/priv_genesis.key;
+#PREFUND_ADDRESS=`geth --datadir $GETH_HOME --password $PASSWD_FILE account import $HOMEDIR/priv_genesis.key | grep -oP '\{\K[^}]+'`;
+#rm $HOMEDIR/priv_genesis.key;
 
 cd $HOMEDIR
 wget -N ${ARTIFACTS_URL_PREFIX}/scripts/start-private-blockchain.sh;
-wget -N ${ARTIFACTS_URL_PREFIX}/genesis-template.json;
+# wget -N ${ARTIFACTS_URL_PREFIX}/genesis-template.json;
 # Place our calculated difficulty into genesis file
-sed s/#DIFFICULTY/$DIFFICULTY/ $HOMEDIR/genesis-template.json > $HOMEDIR/genesis-intermediate.json;
-sed s/#PREFUND_ADDRESS/$PREFUND_ADDRESS/ $HOMEDIR/genesis-intermediate.json > $HOMEDIR/genesis.json;
+#sed s/#DIFFICULTY/$DIFFICULTY/ $HOMEDIR/genesis-template.json > $HOMEDIR/genesis-intermediate.json;
+#sed s/#PREFUND_ADDRESS/$PREFUND_ADDRESS/ $HOMEDIR/genesis-intermediate.json > $HOMEDIR/genesis.json;
 wget -N https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/go-ethereum-on-ubuntu/GuestBook.sol;
 
 ####################
@@ -105,6 +105,7 @@ wget -N https://raw.githubusercontent.com/Azure/azure-quickstart-templates/maste
 ####################
 
 if [ $NODE_TYPE -eq 0 ]; then #Boot node logic
+  printf "ODD ERROR should not be here node type: " $NODE_TYPE
 	printf %s $NODE_KEY > $NODEKEY_FILE_PATH;
 fi
 
@@ -112,9 +113,9 @@ geth --datadir $GETH_HOME -verbosity 6 init $GENESIS_FILE_PATH >> $GETH_LOG_FILE
 echo "===== Completed geth initialization =====";
 
 ####################
-# Setup admin website
+# Setup admin website - change this back to type 2 to have it work
 ####################
-if [ $NODE_TYPE -eq 2 ]; then
+if [ $NODE_TYPE -eq 99 ]; then
 	mkdir -p $ETHERADMIN_HOME/views/layouts;
 	cd $ETHERADMIN_HOME/views/layouts;
 	wget -N ${ARTIFACTS_URL_PREFIX}/scripts/etheradmin/main.handlebars;

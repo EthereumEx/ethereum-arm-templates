@@ -29,7 +29,10 @@ VERBOSITY=4;
 nohup geth --datadir $GETH_HOME -verbosity $VERBOSITY --bootnodes $BOOTNODE_URLS --maxpeers $MAX_PEERS --nat none --networkid $NETWORK_ID --identity $IDENTITY $MINE_OPTIONS $FAST_SYNC --rpc --rpcaddr "$IPADDR" --rpccorsdomain "*" >> $GETH_LOG_FILE_PATH 2>&1 &
 echo "===== Started geth =====";
 
-if [ $NODE_TYPE -eq 2 ]; then
+################
+# Change this back to type 2 when ready
+################
+if [ $NODE_TYPE -eq 99 ]; then
 	cd $ETHERADMIN_HOME;
 	nohup nodejs app.js $GETH_HOME/geth.ipc $PREFUND_ADDRESS $PASSWD $MN_NODE_PREFIX $NUM_MN_NODES $TX_NODE_PREFIX $NUM_TX_NODES >> etheradmin.log &
 	echo "===== Started admin webserver =====";
