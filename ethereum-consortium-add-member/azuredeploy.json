@@ -88,8 +88,8 @@
       "defaultValue": "10.0.10.4"
     },
     "genesisPort" : {
-      "type" :"int",
-      "defaultValue": 30303
+      "type" :"string",
+      "defaultValue": "30303"
     }
   },
   "variables": {
