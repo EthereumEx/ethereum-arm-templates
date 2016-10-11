@@ -601,7 +601,10 @@
           "ethereumAccountPsswd": {"value" : "NOTUSED"},
           "privateKeyForPrefundedAccount": {"value": "NOTUSED"},
           "ethereumNetworkID":{"value": "[parameters('ethereumNetworkID')]"},
-          "maxPeers":{"value": "[variables('maxPeers')]"}
+          "maxPeers":{"value": "[variables('maxPeers')]"},
+          "genesisNodeId" : {"value": ""},
+          "genesisIpAddress" : {"value": ""},
+          "genesisPort" : {"value": "30303"}
         }
       }
     },

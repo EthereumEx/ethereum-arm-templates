@@ -2,13 +2,19 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "apiVersion" : {
+    "apiVersion": {
       "type": "string"
     },
     "txNode": {
       "type": "int"
     },
-    "genesisUrl": {
+    "genesisNodeId": {
+      "type": "string"
+    },
+    "genesisIpAddress": {
+      "type": "string"
+    },
+    "genesisPort": {
       "type": "string"
     },
     "mnNode": {
@@ -41,11 +47,13 @@
     "maxPeers": {
       "type": "int"
     },
-    "privateKeyForPrefundedAccount":{
-      "type":"string"
+    "privateKeyForPrefundedAccount": {
+      "type": "string"
     }
   },
-
+  "variables": {
+    "enodeUrl" : "[concat('enode://', parameters('genesisNodeId'), '@', parameters('genesisIpAddress'), ':', parameters('genesisPort'))]"
+  },
   "resources": [
     {
       "apiVersion": "[parameters('apiVersion')]",
@@ -67,7 +75,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('sh configure-geth.sh ', parameters('adminUsername'), ' ', parameters('ethereumAccountPsswd'), ' ', parameters('privateKeyForPrefundedAccount'), ' ', parameters('artifactsLocationURL'), ' ', parameters('ethereumNetworkID'), ' ', parameters('maxPeers'), ' ', parameters('txNode'), ' ', concat('enode://', parameters('genesisUrl')), ' ', parameters('numMNNodes'), ' ', parameters('mnVMNamePrefix'), ' ', parameters('numTXNodes'), ' ', parameters('txVMNamePrefix'))]"
+          "commandToExecute": "[concat('sh configure-geth.sh ', parameters('adminUsername'), ' ', parameters('ethereumAccountPsswd'), ' ', parameters('privateKeyForPrefundedAccount'), ' ', parameters('artifactsLocationURL'), ' ', parameters('ethereumNetworkID'), ' ', parameters('maxPeers'), ' ', parameters('txNode'), ' ', variables('enodeUrl'), ' ', parameters('numMNNodes'), ' ', parameters('mnVMNamePrefix'), ' ', parameters('numTXNodes'), ' ', parameters('txVMNamePrefix'))]"
         }
       }
     },
@@ -91,7 +99,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('sh configure-geth.sh ', parameters('adminUsername'), ' ', parameters('ethereumAccountPsswd'), ' ', parameters('privateKeyForPrefundedAccount'), ' ', parameters('artifactsLocationURL'), ' ', parameters('ethereumNetworkID'), ' ', parameters('maxPeers'), ' ', parameters('mnNode'), ' ', concat('enode://', parameters('genesisUrl')), ' ', parameters('numMNNodes'))]"
+          "commandToExecute": "[concat('sh configure-geth.sh ', parameters('adminUsername'), ' ', parameters('ethereumAccountPsswd'), ' ', parameters('privateKeyForPrefundedAccount'), ' ', parameters('artifactsLocationURL'), ' ', parameters('ethereumNetworkID'), ' ', parameters('maxPeers'), ' ', parameters('mnNode'), ' ', variables('enodeUrl'), ' ' , parameters('numMNNodes'))]"
         }
       }
     }
