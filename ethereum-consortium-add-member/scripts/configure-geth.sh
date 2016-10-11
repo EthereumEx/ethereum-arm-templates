@@ -6,6 +6,12 @@ set -x;
 #############
 # Parameters
 #############
+echo 'arguments supplied: ' > stuff.out;
+
+for i in $*; do 
+  echo $i >> stuff.out;
+done
+
 # Validate that all arguments are supplied
 if [ $# -lt 7 ]; then echo "Incomplete parameters supplied. Exiting"; exit 1; fi
 

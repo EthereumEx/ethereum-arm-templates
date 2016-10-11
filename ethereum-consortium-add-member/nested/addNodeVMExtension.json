@@ -43,19 +43,7 @@
     },
     "maxPeers": {
       "type": "int"
-    },
-    "nodeIDArray": {
-      "type": "array"
-    },
-    "mnNIPrefix": {
-      "type": "string"
-    },
-    "gethIPCPort": {
-      "type": "int"
     }
-  },
-  "variables": {
-    "numBootNodes": 2
   },
   "resources": [
     {
@@ -85,10 +73,10 @@
     {
       "apiVersion": "[parameters('apiVersion')]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('mnVMNamePrefix'), add(copyIndex(), variables('numBootNodes')),'/newuserscript')]",
+      "name": "[concat(parameters('mnVMNamePrefix'), copyIndex(),'/newuserscript')]",
       "copy": {
         "name": "regularMNNodesConfigLoop",
-        "count": "[sub(parameters('numMNNodes'), variables('numBootNodes'))]"
+        "count": "[parameters('numMNNodes')]"
       },
       "location": "[resourceGroup().location]",
       "properties": {
