@@ -1,6 +1,6 @@
 # Ethereum Consortium Network Deployments Made Easy
 
-[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/master/ethereum-consortium-add-member/azuredeploy.json)  [![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/master/ethereum-consortium-add-member/azuredeploy.json)
+[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FEthereumEx%2Fethereum-arm-templates%2Fmaster%2Fethereum-consortium-add-member%2Fazuredeploy.json)  [![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/master/ethereum-consortium-add-member/azuredeploy.json)
 
 ## Overview
 The next phase of our support of blockchain on Microsoft Azure is the release of the Ethereum Consortium Blockchain Network solution template in the Azure Quick Start Templates that simplifies the infrastructure and protocol substantially.  This template deploys and configures a private Ethereum network from the Azure Portal or cmdline with a single click.  While there are many valuable scenarios for the public Ethereum network, we expect in many enterprise scenarios, you will want to configure Ethereum to build out and deploy your own consortium network.
