@@ -78,6 +78,16 @@
       "metadata": {
         "description": "Size of the virtual machine for transaction nodes"
       }
+    },
+    "genesisNodeId": {
+      "type" : "string"
+    },
+    "genesisIpAddress":{
+      "type" : "string"
+    },
+    "genesisPort" : {
+      "type" :"int",
+      "defaultValue": "30303"
     }
   },
   "variables": {
@@ -602,9 +612,9 @@
           "privateKeyForPrefundedAccount": {"value": "NOTUSED"},
           "ethereumNetworkID":{"value": "[parameters('ethereumNetworkID')]"},
           "maxPeers":{"value": "[variables('maxPeers')]"},
-          "genesisNodeId" : {"value": ""},
-          "genesisIpAddress" : {"value": ""},
-          "genesisPort" : {"value": "30303"}
+          "genesisNodeId" : {"value": "[parameters('genesisNodeId')]"},
+          "genesisIpAddress" : {"value": "[parameters('genesisIpAddress')]"},
+          "genesisPort" : {"value": "[parameters('genesisPort')]"}
         }
       }
     },

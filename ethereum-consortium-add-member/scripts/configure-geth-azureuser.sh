@@ -3,6 +3,16 @@
 # print commands and arguments as they are executed
 set -x;
 
+#############
+# Parameters
+#############
+echo 'arguments supplied: ' > stuff.out;
+
+for i in $*; do 
+  echo $i >> stuff.out;
+done
+
+
 echo "===== Initializing geth installation =====";
 date;
 
@@ -62,6 +72,15 @@ sudo apt-get -y install software-properties-common;
 sudo add-apt-repository -y ppa:ethereum/ethereum;
 sudo apt-get -y update;
 sudo apt-get install -y ethereum;
+
+
+####################
+# Get the Genesis file - this will change to behind a SAS on Storage or generated "somehow."
+####################
+
+cd $HOMEDIR
+wget -N ${ARTIFACTS_URL_PREFIX}/data/genesis.json;
+
 
 ####################
 # Setup Genesis file and pre-allocated account
