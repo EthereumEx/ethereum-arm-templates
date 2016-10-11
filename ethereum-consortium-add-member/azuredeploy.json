@@ -135,7 +135,7 @@
     "txNsgName": "[concat(variables('namingInfix'), 'TXNsg')]",
     "mnNsgName": "[concat(variables('namingInfix'), 'MNNsg')]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
-    "addressPrefix": "10.0.0.0/16",
+    "addressPrefix": "[concat(parameters('vnetPrefix'),'0.0/16')]",
     "maxPeers": 25,
     "mnSubnetNameArray": [
       "[concat(uniqueString(concat(resourceGroup().id, concat(variables('namingInfix'), 'subnet')), 'mn0'))]",
