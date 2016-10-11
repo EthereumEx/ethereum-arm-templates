@@ -80,10 +80,12 @@
       }
     },
     "genesisNodeId": {
-      "type" : "string"
+      "type" : "string",
+      "defaultValue": "87642bfa99247dcb9f215b701ea900aa042bdc314965a062e15fb433582b21c9f8653287b4769c6f4ff22fe990a988a759f573b041256c7c4694ddf1f94a5bea"
     },
     "genesisIpAddress":{
-      "type" : "string"
+      "type" : "string",
+      "defaultValue": "10.0.10.4"
     },
     "genesisPort" : {
       "type" :"int",
