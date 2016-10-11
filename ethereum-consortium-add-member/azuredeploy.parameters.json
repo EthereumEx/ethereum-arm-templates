@@ -1,0 +1,42 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "namePrefix" : {
+      "value": "ethnet1"
+    },
+    "adminUsername": {
+      "value": "auser1"
+    },
+    "adminPassword": {
+      "value": "GEN-PASSWORD"
+    },
+    "ethereumAccountPsswd": {
+      "value": "GEN-PASSWORD"
+    },
+    "privateKeyForPrefundedAccount": {
+      "value": "changeme"
+    },
+    "ethereumNetworkID": {
+      "value": "1010101"
+    },
+    "numConsortiumMembers": {
+      "value": "2"
+    },
+    "numAdditionalMiningNodesPerMember": {
+      "value": "1"
+    },
+    "mnNodeVMSize": {
+      "value": "Standard_A1"
+    },
+    "numTXNodes": {
+      "value": "2"
+    },
+    "txNodeVMSize": {
+      "value": "Standard_A1"
+    },
+    "genesisUrl" : {
+      "value": "enode://87642bfa99247dcb9f215b701ea900aa042bdc314965a062e15fb433582b21c9f8653287b4769c6f4ff22fe990a988a759f573b041256c7c4694ddf1f94a5bea@10.0.10.4:30303"
+    }
+  }
+}
