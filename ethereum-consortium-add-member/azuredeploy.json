@@ -4,6 +4,7 @@
   "parameters": {
     "vnetPrefix" : {
       "type" : "string",
+      "defaultValue": "10.1",
       "metadata": {
         "description" : "What's the prefix of this - make sure it doens't collide with other Vnets 10.0.x.x"
       }
@@ -128,14 +129,14 @@
     "txPublicIPAddressNamePrefix": "[concat(variables('namingInfix'), '-tx-publicip')]",
     "txVMNamePrefix": "[concat(variables('namingInfix'), '-tx')]",
     "txSubnetName": "[concat(uniqueString(concat(resourceGroup().id, concat(variables('namingInfix'), 'subnet')), 'tx'))]",
-    "txSubnetPrefix": "[concat(variables('vnetCidrPrefix'), '10.0/24')]", 
+    "txSubnetPrefix": "[concat(variables('vnetCidrPrefix'), '.10.0/24')]", 
     "txSubnetRef": "[concat(variables('vnetID'),'/subnets/', variables('txSubnetName'))]",
     "txNIPrefix": "nic-tx",
     "virtualNetworkName": "[concat(variables('namingInfix'), 'vnet')]",
     "txNsgName": "[concat(variables('namingInfix'), 'TXNsg')]",
     "mnNsgName": "[concat(variables('namingInfix'), 'MNNsg')]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
-    "addressPrefix": "[concat(parameters('vnetPrefix'),'0.0/16')]",
+    "addressPrefix": "[concat(parameters('vnetPrefix'),'.0.0/16')]",
     "maxPeers": 25,
     "mnSubnetNameArray": [
       "[concat(uniqueString(concat(resourceGroup().id, concat(variables('namingInfix'), 'subnet')), 'mn0'))]",
@@ -145,11 +146,11 @@
       "[concat(uniqueString(concat(resourceGroup().id, concat(variables('namingInfix'), 'subnet')), 'mn4'))]"
     ],
     "mnSubnetPrefixArray": [
-      "[concat(variables('vnetCidrPrefix'),'0.0/24')]",
-      "[concat(variables('vnetCidrPrefix'),'1.0/24')]",
-      "[concat(variables('vnetCidrPrefix'),'2.0/24')]",
-      "[concat(variables('vnetCidrPrefix'),'3.0/24')]",
-      "[concat(variables('vnetCidrPrefix'),'4.0/24')]"],
+      "[concat(variables('vnetCidrPrefix'),'.0.0/24')]",
+      "[concat(variables('vnetCidrPrefix'),'.1.0/24')]",
+      "[concat(variables('vnetCidrPrefix'),'.2.0/24')]",
+      "[concat(variables('vnetCidrPrefix'),'.3.0/24')]",
+      "[concat(variables('vnetCidrPrefix'),'.4.0/24')]"],
     "mnSubnetRefArray": [
       "[concat(variables('vnetID'),'/subnets/', variables('mnSubnetNameArray')[0])]",
       "[concat(variables('vnetID'),'/subnets/', variables('mnSubnetNameArray')[1])]",
