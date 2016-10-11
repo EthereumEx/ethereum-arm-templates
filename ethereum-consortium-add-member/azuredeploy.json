@@ -479,7 +479,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
-                "id": "[variables('mnSubnetRefArray')[mod(copyIndex(), parameters('numConsortiumMembers'))]]"
+                "id": "[variables('mnSubnetRefArray')[mod(copyIndex(), '1')]]"
               }
             }
           }
