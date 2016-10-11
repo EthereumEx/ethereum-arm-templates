@@ -6,10 +6,10 @@ set -x;
 #############
 # Parameters
 #############
-echo 'arguments supplied: ' > stuff.out;
+echo 'arguments supplied: ' > config-azureuser.out;
 
 for i in $*; do 
-  echo $i >> stuff.out;
+  echo $i >> config-azureuser.out;
 done
 
 

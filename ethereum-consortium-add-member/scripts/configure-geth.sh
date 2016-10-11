@@ -6,10 +6,10 @@ set -x;
 #############
 # Parameters
 #############
-echo 'arguments supplied: ' > stuff.out;
+echo 'arguments supplied: ' > config-stuff1.out;
 
 for i in $*; do 
-  echo $i >> stuff.out;
+  echo $i >> config-stuff1.out;
 done
 
 # Validate that all arguments are supplied
