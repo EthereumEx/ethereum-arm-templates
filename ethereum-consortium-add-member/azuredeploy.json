@@ -89,7 +89,7 @@
     },
     "genesisPort" : {
       "type" :"int",
-      "defaultValue": "30303"
+      "defaultValue": 30303
     }
   },
   "variables": {
