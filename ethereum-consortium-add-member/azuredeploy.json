@@ -49,6 +49,7 @@
       "type": "string",
       "defaultValue": "Standard_A1",
       "allowedValues": [
+        "Standard_A1",
         "Standard_D1",
         "Standard_D2",
         "Standard_D1_v2",
@@ -71,6 +72,7 @@
       "type": "string",
       "defaultValue": "Standard_A1",
       "allowedValues": [
+        "Standard_A1",
         "Standard_D1",
         "Standard_D2",
         "Standard_D1_v2",
@@ -647,6 +649,10 @@
     "ethereum-rpc-endpoint": {
       "type": "string",
       "value": "[concat('http://', reference(variables('lbPublicIPAddressName')).dnsSettings.fqdn, ':8545')]"
+    },
+    "jump-box-ssh":{
+      "type": "string",
+      "value": "[concat('ssh', 'azureuser', reference(concat(variables('txPublicIPAddressNamePrefix'),'0')).dnsSettings.fqdn)]"
     }
   }
 }
