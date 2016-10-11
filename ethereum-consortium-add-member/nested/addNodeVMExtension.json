@@ -40,6 +40,9 @@
     },
     "maxPeers": {
       "type": "int"
+    },
+    "privateKeyForPrefundedAccount":{
+      "type":"string"
     }
   },
 
