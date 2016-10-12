@@ -78,7 +78,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('sh configure-geth.sh ', parameters('adminUsername'), ' ', parameters('ethereumAccountPsswd'), ' ', parameters('privateKeyForPrefundedAccount'), ' ', parameters('artifactsLocationURL'), ' ', parameters('ethereumNetworkID'), ' ', parameters('maxPeers'), ' ', parameters('txNode'), ' ', variables('enodeUrl'), ' ', parameters('numMNNodes'), ' ', parameters('mnVMNamePrefix'), ' ', parameters('numTXNodes'), ' ', parameters('txVMNamePrefix'))]"
+          "commandToExecute": "[concat('sh configure-geth.sh ', parameters('adminUsername'), ' ', parameters('ethereumAccountPsswd'), ' ', parameters('privateKeyForPrefundedAccount'), ' ', parameters('artifactsLocationURL'), ' ', parameters('ethereumNetworkID'), ' ', parameters('maxPeers'), ' ', parameters('txNode'), ' ', variables('enodeUrl'), ' ', parameters('numMNNodes'), ' ', parameters('mnVMNamePrefix'), ' ', parameters('numTXNodes'), ' ', parameters('txVMNamePrefix'), ' ', concat('txNodesConfigLoop-', copyIndex()))]"
         }
       }
     },
@@ -102,7 +102,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('sh configure-geth.sh ', parameters('adminUsername'), ' ', parameters('ethereumAccountPsswd'), ' ', parameters('privateKeyForPrefundedAccount'), ' ', parameters('artifactsLocationURL'), ' ', parameters('ethereumNetworkID'), ' ', parameters('maxPeers'), ' ', parameters('mnNode'), ' ', variables('enodeUrl'), ' ' , parameters('numMNNodes'), ' ', parameters('etherbaseAddress'))]"
+          "commandToExecute": "[concat('sh configure-geth.sh ', parameters('adminUsername'), ' ', parameters('ethereumAccountPsswd'), ' ', parameters('privateKeyForPrefundedAccount'), ' ', parameters('artifactsLocationURL'), ' ', parameters('ethereumNetworkID'), ' ', parameters('maxPeers'), ' ', parameters('mnNode'), ' ', variables('enodeUrl'), ' ' , parameters('numMNNodes'), ' ', parameters('etherbaseAddress'), ' ', concat('regularMNNodesConfigLoop-', copyIndex()))]"
         }
       }
     }
