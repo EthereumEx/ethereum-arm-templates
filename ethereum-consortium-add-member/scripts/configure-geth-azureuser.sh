@@ -28,13 +28,14 @@ PRIV_KEY=$3;
 ARTIFACTS_URL_PREFIX=$4;
 NETWORK_ID=$5;
 MAX_PEERS=$6;
-NODE_TYPE=$7; #(0=Mining node; 1=Mining boot node; 2=Transaction node )
+NODE_TYPE=$7; #(0=Mining node; 1=Mining boot node; 2=Transaction node ) # NOTE: I believe 0 and 1 are inverted TODO
 BOOTNODE_URLS=$8;
 NUM_MN_NODES=$9;
 NODE_KEY=$10; #Only supplied for NODE_TYPE=1
 MN_NODE_PREFIX=$10; 	#Only supplied for NODE_TYPE=2
 NUM_TX_NODES=$11;	#Only supplied for NODE_TYPE=2
 TX_NODE_PREFIX=$12;	#Only supplied for NODE_TYPE=2
+ETHBASE=$13; #only supplied for NODE_TYPE=1
 
 MINER_THREADS=1;
 # Difficulty constant represents ~15 sec. block generation for one node
@@ -141,6 +142,10 @@ printf "%s\n" "BOOTNODE_URLS=$BOOTNODE_URLS" >> $GETH_CFG_FILE_PATH;
 if [ $NODE_TYPE -eq 0 ]; then #Boot node
 	printf "%s\n" "NODE_KEY=$NODE_KEY" >> $GETH_CFG_FILE_PATH;
 fi
+if [ $NODE_TYPE -eq 1 ]; then #Boot node
+	printf "%s\n" "ETHBASE=$ETHBASE" >> $GETH_CFG_FILE_PATH;
+fi
+
 if [ $NODE_TYPE -eq 2 ]; then #TX node
 	printf "%s\n" "ETHERADMIN_HOME=$ETHERADMIN_HOME" >> $GETH_CFG_FILE_PATH;
 	printf "%s\n" "PREFUND_ADDRESS=$PREFUND_ADDRESS" >> $GETH_CFG_FILE_PATH;

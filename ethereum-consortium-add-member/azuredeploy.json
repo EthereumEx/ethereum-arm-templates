@@ -6,7 +6,7 @@
       "type" : "string",
       "defaultValue": "10.1",
       "metadata": {
-        "description" : "What's the prefix of this - make sure it doens't collide with other Vnets 10.0.x.x"
+        "description" : "What's the prefix of this vnet using first 2 octets - ex 10.1 - make sure it doens't collide with other Vnets 10.0.x.x"
       }
     },
     "namePrefix" : {
@@ -80,6 +80,12 @@
       ],
       "metadata": {
         "description": "Size of the virtual machine for transaction nodes"
+      }
+    },
+    "etherbaseAddress":{
+      "type" :"string",
+      "metadata": {
+        "description": "This is the address that receives mining if mining is enabled - make sure you have the private key material for this otherwise any mining rewards are lost"
       }
     },
     "genesisNodeId": {
@@ -615,6 +621,7 @@
           "privateKeyForPrefundedAccount": {"value": "NOTUSED"},
           "ethereumNetworkID":{"value": "[parameters('ethereumNetworkID')]"},
           "maxPeers":{"value": "[variables('maxPeers')]"},
+          "etherbaseAddress" : {"value": "[parameters('etherbaseAddress')]"},
           "genesisNodeId" : {"value": "[parameters('genesisNodeId')]"},
           "genesisIpAddress" : {"value": "[parameters('genesisIpAddress')]"},
           "genesisPort" : {"value": "[parameters('genesisPort')]"}

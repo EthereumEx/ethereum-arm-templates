@@ -8,6 +8,9 @@
     "txNode": {
       "type": "int"
     },
+    "etherbaseAddress": {
+      "type" : "string"
+    },
     "genesisNodeId": {
       "type": "string"
     },
@@ -99,7 +102,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('sh configure-geth.sh ', parameters('adminUsername'), ' ', parameters('ethereumAccountPsswd'), ' ', parameters('privateKeyForPrefundedAccount'), ' ', parameters('artifactsLocationURL'), ' ', parameters('ethereumNetworkID'), ' ', parameters('maxPeers'), ' ', parameters('mnNode'), ' ', variables('enodeUrl'), ' ' , parameters('numMNNodes'))]"
+          "commandToExecute": "[concat('sh configure-geth.sh ', parameters('adminUsername'), ' ', parameters('ethereumAccountPsswd'), ' ', parameters('privateKeyForPrefundedAccount'), ' ', parameters('artifactsLocationURL'), ' ', parameters('ethereumNetworkID'), ' ', parameters('maxPeers'), ' ', parameters('mnNode'), ' ', variables('enodeUrl'), ' ' , parameters('numMNNodes'), ' ', parameters('etherbaseAddress'))]"
         }
       }
     }
