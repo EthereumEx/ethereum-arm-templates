@@ -53,7 +53,7 @@ mkdir -p $GETH_HOME;
 ETHERADMIN_HOME="$HOMEDIR/etheradmin";
 GETH_LOG_FILE_PATH0="$HOMEDIR/geth0.log";
 GETH_LOG_FILE_PATH="$HOMEDIR/geth.log";
-GENESIS_FILE_PATH="$HOMEDIR/genesis.json";
+GENESIS_FILE_PATH="./genesis.json";  # Possible bug..
 GETH_CFG_FILE_PATH="$HOMEDIR/geth.cfg";
 NODEKEY_FILE_PATH="$GETH_HOME/nodekey";
 
