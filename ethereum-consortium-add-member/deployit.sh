@@ -2,7 +2,7 @@
 
 # TODO:  collision detection on groups
 
-GROUP="t7";
+GROUP="t8";
 LOCATION="australiaeast";
 
 azure group create $GROUP --location $LOCATION -t blockchain=yes;

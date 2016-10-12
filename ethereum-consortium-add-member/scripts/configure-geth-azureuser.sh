@@ -114,7 +114,7 @@ if [ $NODE_TYPE -eq 0 ]; then #Boot node logic
 	printf %s $NODE_KEY > $NODEKEY_FILE_PATH;
 fi
 
-printf "geth --datadir $GETH_HOME -verbosity 6 init $GENESIS_FILE_PATH" > $GETH_LOG_FILE_PATH0 2>&1;
+printf "geth --datadir $GETH_HOME init $GENESIS_FILE_PATH" > $GETH_LOG_FILE_PATH0 2>&1;
 cat $GENESIS_FILE_PATH >> $GETH_LOG_FILE_PATH0 2>&1;
 geth --datadir $GETH_HOME init $GENESIS_FILE_PATH >> $GETH_LOG_FILE_PATH0 2>&1;
 echo "===== Completed geth initialization =====";
