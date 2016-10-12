@@ -33,9 +33,10 @@ BOOTNODE_URLS=$8;
 NUM_MN_NODES=$9;
 NODE_KEY=$10; #Only supplied for NODE_TYPE=1
 MN_NODE_PREFIX=$10; 	#Only supplied for NODE_TYPE=2
+ETHBASE=$11; #only supplied for NODE_TYPE=1
 NUM_TX_NODES=$11;	#Only supplied for NODE_TYPE=2
 TX_NODE_PREFIX=$12;	#Only supplied for NODE_TYPE=2
-ETHBASE=$11; #only supplied for NODE_TYPE=1
+
 
 MINER_THREADS=1;
 # Difficulty constant represents ~15 sec. block generation for one node
