@@ -89,8 +89,7 @@
       }
     },
     "genesisNodeId": {
-      "type" : "string",
-      "defaultValue": "87642bfa99247dcb9f215b701ea900aa042bdc314965a062e15fb433582b21c9f8653287b4769c6f4ff22fe990a988a759f573b041256c7c4694ddf1f94a5bea"
+      "type" : "string"
     },
     "genesisIpAddress":{
       "type" : "string",
@@ -116,7 +115,6 @@
     "httpPort": 80,
     "adminSitePort": 3000,
     "gethRPCPort": 8545,
-    "gethIPCPort": 30303,
     "numMNNodes": "[parameters('miningNodesPerMember')]",
     "maxVMsPerStorageAcct": 20,
     "mnStorageAcctCount": "[add(div(variables('numMNNodes'), variables('maxVMsPerStorageAcct')), 1)]",
@@ -659,7 +657,7 @@
     },
     "jump-box-ssh":{
       "type": "string",
-      "value": "[concat('ssh', 'azureuser', reference(concat(variables('txPublicIPAddressNamePrefix'),'0')).dnsSettings.fqdn)]"
+      "value": "[concat('ssh', ' ',parameters('adminUsername'), '@', reference(concat(variables('txPublicIPAddressNamePrefix'),'0')).dnsSettings.fqdn)]"
     }
   }
 }

@@ -2,7 +2,7 @@
 
 # TODO:  collision detection on groups
 
-GROUP="t5";
+GROUP="t8";
 LOCATION="australiasoutheast";
 
 azure group create $GROUP --location $LOCATION;

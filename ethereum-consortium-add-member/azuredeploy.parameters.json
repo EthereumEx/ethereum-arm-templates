@@ -2,8 +2,11 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "namePrefix": {
-      "value": "ethnet1"
+    "vnetPrefix": {
+      "value": "10.4"
+    },
+    "namePrefix":{
+      "value" :"v1"
     },
     "adminUsername": {
       "value": "azureuser"
@@ -12,22 +15,25 @@
       "value": "GEN-PASSWORD"
     },
     "ethereumNetworkID": {
-      "value": "1010101"
+      "value": 1010101
     },
     "miningNodesPerMember": {
-      "value": "1"
+      "value": 1
     },
     "mnNodeVMSize": {
       "value": "Standard_A1"
     },
     "numTXNodes": {
-      "value": "2"
+      "value": 1
     },
     "txNodeVMSize": {
       "value": "Standard_A1"
     },
+    "etherbaseAddress" :{
+      "value" : "GEN-UNIQUE-[42]"
+    },
     "genesisNodeId": {
-      "value": "zz"
+      "value": "GEN-UNIQUE-[132]"
     },
     "genesisIpAddress": {
       "value": "10.0.10.4"
