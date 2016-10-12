@@ -8,8 +8,10 @@ set -x;
 #############
 echo 'arguments supplied: ' > config-stuff1.out;
 
-for i in $*; do 
-  echo $i >> config-stuff1.out;
+c=0
+for i in $*; do
+  c=$(($c+1))	
+  echo $c ": " $i  >> config-stuff1.out;
 done
 
 # Validate that all arguments are supplied

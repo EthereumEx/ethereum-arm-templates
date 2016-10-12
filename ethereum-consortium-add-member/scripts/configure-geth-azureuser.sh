@@ -6,10 +6,12 @@ set -x;
 #############
 # Parameters
 #############
-echo 'arguments supplied: ' > config-azureuser.out;
+echo 'arguments supplied..: ' > config-azureuser.out;
 
+c=0
 for i in $*; do
-  echo $i >> config-azureuser.out;
+  c=$(($c+1))	
+  echo $c ": " $i  >> config-azureuser.out;
 done
 
 
@@ -33,7 +35,7 @@ BOOTNODE_URLS=$8;
 NUM_MN_NODES=$9;
 NODE_KEY=$10; #Only supplied for NODE_TYPE=1
 MN_NODE_PREFIX=$10; 	#Only supplied for NODE_TYPE=2
-ETHBASE=$11; #only supplied for NODE_TYPE=1
+ETHBASE=$10; #only supplied for NODE_TYPE=1
 NUM_TX_NODES=$11;	#Only supplied for NODE_TYPE=2
 TX_NODE_PREFIX=$12;	#Only supplied for NODE_TYPE=2
 
@@ -49,6 +51,7 @@ VMNAME=`hostname`;
 GETH_HOME="$HOMEDIR/.ethereum";
 mkdir -p $GETH_HOME;
 ETHERADMIN_HOME="$HOMEDIR/etheradmin";
+GETH_LOG_FILE_PATH0="$HOMEDIR/geth0.log";
 GETH_LOG_FILE_PATH="$HOMEDIR/geth.log";
 GENESIS_FILE_PATH="$HOMEDIR/genesis.json";
 GETH_CFG_FILE_PATH="$HOMEDIR/geth.cfg";
@@ -111,7 +114,9 @@ if [ $NODE_TYPE -eq 0 ]; then #Boot node logic
 	printf %s $NODE_KEY > $NODEKEY_FILE_PATH;
 fi
 
-geth --datadir $GETH_HOME -verbosity 6 init $GENESIS_FILE_PATH >> $GETH_LOG_FILE_PATH 2>&1;
+printf "geth --datadir $GETH_HOME -verbosity 6 init $GENESIS_FILE_PATH" > $GETH_LOG_FILE_PATH0 2>&1;
+cat $GENESIS_FILE_PATH >> $GETH_LOG_FILE_PATH0 2>&1;
+geth --datadir $GETH_HOME init $GENESIS_FILE_PATH >> $GETH_LOG_FILE_PATH0 2>&1;
 echo "===== Completed geth initialization =====";
 
 ####################
