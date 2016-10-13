@@ -88,6 +88,18 @@
         "description": "This is the address that receives mining if mining is enabled - make sure you have the private key material for this otherwise any mining rewards are lost"
       }
     },
+    "ethereumAccountPsswd": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Administrator password used to secure the generated private key file associated with the created Ethereum account"
+      }
+    },
+    "privateKeyForPrefundedAccount": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Private key used to generate account prefunded with Ether.  Use myetherwallet.com to generate a private key."
+      }
+    },
     "genesisNodeId": {
       "type" : "string"
     },
@@ -615,8 +627,8 @@
           "numMNNodes":{"value": "[variables('numMNNodes')]"},
           "artifactsLocationURL":{"value": "[variables('artifactsLocationURL')]"},
           "adminUsername":{"value": "[parameters('adminUsername')]"},
-          "ethereumAccountPsswd": {"value" : "NOTUSED"},
-          "privateKeyForPrefundedAccount": {"value": "NOTUSED"},
+          "ethereumAccountPsswd": {"value" : "[parameters('ethereumAccountPsswd')]"},
+          "privateKeyForPrefundedAccount": {"value": "[parameters('privateKeyForPrefundedAccount')]"},
           "ethereumNetworkID":{"value": "[parameters('ethereumNetworkID')]"},
           "maxPeers":{"value": "[variables('maxPeers')]"},
           "etherbaseAddress" : {"value": "[parameters('etherbaseAddress')]"},

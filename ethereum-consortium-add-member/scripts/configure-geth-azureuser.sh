@@ -90,12 +90,12 @@ wget -N ${ARTIFACTS_URL_PREFIX}/data/genesis.json;
 ####################
 # Setup Genesis file and pre-allocated account
 ####################
-#PASSWD_FILE="$GETH_HOME/passwd.info";
-#printf %s $PASSWD > $PASSWD_FILE;
+PASSWD_FILE="$GETH_HOME/passwd.info";
+printf %s $PASSWD > $PASSWD_FILE;
 
-#printf "%s" $PRIV_KEY > $HOMEDIR/priv_genesis.key;
-#PREFUND_ADDRESS=`geth --datadir $GETH_HOME --password $PASSWD_FILE account import $HOMEDIR/priv_genesis.key | grep -oP '\{\K[^}]+'`;
-#rm $HOMEDIR/priv_genesis.key;
+printf "%s" $PRIV_KEY > $HOMEDIR/priv_genesis.key;
+PREFUND_ADDRESS=`geth --datadir $GETH_HOME --password $PASSWD_FILE account import $HOMEDIR/priv_genesis.key | grep -oP '\{\K[^}]+'`;
+# TODO Remove: rm $HOMEDIR/priv_genesis.key;
 
 cd $HOMEDIR
 wget -N ${ARTIFACTS_URL_PREFIX}/scripts/start-private-blockchain.sh;

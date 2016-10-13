@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# TODO:  collision detection on groups
-
 GROUP=$1;
 LOCATION="australiasoutheast";
 

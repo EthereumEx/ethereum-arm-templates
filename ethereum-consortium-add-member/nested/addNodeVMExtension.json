@@ -44,14 +44,14 @@
     "ethereumAccountPsswd": {
       "type": "securestring"
     },
+    "privateKeyForPrefundedAccount": {
+      "type": "string"
+    },
     "ethereumNetworkID": {
       "type": "int"
     },
     "maxPeers": {
       "type": "int"
-    },
-    "privateKeyForPrefundedAccount": {
-      "type": "string"
     }
   },
   "variables": {
