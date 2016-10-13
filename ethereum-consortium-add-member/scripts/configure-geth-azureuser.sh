@@ -122,7 +122,7 @@ echo "===== Completed geth initialization =====";
 ####################
 # Setup admin website - change this back to type 2 to have it work
 ####################
-if [ $NODE_TYPE -eq 99 ]; then
+if [ $NODE_TYPE -eq 2 ]; then
 	mkdir -p $ETHERADMIN_HOME/views/layouts;
 	cd $ETHERADMIN_HOME/views/layouts;
 	wget -N ${ARTIFACTS_URL_PREFIX}/scripts/etheradmin/main.handlebars;

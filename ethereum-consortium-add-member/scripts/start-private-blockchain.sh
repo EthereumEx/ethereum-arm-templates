@@ -35,7 +35,7 @@ echo "===== Started geth =====";
 ################
 # Change this back to type 2 when ready
 ################
-if [ $NODE_TYPE -eq 99 ]; then
+if [ $NODE_TYPE -eq 2 ]; then
 	cd $ETHERADMIN_HOME;
 	nohup nodejs app.js $GETH_HOME/geth.ipc $PREFUND_ADDRESS $PASSWD $MN_NODE_PREFIX $NUM_MN_NODES $TX_NODE_PREFIX $NUM_TX_NODES >> etheradmin.log &
 	echo "===== Started admin webserver =====";

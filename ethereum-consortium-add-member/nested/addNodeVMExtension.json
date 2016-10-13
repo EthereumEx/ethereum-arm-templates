@@ -8,6 +8,9 @@
     "txNode": {
       "type": "int"
     },
+    "mnNode": {
+      "type": "int"
+    },
     "etherbaseAddress": {
       "type" : "string"
     },
@@ -19,9 +22,6 @@
     },
     "genesisPort": {
       "type": "string"
-    },
-    "mnNode": {
-      "type": "int"
     },
     "txVMNamePrefix": {
       "type": "string"
