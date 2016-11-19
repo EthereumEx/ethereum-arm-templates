@@ -1,0 +1,194 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "location of resources"
+      }
+    },
+    "vmSku": {
+      "defaultValue": "Standard_D1_v2",
+      "type": "string",
+      "metadata": {
+        "description": "Size of VMs in the VM Scale Set."
+      }
+    },
+    "image": {
+      "type": "string",
+      "metadata": {
+        "description": "The os disk image for the VMs in the scale set."
+      }
+    },
+    "vmssName": {
+      "maxLength": 61,
+      "type": "string",
+      "metadata": {
+        "description": "String used as a base for naming resources. Must be 3-61 characters in length and globally unique across Azure. A hash is prepended to this string for some resources, and resource-specific information is appended."
+      }
+    },
+    "instanceCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of VM instances (100 or less)."
+      }
+    },
+    "username": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin username on all VMs."
+      }
+    },
+    "sshPublicKey": {
+      "defaultValue": "",
+      "type": "string",
+      "metadata": {
+        "description": "ssh public key for connecting to VMs."
+      }
+    },
+    "scriptArguments": {
+      "type" :"securestring"
+    },
+    "storageAccounts": {
+      "type": "array"
+    },
+    "virtualNetworkName": {
+      "type": "string"
+    },
+    "networkConfiguration" : {
+      "type": "object"
+    },
+    "testArgument" : {
+      "defaultValue": {},
+      "type" : "object"
+    }
+  },
+  "variables": {
+    "deploymentId": "[toLower(substring(uniqueString(resourceGroup().Id), 0, 10))]",
+    "instanceCount": "[int(parameters('instanceCount'))]",
+    "apiVersion": "2015-06-15",
+    "vmssApiVersion": "2016-03-30",
+    "resourceLocation": "[parameters('location')]",
+    "saCount": 5,
+    "storageAccounts": "[parameters('storageAccounts')]",
+    "namingInfix": "[toLower(parameters('vmssName'))]",
+    "vhdContainerName": "[concat('vhd', variables('namingInfix'))]",
+    "osDiskName": "[concat('osdisk-', variables('namingInfix'))]",
+    "virtualNetworkName": "[parameters('virtualNetworkName')]",
+    "nicName": "[concat('nic-', variables('namingInfix'))]",
+    "ipConfigName": "[concat('ipconfig-', variables('namingInfix'))]",
+    "imageUbuntu14.04.5-LTS": {
+      "sku": "14.04.5-LTS",
+      "publisher": "Canonical",
+      "version": "latest",
+      "offer": "UbuntuServer"
+    },
+    "imageUbuntu16.04.0-LTS": {
+      "sku": "16.04.0-LTS",
+      "publisher": "Canonical",
+      "version": "latest",
+      "offer": "UbuntuServer"
+    },
+    "imageUbuntu14.04.3-LTS": {
+      "sku": "14.04.3-LTS",
+      "publisher": "Canonical",
+      "version": "latest",
+      "offer": "UbuntuServer"
+    },
+    "imageReference": "[variables(concat('image', parameters('image')))]",
+    "osType": "Linux",
+    "authenticationType": "sshPublicKey",
+    "sshKeyPath": "[concat('/home/',parameters('username'),'/.ssh/authorized_keys')]",
+    "osProfilesshPublicKey": {
+      "computerNamePrefix": "[variables('namingInfix')]",
+      "adminUsername": "[parameters('username')]",
+      "adminPassword": "",
+      "linuxConfiguration": {
+        "disablePasswordAuthentication": "true",
+        "ssh": {
+          "publicKeys": [
+            {
+              "path": "[variables('sshKeyPath')]",
+              "keyData": "[parameters('sshPublicKey')]"
+            }
+          ]
+        }
+      }
+    },
+    "osProfileReference": "[variables(concat('osProfile', variables('authenticationType')))]",
+    "networkConfiguration" : "[parameters('networkConfiguration')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/virtualMachineScaleSets",
+      "sku": {
+        "name": "[parameters('vmSku')]",
+        "tier": "Standard",
+        "capacity": "[variables('instanceCount')]"
+      },
+      "name": "[variables('namingInfix')]",
+      "apiVersion": "[variables('vmssApiVersion')]",
+      "location": "[variables('resourceLocation')]",
+      "properties": {
+        "overprovision": "false",
+        "upgradePolicy": {
+          "mode": "Manual"
+        },
+        "virtualMachineProfile": {
+          "storageProfile": {
+            "osDisk": {
+              "vhdContainers": [
+                "[concat(reference(concat('Microsoft.Storage/storageAccounts/', concat(variables('storageAccounts')[0])), variables('apiVersion')).primaryEndpoints.blob, variables('vhdContainerName'))]",
+                "[concat(reference(concat('Microsoft.Storage/storageAccounts/', concat(variables('storageAccounts')[1])), variables('apiVersion')).primaryEndpoints.blob, variables('vhdContainerName'))]",
+                "[concat(reference(concat('Microsoft.Storage/storageAccounts/', concat(variables('storageAccounts')[2])), variables('apiVersion')).primaryEndpoints.blob, variables('vhdContainerName'))]",
+                "[concat(reference(concat('Microsoft.Storage/storageAccounts/', concat(variables('storageAccounts')[3])), variables('apiVersion')).primaryEndpoints.blob, variables('vhdContainerName'))]",
+                "[concat(reference(concat('Microsoft.Storage/storageAccounts/', concat(variables('storageAccounts')[4])), variables('apiVersion')).primaryEndpoints.blob, variables('vhdContainerName'))]"
+              ],
+              "name": "[variables('osDiskName')]",
+              "caching": "ReadOnly",
+              "createOption": "FromImage"
+            },
+            "imageReference": "[variables('imageReference')]"
+          },
+          "osProfile": "[variables('osProfileReference')]",
+          "networkProfile": {
+            "networkInterfaceConfigurations": [
+              {
+                "name": "[variables('nicName')]",
+                "properties": {
+                  "primary": "true",
+                  "ipConfigurations": [
+                    {
+                      "name": "[variables('ipConfigName')]",
+                      "properties": "[variables('networkConfiguration')]"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "extensionProfile": {
+            "extensions": [
+              {
+                "name": "Initialize-Machine",
+                "properties": {
+                  "publisher": "Microsoft.Azure.Extensions",
+                  "type": "CustomScript",
+                  "typeHandlerVersion": "2.0",
+                  "autoUpgradeMinorVersion": true,
+                  "settings": {
+                    "fileUris": [
+                      "https://ericmaidiagnostics.blob.core.windows.net/templates/runScripts.sh"
+                    ],
+                    "commandToExecute": "[concat('sh ', 'runScripts.sh ', parameters('scriptArguments'))]"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

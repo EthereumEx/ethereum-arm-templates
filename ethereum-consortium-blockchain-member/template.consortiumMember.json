@@ -1,0 +1,279 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "location of resources"
+      }
+    },
+    "consortiumName": {
+      "type": "string",
+      "maxLength": 10,
+      "metadata": {
+        "description": "Consortium name"
+      }
+    },
+    "username": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin username on all VMs."
+      }
+    },
+    "sshPublicKey": {
+      "defaultValue": "",
+      "type": "string",
+      "metadata": {
+        "description": "ssh public key for connecting to VMs."
+      }
+    },
+    "genesisUrl": {
+      "type": "securestring"
+    },
+    "gethNetworkId": {
+      "type": "securestring"
+    },
+    "dashboardSecret": {
+      "type": "securestring"
+    },
+    "minerAddress": {
+      "type": "string"
+    },
+    "minerVMSku": {
+      "defaultValue": "Standard_DS2_v2",
+      "type": "string"
+    },
+    "txnodeVMSku": {
+      "defaultValue": "Standard_DS1_v2",
+      "type": "string"
+    },
+    "minerCount": {
+      "defaultValue": 2,
+      "type": "int"
+    },
+    "txnodeCount": {
+      "defaultValue": 3,
+      "type": "int"
+    },
+    "contentRoot" : {
+      "defaultValue" : "https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/master/ethereum-consortium-blockchain-member",
+      "type" :"string"
+    }
+  },
+  "variables": {
+    "contentRoot" : "[parameters('contentRoot')]",
+    "deploymentId": "[toLower(substring(uniqueString(resourceGroup().Id), 0, 10))]",
+    "apiVersion": "2015-06-15",
+    "resourceLocation": "[parameters('location')]",
+    "storageAccountType": "Premium_LRS",
+    "saCount": 5,
+    "namingInfix": "[toLower(parameters('consortiumName'))]",
+    "storageAccounts": [
+      "[concat('savmss01x', variables('deploymentId'))]",
+      "[concat('savmss02x', variables('deploymentId'))]",
+      "[concat('savmss03x', variables('deploymentId'))]",
+      "[concat('savmss04x', variables('deploymentId'))]",
+      "[concat('savmss05x', variables('deploymentId'))]"
+    ]
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageAccounts')[copyIndex()]]",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[variables('resourceLocation')]",
+      "copy": {
+        "name": "storageLoop",
+        "count": "[variables('saCount')]"
+      },
+      "properties": {
+        "accountType": "[variables('storageAccountType')]"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "Consortium.Network",
+      "apiVersion": "2015-11-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/template.network.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('resourceLocation')]"
+          },
+          "namingInfix": {
+            "value": "[variables('namingInfix')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "VM.Dashboard",
+      "apiVersion": "2015-11-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/template.vm.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('resourceLocation')]"
+          },
+          "username": {
+            "value": "[parameters('username')]"
+          },
+          "sshPublicKey": {
+            "value": "[parameters('sshPublicKey')]"
+          },
+          "machineName": {
+            "value": "[concat(variables('namingInfix'), '-dashboard')]"
+          },
+          "scriptArguments": {
+            "value": "[concat(variables('contentRoot'), ' ', parameters('dashboardSecret'))]"
+          },
+          "storageAccountName": {
+            "value": "[variables('storageAccounts')[0]]"
+          },
+          "vmSku": {
+            "value": "[parameters('txnodeVMSku')]"
+          },
+          "ids": {
+            "value": {
+              "subnet": "[reference('Consortium.Network').outputs.network.value.subnets.dashboard]",
+              "vnet": "[reference('Consortium.Network').outputs.network.value.id]",
+              "nsg": "[reference('Consortium.Network').outputs.network.value.nsg.dashboard]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "storageLoop",
+        "Consortium.Network"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "VMSS.TxNodes",
+      "apiVersion": "2015-11-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/template.vmss.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('resourceLocation')]"
+          },
+          "vmssName": {
+            "value": "[concat(variables('namingInfix'), '-n-tx')]"
+          },
+          "vmSku": {
+            "value": "[parameters('txnodeVMSku')]"
+          },
+          "image": {
+            "value": "Ubuntu16.04.0-LTS"
+          },
+          "instanceCount": {
+            "value": "[parameters('txnodeCount')]"
+          },
+          "storageAccounts": {
+            "value": "[variables('storageAccounts')]"
+          },
+          "virtualNetworkName": {
+            "value": "[reference('Consortium.Network').outputs.network.value.name]"
+          },
+          "username": {
+            "value": "[parameters('username')]"
+          },
+          "sshPublicKey": {
+            "value": "[parameters('sshPublicKey')]"
+          },
+          "scriptArguments": {
+            "value": "[concat(variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ',parameters('dashboardSecret'),' ', reference('VM.Dashboard').outputs.ip.value, ' ', reference('VM.Dashboard').outputs.ip.value)]"
+          },
+          "networkConfiguration": {
+            "value": {
+              "subnet": {
+                "id": "[reference('Consortium.Network').outputs.network.value.subnets.tx]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[reference('Consortium.Network').outputs.network.value.internal.poolId]"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "storageLoop",
+        "VM.Dashboard",
+        "Consortium.Network"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "VMSS.Miners",
+      "apiVersion": "2015-11-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/template.vmss.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('resourceLocation')]"
+          },
+          "vmssName": {
+            "value": "[concat(variables('namingInfix'), '-n-miner')]"
+          },
+          "vmSku": {
+            "value": "[parameters('minerVMSku')]"
+          },
+          "image": {
+            "value": "Ubuntu16.04.0-LTS"
+          },
+          "instanceCount": {
+            "value": "[parameters('minerCount')]"
+          },
+          "storageAccounts": {
+            "value": "[variables('storageAccounts')]"
+          },
+          "virtualNetworkName": {
+            "value": "[reference('Consortium.Network').outputs.network.value.name]"
+          },
+          "username": {
+            "value": "[parameters('username')]"
+          },
+          "sshPublicKey": {
+            "value": "[parameters('sshPublicKey')]"
+          },
+          "scriptArguments": {
+            "value": "[concat(variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ',parameters('dashboardSecret'), ' ', reference('VM.Dashboard').outputs.ip.value, ' ', reference('VM.Dashboard').outputs.ip.value, ' ', parameters('minerAddress'))]"
+          },
+          "networkConfiguration": {
+            "value": {
+              "subnet": {
+                "id": "[reference('Consortium.Network').outputs.network.value.subnets.miners]"
+              }
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "storageLoop",
+        "Consortium.Network",
+        "VM.Dashboard",
+        "VMSS.TxNodes"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+###############################################################################
+# Set default behavior to automatically normalize line endings.
+###############################################################################
+
+[attr]wintext text eol=crlf
+
+* text=auto
+
+# Default
+*.* wintext
+
+# Build Specifications
+*.ds	wintext
+*.dc	wintext
+dirs	wintext
+*.sln	wintext
+*.props	wintext
+*.sources	wintext
+*.targets	wintext
+*.csproj	wintext
+*.rptproj	wintext
+*.vcxproj	wintext
+*.proj	wintext
+*.filters	wintext
+
+# Sources (Core)
+*.cs	wintext
+*.vb	wintext
+*.h	wintext
+*.cpp	wintext
+*.resx	wintext
+*.xaml	wintext
+*.html	wintext
+*.css	wintext
+*.js	wintext
+
+# Sources (Auxilary)
+*.cmd	wintext
+*.bat	wintext
+*.ps1	wintext
+*.txt	wintext
+*.config	wintext
+*.xml	wintext
+*.xsd	wintext
+*.ini	wintext
+*.snippet	wintext
+*.XML	wintext
+*.vsixmanifest	wintext
+*.ruleset	wintext
+*.nuspec	wintext
+*.StyleCop	wintext
+*.DotSettings	wintext
+*.rdl	wintext
+*.rsd	wintext
+*.def	wintext
+*.pkgdev wintext
+
+# Sources (Binary)
+*.rtf  binary
+*.pdf  binary
+*.ico  binary
+*.snk  binary
+*.rdl.data  binary
+*.appx binary
+
+# Fonts (Binary)
+*.eot	binary
+*.ttf	binary
+*.woff	binary
+*.woff2	binary
+*.otf	binary
+
+# Configuration
+*.gitattributes	wintext
+*.gitignore	wintext
+*.rds	wintext
+
+#Binaries
+*.exe  binary
+*.dll  binary
+*.pdb  binary
+*.zip  binary
+*.chm  binary
+*.nupkg  binary
+*.lex binary
+*.ocx binary
+*.mui binary
+*.oca binary
+*.pfx binary
+*.pvk binary
+*.cer binary
+*.bin binary
+*.ppt binary
+*.pdf binary
+*.sys binary
+*.mdb binary 
+*.cdg binary
+*.com binary
+*.ciphertext binary
+*.qencr binary
+*.cab binary
+*.dpk binary 
+*.tlb binary
+*.lnk binary
+*.trc binary
+*.xlsx binary
+*.covsym binary
+*.mdf binary
+
+#Images
+*.png binary
+*.jpg binary
+*.bmp binary
+*.gif binary
+*.jpeg binary
+*.psd binary

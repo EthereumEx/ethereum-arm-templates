@@ -1,0 +1,177 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "userName": {
+      "type": "string"
+    },
+    "sshPublicKey": {
+      "type": "string"
+    },
+    "machineName": {
+      "type": "string"
+    },
+    "storageAccountName": {
+      "type": "string"
+    },
+    "vmSku": {
+      "type": "string"
+    },
+    "scriptArguments": {
+      "defaultValue": "",
+      "type": "securestring"
+    },
+    "ids": {
+      "type": "object"
+    }
+  },
+  "variables": {
+    "location": "[parameters('location')]",
+    "vmSku": "[parameters('vmSku')]",
+    "machineName": "[parameters('machineName')]",
+    "userName": "[parameters('userName')]",
+    "sshPublicKey": "[parameters('sshPublicKey')]",
+    "storageAccountName": "[parameters('storageAccountName')]",
+    "osDiskName": "[concat(variables('machineName'), '-os')]",
+    "osDiskUri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', '/vhds/vm-', variables('osDiskName'),'.vhd')]",
+    "nicName": "[concat(variables('machineName'), '-nic')]",
+    "publicIpName": "[concat(variables('machineName'), '-public-ip')]",
+    "ids": {
+      "nic": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]",
+      "publicIp": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]",
+      "subnet": "[parameters('ids').subnet]",
+      "vnet": "[parameters('ids').vnet]",
+      "nsg": "[parameters('ids').nsg]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[variables('machineName')]",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[variables('vmSku')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "16.04.0-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[variables('osDiskName')]",
+            "createOption": "FromImage",
+            "vhd": {
+              "uri": "[variables('osDiskUri')]"
+            },
+            "caching": "ReadWrite"
+          },
+          "dataDisks": [ ]
+        },
+        "osProfile": {
+          "computerName": "[variables('machineName')]",
+          "adminUsername": "[variables('userName')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', variables('userName'), '/.ssh/authorized_keys')]",
+                  "keyData": "[variables('sshPublicKey')]"
+                }
+              ]
+            }
+          },
+          "secrets": [ ],
+          "adminPassword": ""
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[variables('ids').nic]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[variables('ids').nic]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('nicName')]",
+      "apiVersion": "2016-03-30",
+      "location": "[variables('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[variables('ids').publicIp]"
+              },
+              "subnet": {
+                "id": "[variables('ids').subnet]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": [ ]
+        },
+        "enableIPForwarding": false,
+        "networkSecurityGroup": {
+          "id": "[variables('ids').nsg]"
+        }
+      },
+      "dependsOn": [
+        "[variables('ids').publicIp]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('publicIpName')]",
+      "apiVersion": "2016-03-30",
+      "location": "[variables('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4
+      },
+      "dependsOn": [ ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('machineName'), '/', variables('machineName'), '-scripts')]",
+      "apiVersion": "2016-03-30",
+      "location": "[variables('location')]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "https://ericmaidiagnostics.blob.core.windows.net/templates/runScripts.sh"
+          ],
+          "commandToExecute": "[concat('sh ', 'runScripts.sh ', parameters('scriptArguments'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('machineName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "ip": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))).ipConfigurations[0].properties.privateIPAddress]"
+    }
+  }
+}
