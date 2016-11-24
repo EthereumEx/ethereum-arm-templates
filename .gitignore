@@ -212,3 +212,5 @@ ModelManifest.xml
 # Ignore JS generated from TypeScript
 deploy-test.json
 *.out
+
+test.parameters.json
