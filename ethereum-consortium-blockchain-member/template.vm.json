@@ -20,8 +20,10 @@
     "vmSku": {
       "type": "string"
     },
-    "scriptArguments": {
-      "defaultValue": "",
+    "scriptUri": {
+      "type": "string"
+    },
+    "scriptCommand": {
       "type": "securestring"
     },
     "ids": {
@@ -158,9 +160,9 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
-            "https://ericmaidiagnostics.blob.core.windows.net/templates/runScripts.sh"
+            "[parameters('scriptUri')]"
           ],
-          "commandToExecute": "[concat('sh ', 'runScripts.sh ', parameters('scriptArguments'))]"
+          "commandToExecute": "[parameters('scriptCommand')]"
         }
       },
       "dependsOn": [

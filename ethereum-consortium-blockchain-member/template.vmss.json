@@ -47,21 +47,24 @@
         "description": "ssh public key for connecting to VMs."
       }
     },
-    "scriptArguments": {
-      "type" :"securestring"
-    },
     "storageAccounts": {
       "type": "array"
     },
     "virtualNetworkName": {
       "type": "string"
     },
-    "networkConfiguration" : {
+    "networkConfiguration": {
       "type": "object"
     },
-    "testArgument" : {
-      "defaultValue": {},
-      "type" : "object"
+    "testArgument": {
+      "defaultValue": { },
+      "type": "object"
+    },
+    "scriptUri": {
+      "type": "string"
+    },
+    "scriptCommand": {
+      "type": "securestring"
     }
   },
   "variables": {
@@ -179,9 +182,9 @@
                   "autoUpgradeMinorVersion": true,
                   "settings": {
                     "fileUris": [
-                      "https://ericmaidiagnostics.blob.core.windows.net/templates/runScripts.sh"
+                      "[parameters('scriptUri')]"
                     ],
-                    "commandToExecute": "[concat('sh ', 'runScripts.sh ', parameters('scriptArguments'))]"
+                    "commandToExecute": "[parameters('scriptCommand')]"
                   }
                 }
               }

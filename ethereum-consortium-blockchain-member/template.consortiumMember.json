@@ -75,7 +75,10 @@
       "[concat('savmss03x', variables('deploymentId'))]",
       "[concat('savmss04x', variables('deploymentId'))]",
       "[concat('savmss05x', variables('deploymentId'))]"
-    ]
+    ],
+    "scriptName" : "runScripts.sh",
+    "machineSetupScriptUri": "[concat(variables('contentRoot'), '/', variables('scriptName'))]",
+    "scriptCommand" : "[concat('sh ', variables('scriptName'), ' ')]"
   },
   "resources": [
     {
@@ -134,8 +137,11 @@
           "machineName": {
             "value": "[concat(variables('namingInfix'), '-dashboard')]"
           },
-          "scriptArguments": {
-            "value": "[concat(variables('contentRoot'), ' ', parameters('dashboardSecret'))]"
+          "scriptUri": {
+            "value": "[variables('machineSetupScriptUri')]"
+          },
+          "scriptCommand": {
+            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('dashboardSecret'))]"
           },
           "storageAccountName": {
             "value": "[variables('storageAccounts')[0]]"
@@ -195,8 +201,11 @@
           "sshPublicKey": {
             "value": "[parameters('sshPublicKey')]"
           },
-          "scriptArguments": {
-            "value": "[concat(variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ',parameters('dashboardSecret'),' ', reference('VM.Dashboard').outputs.ip.value, ' ', reference('VM.Dashboard').outputs.ip.value)]"
+          "scriptUri": {
+            "value": "[variables('machineSetupScriptUri')]"
+          },
+          "scriptCommand": {
+            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ',parameters('dashboardSecret'),' ', reference('VM.Dashboard').outputs.ip.value, ' ', reference('VM.Dashboard').outputs.ip.value)]"
           },
           "networkConfiguration": {
             "value": {
@@ -256,8 +265,11 @@
           "sshPublicKey": {
             "value": "[parameters('sshPublicKey')]"
           },
-          "scriptArguments": {
-            "value": "[concat(variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ',parameters('dashboardSecret'), ' ', reference('VM.Dashboard').outputs.ip.value, ' ', reference('VM.Dashboard').outputs.ip.value, ' ', parameters('minerAddress'))]"
+          "scriptUri": {
+            "value" :  "[variables('machineSetupScriptUri')]"
+          },
+          "scriptCommand": {
+            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ',parameters('dashboardSecret'), ' ', reference('VM.Dashboard').outputs.ip.value, ' ', reference('VM.Dashboard').outputs.ip.value, ' ', parameters('minerAddress'))]"
           },
           "networkConfiguration": {
             "value": {

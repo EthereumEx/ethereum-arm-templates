@@ -2,18 +2,30 @@
 
 LOG=/root/install.log
 SCRIPTS=/root/scripts
+CURL=curl -S -s --connect-timeout 5 --retry 15
 
 date > $LOG
 mkdir -p $SCRIPTS
-export DEBIAN_FRONTEND=noninteractive
-apt-mark hold walinuxagent
-curl -S -s -o $SCRIPTS/installDocker.sh https://gist.githubusercontent.com/ericmaino/32d7155dedcf3d020f3a35bcea494ff7/raw/6824ea7d00f4c939c0f0ecba3351060a2820d2ea/install-docker-ubuntu1604.sh >> $LOG 2>&1
-sh $SCRIPTS/installDocker.sh >> $LOG 2>&1
+SCRIPT_COMPLETE=$SCRIPTS/.complete.0
+
+if [ ! -f $SCRIPT_COMPLETE ]; then
+  export DEBIAN_FRONTEND=noninteractive
+  apt-mark hold walinuxagent
+  $CURL -o $SCRIPTS/installDocker.sh https://gist.githubusercontent.com/ericmaino/32d7155dedcf3d020f3a35bcea494ff7/raw/6824ea7d00f4c939c0f0ecba3351060a2820d2ea/install-docker-ubuntu1604.sh >> $LOG 2>&1
+  sh $SCRIPTS/installDocker.sh >> $LOG 2>&1
+  echo > $SCRIPT_COMPLETE
+fi
 
 echo >> $LOG 2>&1
 date >> $LOG 2>&1
 echo "Downloading from $1" >> $LOG 2>&1
-curl  -S -s -o $SCRIPTS/setupMachine.sh $1/initNode.sh >> $LOG 2>&1
+SCRIPT=$SCRIPTS/setupMachine.sh
+$CURL -o $SCRIPT $1/initNode.sh >> $LOG 2>&1
+
+if [ ! -f $SCRIPT ]; then
+  echo "Failed to download $SCRIPT" >> $LOG 2>&1
+  exit 2
+fi
 
 NEWARGS=
 SKIP=
@@ -27,6 +39,5 @@ do
   fi
 done
 
-
 echo $NEWARGS >> $LOG 2>&1
-sh $SCRIPTS/setupMachine.sh $NEWARGS >> $LOG 2>&1
+sh $SCRIPT $NEWARGS >> $LOG 2>&1
