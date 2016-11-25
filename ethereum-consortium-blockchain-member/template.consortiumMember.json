@@ -83,7 +83,7 @@
       "[resourceGroup().location]",
       "[parameters('locationOverride')]"
     ],
-    "resourceLocation": "[variables('resourceLocations')[length(substring(parameters('locationOverride'),0,1))]]",
+    "resourceLocation": "[variables('resourceLocations')[length(take(parameters('locationOverride'),1))]]",
     "storageAccountType": "Premium_LRS",
     "saCount": 5,
     "namingInfix": "[toLower(parameters('consortiumName'))]",
