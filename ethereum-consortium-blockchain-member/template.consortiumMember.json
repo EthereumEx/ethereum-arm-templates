@@ -2,59 +2,73 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "location": {
-      "type": "string",
-      "metadata": {
-        "description": "location of resources"
-      }
-    },
     "consortiumName": {
       "type": "string",
       "maxLength": 10,
       "metadata": {
-        "description": "Consortium name"
+        "description": "A short identifier to distinguish machines in this membership"
       }
     },
     "username": {
       "type": "string",
+      "defaultValue": "azureuser",
       "metadata": {
         "description": "Admin username on all VMs."
       }
     },
     "sshPublicKey": {
-      "defaultValue": "",
       "type": "string",
       "metadata": {
         "description": "ssh public key for connecting to VMs."
       }
     },
     "genesisUrl": {
-      "type": "securestring"
+      "type": "securestring",
+      "metadata": {
+        "description": "A url used to download the JSON which describes the genesis block"
+      }
     },
     "gethNetworkId": {
-      "type": "securestring"
+      "type": "securestring",
+      "metadata": {
+        "description": "A unique id used to ensure only machines on the same network can talk to each other"
+      }
     },
     "dashboardSecret": {
-      "type": "securestring"
+      "type": "securestring",
+      "metadata": {
+        "description": "A unique string to used to ensure only machines with the secret can post to the dashboard"
+      }
     },
     "minerAddress": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If miners is more than 0, then an address must be specified"
+      }
     },
     "minerVMSku": {
       "defaultValue": "Standard_DS2_v2",
-      "type": "string"
-    },
-    "txnodeVMSku": {
-      "defaultValue": "Standard_DS1_v2",
       "type": "string"
     },
     "minerCount": {
       "defaultValue": 2,
       "type": "int"
     },
+    "txnodeVMSku": {
+      "defaultValue": "Standard_DS1_v2",
+      "type": "string"
+    },
     "txnodeCount": {
       "defaultValue": 3,
       "type": "int"
+    },
+    "locationOverride": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Location to deploy resources. By default the template will use the Resource Group location"
+      }
     },
     "contentRoot" : {
       "defaultValue" : "https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/master/ethereum-consortium-blockchain-member",
@@ -65,7 +79,11 @@
     "contentRoot" : "[parameters('contentRoot')]",
     "deploymentId": "[toLower(substring(uniqueString(resourceGroup().Id), 0, 10))]",
     "apiVersion": "2015-06-15",
-    "resourceLocation": "[parameters('location')]",
+    "resourceLocations": [
+      "[resourceGroup().location]",
+      "[parameters('locationOverride')]"
+    ],
+    "resourceLocation": "[variables('resourceLocations')[length(substring(parameters('locationOverride'),0,1))]]",
     "storageAccountType": "Premium_LRS",
     "saCount": 5,
     "namingInfix": "[toLower(parameters('consortiumName'))]",
