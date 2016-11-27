@@ -105,7 +105,8 @@
     "dNetworkName": "[concat('Consortium.', parameters('consortiumName'), '.Network')]",
     "dVMSSTx": "[concat('Consortium.', parameters('consortiumName'), '.Tx')]",
     "dVMSSMiners": "[concat('Consortium.', parameters('consortiumName'), '.Miners')]",
-    "dScriptArguments": "[concat('Consortium.', parameters('consortiumName'), '.Arguments')]"
+    "dScriptArguments": "[concat('Consortium.', parameters('consortiumName'), '.Arguments')]",
+    "secureArguments": "[concat(parameters('genesisUrl'),' ',parameters('gethNetworkId'),' ',parameters('dashboardSecret'))]"
   },
   "resources": [
     {
@@ -159,11 +160,8 @@
             "value": [
               "[variables('scriptCommand')]",
               "[variables('contentRoot')]",
-              "[parameters('genesisUrl')]",
-              "[parameters('gethNetworkId')]",
               "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
               "[reference(variables('dNetworkName')).outputs.network.value.ip.ipAddress]",
-              "[parameters('dashboardSecret')]",
               "[parameters('dashboardIp')]",
               "[parameters('registrarIp')]"
             ]
@@ -222,7 +220,7 @@
             "value": "[variables('machineSetupScriptUri')]"
           },
           "scriptCommand": {
-            "value": "[reference(variables('dScriptArguments')).outputs.result.value]"
+            "value": "[concat(reference(variables('dScriptArguments')).outputs.result.value, ' ', variables('secureArguments'))]"
           },
           "networkConfiguration": {
             "value": {
@@ -286,7 +284,7 @@
             "value": "[variables('machineSetupScriptUri')]"
           },
           "scriptCommand": {
-            "value": "[concat(reference(variables('dScriptArguments')).outputs.result.value, ' ', parameters('minerAddress'))]"
+            "value": "[concat(reference(variables('dScriptArguments')).outputs.result.value, ' ', variables('secureArguments'), ' ', parameters('minerAddress'))]"
           },
           "networkConfiguration": {
             "value": {

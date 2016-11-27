@@ -14,14 +14,16 @@ if [ "$#" -eq 1 ]; then
 fi
 
 if [ "$#" -ne 1 ]; then
-        GENESIS_URL=$1
-        NETWORK_ID=$2
-        BOOTNODE_NETWORK=$3
-        BOOTNODE_PUBLIC_IP=$4
-        WS_SECRET=$5
+        BOOTNODE_NETWORK=$1
+        BOOTNODE_PUBLIC_IP=$2
+        DASHBOARD_IP=$3
+        REGISTRAR_IP=$4
+        GENESIS_URL=$5
+        NETWORK_ID=$6
+        WS_SECRET=$7
         
-        WS_SERVER="ws://$6:3000"
-        BOOTNODE_URL="http://$7:3001"
+        WS_SERVER="ws://$DASHBOARD_IP:3000"
+        BOOTNODE_URL="http://$REGISTRAR_IP:3001"
         ENABLE_MINER=
 
         if [ "$8" ]; then
