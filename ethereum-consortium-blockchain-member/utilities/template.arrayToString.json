@@ -1,0 +1,80 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "args": {
+            "type": "array"
+        },
+        "delimiter": {
+            "type": "string",
+            "defaultValue": " "
+        },
+        "contentRoot": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "id" :"[concat('ArrayToString', uniqueString(string(parameters('args'))))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "[concat(variables('id'), '0')]",
+            "apiVersion": "2015-01-01",
+            "properties": {
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[concat(parameters('contentRoot'), '/utilities/template.stringJoin.json')]"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                    "stringA": {
+                        "value": ""
+                    },
+                    "delimiter": {
+                        "value": ""
+                    },
+                    "stringB": {
+                        "value": ""
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "[concat(variables('id'), add(copyindex(),1))]",
+            "apiVersion": "2015-01-01",
+            "copy": {
+                "name": "arrayJoinLoop",
+                "count": "[length(parameters('args'))]"
+            },
+            "properties": {
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[concat(parameters('contentRoot'), '/utilities/template.stringJoin.json')]"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                    "stringA": {
+                        "value": "[reference(concat(variables('id'), copyindex())).outputs.result.value]"
+                    },
+                    "delimiter": {
+                        "value": "[parameters('delimiter')]"
+                    },
+                    "stringB": {
+                        "value": "[parameters('args')[copyindex()]]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('id'), copyindex())]"
+            ]
+        }
+    ],
+    "outputs": {
+        "Result": {
+            "type": "string",
+            "value": "[reference(concat(variables('id'), length(parameters('args')))).outputs.result.value]"
+        }
+    }
+}
