@@ -92,6 +92,32 @@
               "priority": 102,
               "direction": "Inbound"
             }
+          },
+          {
+            "name": "allow-dashboard",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3000",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "Internet",
+              "access": "Allow",
+              "priority": 102,
+              "direction": "Outbound"
+            }
+          },
+          {
+            "name": "allow-registrar",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3001",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "Internet",
+              "access": "Allow",
+              "priority": 103,
+              "direction": "Outbound"
+            }
           }
         ]
       }
