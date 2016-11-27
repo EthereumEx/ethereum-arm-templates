@@ -40,6 +40,12 @@
         "description": "A unique string to used to ensure only machines with the secret can post to the dashboard"
       }
     },
+    "dashboardIp":{
+      "type": "string"
+    },
+    "registrarIp":{
+      "type": "string"
+    },
     "minerAddress": {
       "type": "string",
       "defaultValue": "",
@@ -77,7 +83,6 @@
   },
   "variables": {
     "contentRoot" : "[parameters('contentRoot')]",
-    "apiVersion": "2015-06-15",
     "resourceLocations": [
       "[resourceGroup().location]",
       "[parameters('locationOverride')]"
@@ -96,13 +101,16 @@
     ],
     "scriptName" : "runScripts.sh",
     "machineSetupScriptUri": "[concat(variables('contentRoot'), '/', variables('scriptName'))]",
-    "scriptCommand" : "[concat('sh ', variables('scriptName'), ' ')]"
+    "scriptCommand" : "[concat('sh ', variables('scriptName'), ' ')]",
+    "dNetworkName" : "[concat('Consortium.', parameters('consortiumName'), '.Network')]",
+    "dVMSSTx" : "[concat('Consortium.', parameters('consortiumName'), '.Tx')]",
+    "dVMSSMiners" : "[concat('Consortium.', parameters('consortiumName'), '.Miners')]"
   },
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageAccounts')[copyIndex()]]",
-      "apiVersion": "[variables('apiVersion')]",
+      "apiVersion": "2015-06-15",
       "location": "[variables('resourceLocation')]",
       "copy": {
         "name": "storageLoop",
@@ -114,8 +122,8 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "Consortium.Network",
-      "apiVersion": "2015-11-01",
+      "name": "[variables('dNetworkName')]",
+      "apiVersion": "2015-01-01",
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
@@ -134,57 +142,8 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "VM.Dashboard",
-      "apiVersion": "2015-11-01",
-      "properties": {
-        "templateLink": {
-          "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/template.vm.json')]"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "location": {
-            "value": "[variables('resourceLocation')]"
-          },
-          "username": {
-            "value": "[parameters('username')]"
-          },
-          "sshPublicKey": {
-            "value": "[parameters('sshPublicKey')]"
-          },
-          "machineName": {
-            "value": "[concat(variables('namingInfix'), '-dashboard')]"
-          },
-          "scriptUri": {
-            "value": "[variables('machineSetupScriptUri')]"
-          },
-          "scriptCommand": {
-            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('dashboardSecret'))]"
-          },
-          "storageAccountName": {
-            "value": "[variables('storageAccounts')[0]]"
-          },
-          "vmSku": {
-            "value": "[parameters('txnodeVMSku')]"
-          },
-          "ids": {
-            "value": {
-              "subnet": "[reference('Consortium.Network').outputs.network.value.subnets.dashboard]",
-              "vnet": "[reference('Consortium.Network').outputs.network.value.id]",
-              "nsg": "[reference('Consortium.Network').outputs.network.value.nsg.dashboard]"
-            }
-          }
-        }
-      },
-      "dependsOn": [
-        "storageLoop",
-        "Consortium.Network"
-      ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "name": "VMSS.TxNodes",
-      "apiVersion": "2015-11-01",
+      "name": "[variables('dVMSSTx')]",
+      "apiVersion": "2015-01-01",
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
@@ -211,7 +170,7 @@
             "value": "[variables('storageAccounts')]"
           },
           "virtualNetworkName": {
-            "value": "[reference('Consortium.Network').outputs.network.value.name]"
+            "value": "[reference(variables('dNetworkName')).outputs.network.value.name]"
           },
           "username": {
             "value": "[parameters('username')]"
@@ -223,16 +182,16 @@
             "value": "[variables('machineSetupScriptUri')]"
           },
           "scriptCommand": {
-            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ',parameters('dashboardSecret'),' ', reference('VM.Dashboard').outputs.ip.value, ' ', reference('VM.Dashboard').outputs.ip.value)]"
+            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ',parameters('dashboardSecret'),' ', parameters('dashboardIp'), ' ', parameters('registrarIp'))]"
           },
           "networkConfiguration": {
             "value": {
               "subnet": {
-                "id": "[reference('Consortium.Network').outputs.network.value.subnets.tx]"
+                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets.tx]"
               },
               "loadBalancerBackendAddressPools": [
                 {
-                  "id": "[reference('Consortium.Network').outputs.network.value.internal.poolId]"
+                  "id": "[reference(variables('dNetworkName')).outputs.network.value.internal.poolId]"
                 }
               ]
             }
@@ -241,14 +200,13 @@
       },
       "dependsOn": [
         "storageLoop",
-        "VM.Dashboard",
-        "Consortium.Network"
+        "[variables('dNetworkName')]"
       ]
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "VMSS.Miners",
-      "apiVersion": "2015-11-01",
+      "name": "[variables('dVMSSMiners')]",
+      "apiVersion": "2015-01-01",
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
@@ -275,7 +233,7 @@
             "value": "[variables('storageAccounts')]"
           },
           "virtualNetworkName": {
-            "value": "[reference('Consortium.Network').outputs.network.value.name]"
+            "value": "[reference(variables('dNetworkName')).outputs.network.value.name]"
           },
           "username": {
             "value": "[parameters('username')]"
@@ -287,12 +245,12 @@
             "value" :  "[variables('machineSetupScriptUri')]"
           },
           "scriptCommand": {
-            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ',parameters('dashboardSecret'), ' ', reference('VM.Dashboard').outputs.ip.value, ' ', reference('VM.Dashboard').outputs.ip.value, ' ', parameters('minerAddress'))]"
+            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ',parameters('dashboardSecret'), ' ', parameters('dashboardIp'), ' ', parameters('registrarIp'), ' ', parameters('minerAddress'))]"
           },
           "networkConfiguration": {
             "value": {
               "subnet": {
-                "id": "[reference('Consortium.Network').outputs.network.value.subnets.miners]"
+                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets.miners]"
               }
             }
           }
@@ -300,9 +258,8 @@
       },
       "dependsOn": [
         "storageLoop",
-        "Consortium.Network",
-        "VM.Dashboard",
-        "VMSS.TxNodes"
+        "[variables('dNetworkName')]",
+        "[variables('dVMSSTx')]"
       ]
     }
   ]

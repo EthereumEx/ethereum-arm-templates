@@ -1,0 +1,21 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "id": {
+      "type": "string"
+    },
+    "apiVersion": {
+      "type": "string",
+      "defaultValue": "2015-01-01"
+    }
+  },
+  "resources": [
+  ],
+  "outputs": {
+    "Result": {
+      "type": "object",
+      "value": "[reference(parameters('id'), parameters('apiVersion'))]"
+    }
+  }
+}
