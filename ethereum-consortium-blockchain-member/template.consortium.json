@@ -112,7 +112,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat('Consortium.', parameters('members')[copyIndex()].name)]",
+      "name": "[concat('Consortium.', parameters('consortiumName'), '-', parameters('members')[copyIndex()].name)]",
       "apiVersion": "2015-01-01",
       "copy": {
         "name": "storageLoop",
