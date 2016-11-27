@@ -153,9 +153,10 @@
         "mode": "Incremental",
         "parameters": {
           "args" :{
+            "templateId" : "concat(variables('dScriptArguments'), '-')",
             "value" :[
-                "variables('scriptCommand')",
-                "variables('contentRoot')", 
+                "[variables('scriptCommand')]",
+                "[variables('contentRoot')]", 
                 "[parameters('genesisUrl')]", 
                 "[parameters('gethNetworkId')]", 
                 "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]", 

@@ -11,10 +11,18 @@
         },
         "contentRoot": {
             "type": "string"
+        },
+        "templateId" :{
+            "defaultValue": "",
+            "type": "string"
         }
     },
     "variables": {
-        "id" :"[concat('ArrayToString', uniqueString(string(parameters('args'))))]"
+        "ids": [
+            "[concat('ArrayToString', uniqueString(string(parameters('args'))))]",
+            "[parameters('templateId')]"
+        ],
+        "id" :"[variables('ids')[length(take(parameters('templateId'),1))]]"
     },
     "resources": [
         {
