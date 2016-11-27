@@ -34,7 +34,7 @@
       "apiVersion": "2016-03-30",
       "location": "[variables('resourceLocation')]",
       "properties": {
-        "publicIPAllocationMethod": "Dynamic",
+        "publicIPAllocationMethod": "Static",
         "idleTimeoutInMinutes": 4,
         "dnsSettings": {
           "domainNameLabel": "[variables('publicIpDns')]"
@@ -126,6 +126,7 @@
       "value": {
         "name": "[variables('virtualNetworkName')]",
         "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
+        "ipAddress": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))).ipAddress]",
         "subnets": {
           "dashboard": "[variables('subnetDashboardId')]"
         },

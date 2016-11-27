@@ -145,36 +145,12 @@
         "storageLoop",
         "Dashboard.Network"
       ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "name": "Dashboard.ReadPublicIP",
-      "apiVersion": "2015-01-01",
-      "properties": {
-        "templateLink": {
-          "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/utilities/template.read.json')]"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "id": {
-            "value": "[reference('Dashboard.Network').outputs.network.value.publicIpId]"
-          },
-          "apiVersion": {
-            "value": "2016-09-01"
-          }
-        }
-      },
-      "dependsOn": [
-        "Dashboard.Network",
-        "Dashboard.VM"
-      ]
     }
   ],
   "outputs": {
     "ip": {
       "type": "string",
-      "value": "[reference('Dashboard.ReadPublicIP').outputs.result.value.ipAddress]"
+      "value": "[reference('Dashboard.Network').outputs.network.value.ipAddress]"
     }
   }
 }
