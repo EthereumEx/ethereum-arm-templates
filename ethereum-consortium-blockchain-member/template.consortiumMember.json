@@ -152,24 +152,26 @@
         },
         "mode": "Incremental",
         "parameters": {
-          "args" :{
-            "templateId" : "concat(variables('dScriptArguments'), '-')",
-            "value" :[
-                "[variables('scriptCommand')]",
-                "[variables('contentRoot')]", 
-                "[parameters('genesisUrl')]", 
-                "[parameters('gethNetworkId')]", 
-                "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]", 
-                "[reference(variables('dNetworkName')).outputs.network.value.ip.ipAddress]",
-                "[parameters('dashboardSecret')]",
-                "[parameters('dashboardIp')]",
-                "[parameters('registrarIp')]"
+          "templateId": {
+            "value": "[concat(variables('dScriptArguments'), '-')]"
+          },
+          "args": {
+            "value": [
+              "[variables('scriptCommand')]",
+              "[variables('contentRoot')]",
+              "[parameters('genesisUrl')]",
+              "[parameters('gethNetworkId')]",
+              "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
+              "[reference(variables('dNetworkName')).outputs.network.value.ip.ipAddress]",
+              "[parameters('dashboardSecret')]",
+              "[parameters('dashboardIp')]",
+              "[parameters('registrarIp')]"
             ]
           },
-          "delimiter" :{
+          "delimiter": {
             "value": " "
           },
-          "contentRoot" : {
+          "contentRoot": {
             "value": "[parameters('contentRoot')]"
           }
         }
