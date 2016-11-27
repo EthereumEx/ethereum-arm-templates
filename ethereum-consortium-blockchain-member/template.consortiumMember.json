@@ -4,7 +4,7 @@
   "parameters": {
     "consortiumName": {
       "type": "string",
-      "maxLength": 10,
+      "maxLength": 25,
       "metadata": {
         "description": "A short identifier to distinguish machines in this membership"
       }
