@@ -40,10 +40,10 @@
         "description": "A unique string to used to ensure only machines with the secret can post to the dashboard"
       }
     },
-    "dashboardIp":{
+    "dashboardIp": {
       "type": "string"
     },
-    "registrarIp":{
+    "registrarIp": {
       "type": "string"
     },
     "minerAddress": {
@@ -76,13 +76,13 @@
         "description": "Location to deploy resources. By default the template will use the Resource Group location"
       }
     },
-    "contentRoot" : {
-      "defaultValue" : "https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/master/ethereum-consortium-blockchain-member",
-      "type" :"string"
+    "contentRoot": {
+      "defaultValue": "https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/master/ethereum-consortium-blockchain-member",
+      "type": "string"
     }
   },
   "variables": {
-    "contentRoot" : "[parameters('contentRoot')]",
+    "contentRoot": "[parameters('contentRoot')]",
     "resourceLocations": [
       "[resourceGroup().location]",
       "[parameters('locationOverride')]"
@@ -99,12 +99,13 @@
       "[concat('savmss', variables('deploymentId'), '04')]",
       "[concat('savmss', variables('deploymentId'), '05')]"
     ],
-    "scriptName" : "runScripts.sh",
+    "scriptName": "runScripts.sh",
     "machineSetupScriptUri": "[concat(variables('contentRoot'), '/', variables('scriptName'))]",
-    "scriptCommand" : "[concat('sh ', variables('scriptName'), ' ')]",
-    "dNetworkName" : "[concat('Consortium.', parameters('consortiumName'), '.Network')]",
-    "dVMSSTx" : "[concat('Consortium.', parameters('consortiumName'), '.Tx')]",
-    "dVMSSMiners" : "[concat('Consortium.', parameters('consortiumName'), '.Miners')]"
+    "scriptCommand": "[concat('sh ', variables('scriptName'), ' ')]",
+    "dNetworkName": "[concat('Consortium.', parameters('consortiumName'), '.Network')]",
+    "dVMSSTx": "[concat('Consortium.', parameters('consortiumName'), '.Tx')]",
+    "dVMSSMiners": "[concat('Consortium.', parameters('consortiumName'), '.Miners')]",
+    "dScriptArguments": "[concat('Consortium.', parameters('consortiumName'), '.Arguments')]"
   },
   "resources": [
     {
@@ -139,6 +140,42 @@
           }
         }
       }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[variables('dScriptArguments')]",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/utilities/template.arrayToString.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "args" :{
+            "value" :[
+                "variables('scriptCommand')",
+                "variables('contentRoot')", 
+                "[parameters('genesisUrl')]", 
+                "[parameters('gethNetworkId')]", 
+                "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]", 
+                "[reference(variables('dNetworkName')).outputs.network.value.ip.ipAddress]",
+                "[parameters('dashboardSecret')]",
+                "[parameters('dashboardIp')]",
+                "[parameters('registrarIp')]"
+            ]
+          },
+          "delimiter" :{
+            "value": " "
+          },
+          "contentRoot" : {
+            "value": "[parameters('contentRoot')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[variables('dNetworkName')]"
+      ]
     },
     {
       "type": "Microsoft.Resources/deployments",
@@ -182,7 +219,7 @@
             "value": "[variables('machineSetupScriptUri')]"
           },
           "scriptCommand": {
-            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ', substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10), ' ', reference(variables('dNetworkName')).outputs.network.value.ip.ipAddress, ' ', parameters('dashboardSecret'),' ', parameters('dashboardIp'), ' ', parameters('registrarIp'))]"
+            "value": "[reference(variables('dScriptArguments')).outputs.result.value]"
           },
           "networkConfiguration": {
             "value": {
@@ -200,7 +237,8 @@
       },
       "dependsOn": [
         "storageLoop",
-        "[variables('dNetworkName')]"
+        "[variables('dNetworkName')]",
+        "[variables('dScriptArguments')]"
       ]
     },
     {
@@ -242,10 +280,10 @@
             "value": "[parameters('sshPublicKey')]"
           },
           "scriptUri": {
-            "value" :  "[variables('machineSetupScriptUri')]"
+            "value": "[variables('machineSetupScriptUri')]"
           },
           "scriptCommand": {
-            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ', substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10), ' ', reference(variables('dNetworkName')).outputs.network.value.ip.ipAddress, ' ', parameters('dashboardSecret'), ' ', parameters('dashboardIp'), ' ', parameters('registrarIp'), ' ', parameters('minerAddress'))]"
+            "value": "[concat(reference(variables('dScriptArguments')).outputs.result.value, ' ', parameters('minerAddress'))]"
           },
           "networkConfiguration": {
             "value": {
@@ -259,7 +297,8 @@
       "dependsOn": [
         "storageLoop",
         "[variables('dNetworkName')]",
-        "[variables('dVMSSTx')]"
+        "[variables('dVMSSTx')]",
+        "[variables('dScriptArguments')]"
       ]
     }
   ]
