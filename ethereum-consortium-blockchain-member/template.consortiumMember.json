@@ -182,7 +182,7 @@
             "value": "[variables('machineSetupScriptUri')]"
           },
           "scriptCommand": {
-            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ',parameters('dashboardSecret'),' ', parameters('dashboardIp'), ' ', parameters('registrarIp'))]"
+            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ', substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10), ' ', reference(variables('dNetworkName')).outputs.network.value.ip.ipAddress, ' ', parameters('dashboardSecret'),' ', parameters('dashboardIp'), ' ', parameters('registrarIp'))]"
           },
           "networkConfiguration": {
             "value": {
@@ -245,7 +245,7 @@
             "value" :  "[variables('machineSetupScriptUri')]"
           },
           "scriptCommand": {
-            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ',parameters('dashboardSecret'), ' ', parameters('dashboardIp'), ' ', parameters('registrarIp'), ' ', parameters('minerAddress'))]"
+            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('genesisUrl'), ' ',parameters('gethNetworkId'), ' ', substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10), ' ', reference(variables('dNetworkName')).outputs.network.value.ip.ipAddress, ' ', parameters('dashboardSecret'), ' ', parameters('dashboardIp'), ' ', parameters('registrarIp'), ' ', parameters('minerAddress'))]"
           },
           "networkConfiguration": {
             "value": {

@@ -16,13 +16,16 @@ fi
 if [ "$#" -ne 1 ]; then
         GENESIS_URL=$1
         NETWORK_ID=$2
-        WS_SECRET=$3
-        WS_SERVER="ws://$4:3000"
-        BOOTNODE_URL="http://$5:3001"
+        BOOTNODE_NETWORK=$3
+        BOOTNODE_PUBLIC_IP=$4
+        WS_SECRET=$5
+        
+        WS_SERVER="ws://$6:3000"
+        BOOTNODE_URL="http://$7:3001"
         ENABLE_MINER=
 
-        if [ "$6" ]; then
-                ENABLE_MINER="-e ENABLE_MINER=1 -e MINER_ADDRESS=$6"
+        if [ "$8" ]; then
+                ENABLE_MINER="-e ENABLE_MINER=1 -e MINER_ADDRESS=$8"
         fi
 
         USER=azureuser
@@ -48,6 +51,8 @@ if [ "$#" -ne 1 ]; then
                 -e NODE_NAME=$NODE_NAME \
                 -e INSTANCE_NAME=$NODE_NAME \
                 -e BOOTNODE_URL=$BOOTNODE_URL \
+                -e BOOTNODE_NETWORK=$BOOTNODE_NETWORK \
+                -e BOOTNODE_PUBLIC_IP=$BOOTNODE_PUBLIC_IP \
                 -e HOST_IP=$HOST_IP \
                 $ENABLE_MINER \
                 ethereumex/geth-node
