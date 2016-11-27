@@ -213,4 +213,4 @@ ModelManifest.xml
 deploy-test.json
 *.out
 
-test.parameters.json
+test.parameters*.json

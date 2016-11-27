@@ -40,10 +40,9 @@
     "osDiskName": "[concat(variables('machineName'), '-os')]",
     "osDiskUri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', '/vhds/vm-', variables('osDiskName'),'.vhd')]",
     "nicName": "[concat(variables('machineName'), '-nic')]",
-    "publicIpName": "[concat(variables('machineName'), '-public-ip')]",
     "ids": {
       "nic": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]",
-      "publicIp": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]",
+      "publicIp": "[parameters('ids').publicIp]",
       "subnet": "[parameters('ids').subnet]",
       "vnet": "[parameters('ids').vnet]",
       "nsg": "[parameters('ids').nsg]"
@@ -132,21 +131,7 @@
         "networkSecurityGroup": {
           "id": "[variables('ids').nsg]"
         }
-      },
-      "dependsOn": [
-        "[variables('ids').publicIp]"
-      ]
-    },
-    {
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('publicIpName')]",
-      "apiVersion": "2016-03-30",
-      "location": "[variables('location')]",
-      "properties": {
-        "publicIPAllocationMethod": "Dynamic",
-        "idleTimeoutInMinutes": 4
-      },
-      "dependsOn": [ ]
+      }
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",

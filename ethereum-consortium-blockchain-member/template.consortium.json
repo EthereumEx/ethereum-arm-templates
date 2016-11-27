@@ -1,0 +1,180 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "consortiumName": {
+      "type": "string",
+      "maxLength": 10,
+      "metadata": {
+        "description": "A short identifier to distinguish machines in this membership"
+      }
+    },
+    "members" : {
+      "type" : "array",
+      "metadata": {
+        "description" : "An array of members to create { name : 'M1', location : 'westus' }"
+      }
+    },
+    "username": {
+      "type": "string",
+      "defaultValue": "azureuser",
+      "metadata": {
+        "description": "Admin username on all VMs."
+      }
+    },
+    "sshPublicKey": {
+      "type": "string",
+      "metadata": {
+        "description": "ssh public key for connecting to VMs."
+      }
+    },
+    "genesisUrl": {
+      "type": "securestring",
+      "metadata": {
+        "description": "A url used to download the JSON which describes the genesis block"
+      }
+    },
+    "gethNetworkId": {
+      "type": "securestring",
+      "metadata": {
+        "description": "A unique id used to ensure only machines on the same network can talk to each other"
+      }
+    },
+    "dashboardSecret": {
+      "type": "securestring",
+      "metadata": {
+        "description": "A unique string to used to ensure only machines with the secret can post to the dashboard"
+      }
+    },
+    "minerVMSku": {
+      "defaultValue": "Standard_DS2_v2",
+      "type": "string"
+    },
+    "txnodeVMSku": {
+      "defaultValue": "Standard_DS1_v2",
+      "type": "string"
+    },
+    "locationOverride": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Location to deploy resources. By default the template will use the Resource Group location"
+      }
+    },
+    "contentRoot" : {
+      "defaultValue" : "https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/master/ethereum-consortium-blockchain-member",
+      "type" :"string"
+    }
+  },
+  "variables": {
+    "contentRoot" : "[parameters('contentRoot')]",
+    "resourceLocations": [
+      "[resourceGroup().location]",
+      "[parameters('locationOverride')]"
+    ],
+    "resourceLocation": "[tolower(variables('resourceLocations')[length(take(parameters('locationOverride'),1))])]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "Consortium.Dashboard",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/template.dashboard.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "consortiumName": {
+            "value": "[parameters('consortiumName')]"
+          },
+          "username": {
+            "value": "[parameters('username')]"
+          },
+          "sshPublicKey": {
+            "value": "[parameters('sshPublicKey')]"
+          },
+          "dashboardSecret": {
+            "value": "[parameters('dashboardSecret')]"
+          },
+          "vmSku": {
+            "value": "[parameters('txnodeVMSku')]"
+          },
+          "locationOverride": {
+            "value": "[variables('resourceLocation')]"
+          },
+          "contentRoot": {
+            "value": "[parameters('contentRoot')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[concat('Consortium.', parameters('consortiumName'), '-', parameters('members')[copyIndex()].name)]",
+      "apiVersion": "2015-01-01",
+      "copy": {
+        "name": "storageLoop",
+        "count": "[length(parameters('members'))]"
+      },
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/template.consortiumMember.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "consortiumName": {
+            "value": "[concat(parameters('consortiumName'), '-', parameters('members')[copyIndex()].name)]"
+          },
+          "username": {
+            "value": "[parameters('username')]"
+          },
+          "sshPublicKey": {
+            "value": "[parameters('sshPublicKey')]"
+          },
+          "genesisUrl": {
+            "value": "[parameters('genesisUrl')]"
+          },
+           "gethNetworkId": {
+            "value": "[parameters('gethNetworkId')]"
+          },
+           "dashboardSecret": {
+            "value": "[parameters('dashboardSecret')]"
+          },
+          "dashboardIp": {
+            "value": "[reference('Consortium.Dashboard').outputs.ip.value]"
+          },
+           "registrarIp": {
+            "value": "[reference('Consortium.Dashboard').outputs.ip.value]"
+          },
+           "minerAddress": {
+            "value": "[parameters('members')[copyIndex()].minerAddress]"
+          },
+          "minerVMSku": {
+            "value": "[parameters('minerVMSku')]"
+          },
+          "minerCount": {
+            "value": "[parameters('members')[copyIndex()].minerCount]"
+          },
+          "txnodeVMSku": {
+            "value": "[parameters('txnodeVMSku')]"
+          },
+          "txnodeCount": {
+            "value": "[parameters('members')[copyIndex()].txNodeCount]"
+          },
+          "locationOverride": {
+            "value": "[parameters('members')[copyIndex()].location]"
+          },
+          "contentRoot": {
+            "value": "[parameters('contentRoot')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "Consortium.Dashboard"
+      ]
+    }
+  ]
+}

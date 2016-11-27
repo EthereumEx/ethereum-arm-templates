@@ -1,0 +1,140 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "location of resources"
+      }
+    },
+    "namingInfix": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "deploymentId": "[toLower(substring(uniqueString(resourceGroup().Id), 0, 10))]",
+    "resourceLocation": "[parameters('location')]",
+    "addressPrefix": "10.0.0.0/16",
+    "namingInfix": "[parameters('namingInfix')]",
+    "subnetDashboard": {
+      "name": "subnet-dashboard",
+      "nsg": "[concat(variables('namingInfix'), '-dashboard-nsg')]",
+      "prefix": "10.0.2.0/24"
+    },
+    "virtualNetworkName": "[concat(variables('namingInfix'), '-dashboard-vnet')]",
+    "publicIpName": "[concat(variables('namingInfix'), '-dashboard-ip')]",
+    "publicIpDns": "[concat('a', variables('deploymentId'), '-', variables('namingInfix'), '-dashboard')]",
+    "subnetDashboardId": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')), '/subnets/', variables('subnetDashboard').name)]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('publicIpName')]",
+      "apiVersion": "2016-03-30",
+      "location": "[variables('resourceLocation')]",
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+          "domainNameLabel": "[variables('publicIpDns')]"
+        }
+      },
+      "dependsOn": [ ]
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('subnetDashboard').nsg]",
+      "apiVersion": "2016-03-30",
+      "location": "[variables('resourceLocation')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "allow-ssh",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-dashboard",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3000",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 101,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-registrar",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3001",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 102,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('virtualNetworkName')]",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('resourceLocation')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('addressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnetDashboard').name]",
+            "properties": {
+              "addressPrefix": "[variables('subnetDashboard').prefix]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('subnetDashboard').nsg)]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('subnetDashboard').nsg)]"
+      ]
+    }
+  ],
+  "outputs": {
+    "Network": {
+      "type": "object",
+      "value": {
+        "name": "[variables('virtualNetworkName')]",
+        "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
+        "ipAddress": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))).ipAddress]",
+        "subnets": {
+          "dashboard": "[variables('subnetDashboardId')]"
+        },
+        "nsg": {
+          "dashboard": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('subnetDashboard').nsg)]"
+        },
+        "publicIpId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]"
+      }
+    }
+  }
+}

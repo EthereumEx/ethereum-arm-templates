@@ -1,0 +1,156 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "consortiumName": {
+      "type": "string",
+      "maxLength": 10,
+      "metadata": {
+        "description": "A short identifier to distinguish machines in this membership"
+      }
+    },
+    "username": {
+      "type": "string",
+      "defaultValue": "azureuser",
+      "metadata": {
+        "description": "Admin username on all VMs."
+      }
+    },
+    "sshPublicKey": {
+      "type": "string",
+      "metadata": {
+        "description": "ssh public key for connecting to VMs."
+      }
+    },
+    "dashboardSecret": {
+      "type": "securestring",
+      "metadata": {
+        "description": "A unique string to used to ensure only machines with the secret can post to the dashboard"
+      }
+    },
+    "vmSku": {
+      "defaultValue": "Standard_DS1_v2",
+      "type": "string"
+    },
+    "locationOverride": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Location to deploy resources. By default the template will use the Resource Group location"
+      }
+    },
+    "contentRoot": {
+      "defaultValue": "https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/master/ethereum-consortium-blockchain-member",
+      "type": "string"
+    }
+  },
+  "variables": {
+    "contentRoot": "[parameters('contentRoot')]",
+    "resourceLocations": [
+      "[resourceGroup().location]",
+      "[parameters('locationOverride')]"
+    ],
+    "resourceLocation": "[tolower(variables('resourceLocations')[length(take(parameters('locationOverride'),1))])]",
+    "deploymentId": "[toLower(substring(uniqueString(concat(resourceGroup().Id, variables('resourceLocation'))), 0, 10))]",
+    "storageAccountType": "Premium_LRS",
+    "saCount": 1,
+    "namingInfix": "[toLower(parameters('consortiumName'))]",
+    "storageAccounts": [
+      "[concat('savmss', variables('deploymentId'), '01')]"
+    ],
+    "scriptName": "runScripts.sh",
+    "machineSetupScriptUri": "[concat(variables('contentRoot'), '/', variables('scriptName'))]",
+    "scriptCommand": "[concat('sh ', variables('scriptName'), ' ')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageAccounts')[copyIndex()]]",
+      "location": "[variables('resourceLocation')]",
+      "apiVersion": "2015-06-15",
+      "copy": {
+        "name": "storageLoop",
+        "count": "[variables('saCount')]"
+      },
+      "properties": {
+        "accountType": "[variables('storageAccountType')]"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "Dashboard.Network",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/template.dashboard.network.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('resourceLocation')]"
+          },
+          "namingInfix": {
+            "value": "[variables('namingInfix')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "Dashboard.VM",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/template.vm.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('resourceLocation')]"
+          },
+          "username": {
+            "value": "[parameters('username')]"
+          },
+          "sshPublicKey": {
+            "value": "[parameters('sshPublicKey')]"
+          },
+          "machineName": {
+            "value": "[concat(variables('namingInfix'), '-dashboard')]"
+          },
+          "scriptUri": {
+            "value": "[variables('machineSetupScriptUri')]"
+          },
+          "scriptCommand": {
+            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('dashboardSecret'))]"
+          },
+          "storageAccountName": {
+            "value": "[variables('storageAccounts')[0]]"
+          },
+          "vmSku": {
+            "value": "[parameters('vmSku')]"
+          },
+          "ids": {
+            "value": {
+              "subnet": "[reference('Dashboard.Network').outputs.network.value.subnets.dashboard]",
+              "vnet": "[reference('Dashboard.Network').outputs.network.value.id]",
+              "nsg": "[reference('Dashboard.Network').outputs.network.value.nsg.dashboard]",
+              "publicIp": "[reference('Dashboard.Network').outputs.network.value.publicIpId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "storageLoop",
+        "Dashboard.Network"
+      ]
+    }
+  ],
+  "outputs": {
+    "ip": {
+      "type": "string",
+      "value": "[reference('Dashboard.Network').outputs.network.value.ipAddress]"
+    }
+  }
+}
