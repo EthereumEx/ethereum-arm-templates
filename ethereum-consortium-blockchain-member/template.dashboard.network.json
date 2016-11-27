@@ -22,7 +22,7 @@
       "nsg": "[concat(variables('namingInfix'), '-dashboard-nsg')]",
       "prefix": "10.0.2.0/24"
     },
-    "virtualNetworkName": "[concat(variables('namingInfix'), 'dashboard-vnet')]",
+    "virtualNetworkName": "[concat(variables('namingInfix'), '-dashboard-vnet')]",
     "publicIpName": "[concat(variables('namingInfix'), '-dashboard-ip')]",
     "publicIpDns": "[concat('a', variables('deploymentId'), '-', variables('namingInfix'), '-dashboard')]",
     "subnetDashboardId": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')), '/subnets/', variables('subnetDashboard').name)]"
