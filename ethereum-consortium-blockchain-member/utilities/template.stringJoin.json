@@ -1,0 +1,24 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "stringA" : {
+            "type": "string"
+        },
+        "delimiter":{
+            "type": "string",
+            "defaultValue": " "
+        },
+        "stringB" : {
+            "type": "string"
+        }
+    },
+    "resources": [
+    ],
+    "outputs": {
+        "Result": {
+            "type": "string",
+            "value": "[concat(parameters('stringA'), parameters('delimiter'), parameters('stringB'))]"
+        }
+    }
+}
