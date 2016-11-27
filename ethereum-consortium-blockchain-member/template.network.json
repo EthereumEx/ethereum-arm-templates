@@ -231,7 +231,7 @@
             "properties": {
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]"
-                }
+              }
             }
           }
         ],
@@ -306,8 +306,8 @@
       "value": {
         "name": "[variables('virtualNetworkName')]",
         "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
+        "ip": "[reference(variables('publicIpName'))]",
         "internal": {
-          "ip": "[reference(variables('publicIpName'))]",
           "id": "[variables('publicLoadBalancerId')]",
           "poolId": "[variables('publicLoadBalancer').backendPoolId]",
           "natPoolId": "[variables('publicLoadBalancer').natPoolId]"
