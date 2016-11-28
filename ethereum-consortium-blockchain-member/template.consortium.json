@@ -9,10 +9,10 @@
         "description": "A short identifier to distinguish machines in this membership"
       }
     },
-    "members" : {
-      "type" : "array",
+    "members": {
+      "type": "array",
       "metadata": {
-        "description" : "An array of members to create { name : 'M1', location : 'westus' }"
+        "description": "An array of members to create { name : 'M1', location : 'westus' }"
       }
     },
     "username": {
@@ -54,20 +54,32 @@
       "defaultValue": "Standard_DS1_v2",
       "type": "string"
     },
+    "contentVersion": {
+      "defaultValue": "Release-v0.1",
+      "type": "string",
+      "metadata": {
+        "description": "The version of the templates to use. This refers to a git branch. This parameter is ignored if contentRootOverride is provided"
+      }
+    },
+    "contentRootOverride": {
+      "defaultValue": "",
+      "type": "string"
+    },
     "locationOverride": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
         "description": "Location to deploy resources. By default the template will use the Resource Group location"
       }
-    },
-    "contentRoot" : {
-      "defaultValue" : "https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/master/ethereum-consortium-blockchain-member",
-      "type" :"string"
     }
   },
   "variables": {
-    "contentRoot" : "[parameters('contentRoot')]",
+    "contentRootUrl": "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium-blockchain-member')]",
+    "contentRoots": [
+      "[variables('contentRootUrl')]",
+      "[parameters('contentRootOverride')]"
+    ],
+    "contentRoot": "[variables('contentRoots')[length(take(parameters('contentRootOverride'),1))]]",
     "resourceLocations": [
       "[resourceGroup().location]",
       "[parameters('locationOverride')]"
@@ -104,8 +116,11 @@
           "locationOverride": {
             "value": "[variables('resourceLocation')]"
           },
-          "contentRoot": {
-            "value": "[parameters('contentRoot')]"
+          "contentVersion" :{
+            "value" : "[parameters('contentVersion')]"
+          },
+          "contentRootOverride": {
+            "value": "[variables('contentRoot')]"
           }
         }
       }
@@ -137,19 +152,19 @@
           "genesisUrl": {
             "value": "[parameters('genesisUrl')]"
           },
-           "gethNetworkId": {
+          "gethNetworkId": {
             "value": "[parameters('gethNetworkId')]"
           },
-           "dashboardSecret": {
+          "dashboardSecret": {
             "value": "[parameters('dashboardSecret')]"
           },
           "dashboardIp": {
             "value": "[reference('Consortium.Dashboard').outputs.ip.value]"
           },
-           "registrarIp": {
+          "registrarIp": {
             "value": "[reference('Consortium.Dashboard').outputs.ip.value]"
           },
-           "minerAddress": {
+          "minerAddress": {
             "value": "[parameters('members')[copyIndex()].minerAddress]"
           },
           "minerVMSku": {
@@ -167,8 +182,11 @@
           "locationOverride": {
             "value": "[parameters('members')[copyIndex()].location]"
           },
-          "contentRoot": {
-            "value": "[parameters('contentRoot')]"
+          "contentVersion" :{
+            "value" : "[parameters('contentVersion')]"
+          },
+          "contentRootOverride": {
+            "value": "[variables('contentRoot')]"
           }
         }
       },

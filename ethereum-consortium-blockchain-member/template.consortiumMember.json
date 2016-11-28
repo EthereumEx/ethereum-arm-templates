@@ -69,20 +69,35 @@
       "defaultValue": 3,
       "type": "int"
     },
+    "contentVersion": {
+      "defaultValue": "Release-v0.1",
+      "type": "string",
+      "metadata": {
+        "description": "The version of the templates to use. This refers to a git branch. This parameter is ignored if contentRootOverride is provided"
+      }
+    },
+    "contentRootOverride": {
+      "defaultValue": "",
+      "type": "string",
+      "metadata": {
+        "description": "Url location of root templates"
+      }
+    },
     "locationOverride": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
         "description": "Location to deploy resources. By default the template will use the Resource Group location"
       }
-    },
-    "contentRoot": {
-      "defaultValue": "https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/master/ethereum-consortium-blockchain-member",
-      "type": "string"
     }
   },
   "variables": {
-    "contentRoot": "[parameters('contentRoot')]",
+    "contentRootUrl" : "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium-blockchain-member')]",
+    "contentRoots" : [
+      "[variables('contentRootUrl')]",
+      "[parameters('contentRootOverride')]"
+    ],
+    "contentRoot": "[variables('contentRoots')[length(take(parameters('contentRootOverride'),1))]]",
     "resourceLocations": [
       "[resourceGroup().location]",
       "[parameters('locationOverride')]"
@@ -170,7 +185,7 @@
             "value": " "
           },
           "contentRoot": {
-            "value": "[parameters('contentRoot')]"
+            "value": "[variables('contentRoot')]"
           }
         }
       },
