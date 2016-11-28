@@ -55,7 +55,7 @@
     }
   },
   "variables": {
-    "contentRootUrl" : "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium-blockchain-member')]",
+    "contentRootUrl" : "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium')]",
     "contentRoots" : [
       "[variables('contentRootUrl')]",
       "[parameters('contentRootOverride')]"
@@ -118,7 +118,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/template.vm.json')]"
+          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.vm.json')]"
         },
         "mode": "Incremental",
         "parameters": {

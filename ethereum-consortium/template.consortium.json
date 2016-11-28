@@ -74,7 +74,7 @@
     }
   },
   "variables": {
-    "contentRootUrl": "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium-blockchain-member')]",
+    "contentRootUrl": "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium')]",
     "contentRoots": [
       "[variables('contentRootUrl')]",
       "[parameters('contentRootOverride')]"
