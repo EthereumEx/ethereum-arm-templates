@@ -116,6 +116,9 @@
           "locationOverride": {
             "value": "[variables('resourceLocation')]"
           },
+          "contentVersion" :{
+            "value" : "[parameters('contentVersion')]"
+          },
           "contentRootOverride": {
             "value": "[variables('contentRoot')]"
           }
@@ -178,6 +181,9 @@
           },
           "locationOverride": {
             "value": "[parameters('members')[copyIndex()].location]"
+          },
+          "contentVersion" :{
+            "value" : "[parameters('contentVersion')]"
           },
           "contentRootOverride": {
             "value": "[variables('contentRoot')]"
