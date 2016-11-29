@@ -32,6 +32,13 @@
       "defaultValue": "Standard_DS1_v2",
       "type": "string"
     },
+    "dockerTag" :{
+      "defaultValue": "latest",
+      "type": "string",
+      "metadata": {
+        "description": "The tag of the docker image to download"
+      }
+    },
     "contentVersion": {
       "defaultValue": "Release-v0.3",
       "type": "string",
@@ -138,7 +145,7 @@
             "value": "[variables('machineSetupScriptUri')]"
           },
           "scriptCommand": {
-            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('dashboardSecret'))]"
+            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('dockerTag'), ' ', parameters('dashboardSecret'))]"
           },
           "storageAccountName": {
             "value": "[variables('storageAccounts')[0]]"

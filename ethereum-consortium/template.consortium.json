@@ -65,6 +65,14 @@
       "defaultValue": "",
       "type": "string"
     },
+    "dashboardDockerTag": {
+      "defaultValue": "latest",
+      "type": "string"
+    },
+    "gethNodeDockerTag": {
+      "defaultValue": "latest",
+      "type": "string"
+    },
     "locationOverride": {
       "type": "string",
       "defaultValue": "",
@@ -115,6 +123,9 @@
           },
           "locationOverride": {
             "value": "[variables('resourceLocation')]"
+          },
+          "dockerTag":{
+            "value" :"[parameters('dashboardDockerTag')]"
           },
           "contentVersion" :{
             "value" : "[parameters('contentVersion')]"
@@ -178,6 +189,9 @@
           },
           "txnodeCount": {
             "value": "[parameters('members')[copyIndex()].txNodeCount]"
+          },
+          "dockerTag":{
+            "value" :"[parameters('gethNodeDockerTag')]"
           },
           "locationOverride": {
             "value": "[parameters('members')[copyIndex()].location]"

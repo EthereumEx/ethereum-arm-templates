@@ -69,6 +69,13 @@
       "defaultValue": 3,
       "type": "int"
     },
+    "dockerTag" :{
+      "defaultValue": "latest",
+      "type": "string",
+      "metadata": {
+        "description": "The tag of the docker image to download"
+      }
+    },
     "contentVersion": {
       "defaultValue": "Release-v0.3",
       "type": "string",
@@ -175,6 +182,7 @@
             "value": [
               "[variables('scriptCommand')]",
               "[variables('contentRoot')]",
+              "[parameters('dockerTag')]",
               "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
               "[reference(variables('dNetworkName')).outputs.network.value.ip.ipAddress]",
               "[parameters('dashboardIp')]",
