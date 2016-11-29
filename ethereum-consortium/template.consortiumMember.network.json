@@ -306,26 +306,6 @@
                 "id": "[variables('publicLoadBalancer').backendProbeId]"
               }
             }
-          },
-          {
-            "name": "Geth-P2P-UDP",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('publicLoadBalancer').frontendIPConfigId]"
-              },
-              "frontendPort": 30303,
-              "backendPort": 30303,
-              "enableFloatingIP": false,
-              "idleTimeoutInMinutes": 4,
-              "protocol": "Udp",
-              "loadDistribution": "Default",
-              "backendAddressPool": {
-                "id": "[variables('publicLoadBalancer').backendPoolId]"
-              },
-              "probe": {
-                "id": "[variables('publicLoadBalancer').backendProbeId]"
-              }
-            }
           }
         ],
         "probes": [
