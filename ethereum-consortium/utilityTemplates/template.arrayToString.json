@@ -32,7 +32,7 @@
             "properties": {
                 "templateLink": {
                     "contentVersion": "1.0.0.0",
-                    "uri": "[concat(parameters('contentRoot'), '/utilities/template.stringJoin.json')]"
+                    "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/template.stringJoin.json')]"
                 },
                 "mode": "Incremental",
                 "parameters": {
@@ -59,7 +59,7 @@
             "properties": {
                 "templateLink": {
                     "contentVersion": "1.0.0.0",
-                    "uri": "[concat(parameters('contentRoot'), '/utilities/template.stringJoin.json')]"
+                    "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/template.stringJoin.json')]"
                 },
                 "mode": "Incremental",
                 "parameters": {

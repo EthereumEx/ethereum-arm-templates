@@ -113,7 +113,7 @@ Step 4.
       finished syncing you should see your account in the list and see the 
       pre-funded ether that was allocated in the genesis node.
 
-## Enjoy ! ##  
+## Enjoy !  
 
 
 [Download Geth]:https://geth.ethereum.org/downloads/
