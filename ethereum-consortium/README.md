@@ -1,8 +1,8 @@
-# Ethereum Consortium Member
+# Ethereum Consortium
 
 
-[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FEthereumEx%2Fethereum-arm-templates%2Fmaster%2Fethereum-consortium-blockchain-member%2Ftemplate.consortium.json)  
-[![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FEthereumEx%2Fethereum-arm-templates%2Fmaster%2Fethereum-consortium-blockchain-member%2Ftemplate.consortium.json)
+[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FEthereumEx%2Fethereum-arm-templates%2Fmaster%2Fethereum-consortium%2Ftemplate.consortium.json)  
+[![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FEthereumEx%2Fethereum-arm-templates%2Fmaster%2Fethereum-consortium%2Ftemplate.consortium.json)
 
 ## Overview
 The goal of this template, which was inspired by the [Ethereum Consortium Network template](https://github.com/Azure/azure-quickstart-templates/tree/master/ethereum-consortium-blockchain-network), is to make it easy to spin up a Blockchain network will work on it's own or that could easily be connected to an existing network.
@@ -17,6 +17,10 @@ The [Ethereum Network Stats](https://github.com/EthereumEx/eth-netstats) dashboa
 
 ### Docker Containers
 All of the nodes in the network are assembled by using docker containers from [EthereumeEx images](https://github.com/EthereumEx/hackfest-images). This should make it easy in the future to roll out updates to the network as the data is stored on the host machines.
+
+## Getting Started
+* [Network setup walk through](docs/setupWalkthrough.md)
+* [Adding a new member to a network](docs/newMemberWalkthrough.md)
 
 ## Example Parameters File
     {

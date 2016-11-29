@@ -70,7 +70,7 @@
       "type": "int"
     },
     "contentVersion": {
-      "defaultValue": "Release-v0.1",
+      "defaultValue": "Release-v0.2",
       "type": "string",
       "metadata": {
         "description": "The version of the templates to use. This refers to a git branch. This parameter is ignored if contentRootOverride is provided"
@@ -92,7 +92,7 @@
     }
   },
   "variables": {
-    "contentRootUrl" : "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium-blockchain-member')]",
+    "contentRootUrl" : "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium')]",
     "contentRoots" : [
       "[variables('contentRootUrl')]",
       "[parameters('contentRootOverride')]"
@@ -144,7 +144,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/template.network.json')]"
+          "uri": "[concat(variables('contentRoot'), '/template.consortiumMember.network.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -164,7 +164,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/utilities/template.arrayToString.json')]"
+          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.arrayToString.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -200,7 +200,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/template.vmss.json')]"
+          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.vmss.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -264,7 +264,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/template.vmss.json')]"
+          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.vmss.json')]"
         },
         "mode": "Incremental",
         "parameters": {

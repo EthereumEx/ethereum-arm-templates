@@ -55,7 +55,7 @@
       "type": "string"
     },
     "contentVersion": {
-      "defaultValue": "Release-v0.1",
+      "defaultValue": "Release-v0.2",
       "type": "string",
       "metadata": {
         "description": "The version of the templates to use. This refers to a git branch. This parameter is ignored if contentRootOverride is provided"
@@ -74,7 +74,7 @@
     }
   },
   "variables": {
-    "contentRootUrl": "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium-blockchain-member')]",
+    "contentRootUrl": "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium')]",
     "contentRoots": [
       "[variables('contentRootUrl')]",
       "[parameters('contentRootOverride')]"
