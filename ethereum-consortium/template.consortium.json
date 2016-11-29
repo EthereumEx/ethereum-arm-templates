@@ -55,7 +55,7 @@
       "type": "string"
     },
     "contentVersion": {
-      "defaultValue": "Release-v0.2",
+      "defaultValue": "Release-v0.3",
       "type": "string",
       "metadata": {
         "description": "The version of the templates to use. This refers to a git branch. This parameter is ignored if contentRootOverride is provided"
