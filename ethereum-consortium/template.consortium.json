@@ -208,5 +208,11 @@
         "Consortium.Dashboard"
       ]
     }
-  ]
+  ],
+  "outputs": {
+    "DashboardIp" : {
+      "type": "string",
+      "value": "[reference('Consortium.Dashboard').outputs.ip.value]"
+    }
+  }
 }
