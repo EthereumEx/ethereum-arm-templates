@@ -1,0 +1,97 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "VM": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_DS1_v2",
+        "Standard_DS2_v2",
+        "Standard_DS3_v2",
+        "Standard_DS4_v2",
+        "Standard_DS5_v2",
+        "Standard_DS11_v2",
+        "Standard_DS12_v2",
+        "Standard_DS13_v2",
+        "Standard_DS14_v2",
+        "Standard_DS15_v2",
+        "Standard_GS1",
+        "Standard_GS2",
+        "Standard_GS3",
+        "Standard_GS4",
+        "Standard_GS5"
+      ]
+    }
+  },
+  "variables": {
+    "vms": {
+      "Standard_DS1_v2": {
+        "cores" : 1,
+        "ram" : 35
+      },
+      "Standard_DS2_v2":{
+        "cores" : 2,
+        "ram" : 70
+      },
+      "Standard_DS3_v2":{
+        "cores" : 4,
+        "ram" : 140
+      },
+      "Standard_DS4_v2": {
+        "cores" : 8,
+        "ram" : 280
+      },
+      "Standard_DS5_v2": {
+        "cores" : 16,
+        "ram" : 560
+      },
+      "Standard_DS11_v2": {
+        "cores" : 2,
+        "ram" : 140
+      },
+      "Standard_DS12_v2": {
+        "cores" : 4,
+        "ram" : 280
+      },
+      "Standard_DS13_v2": {
+        "cores" : 8,
+        "ram" : 560
+      },
+      "Standard_DS14_v2": {
+        "cores" : 16,
+        "ram" : 1120
+      },
+      "Standard_DS15_v2": {
+        "cores" : 20,
+        "ram" : 1400
+      },
+      "Standard_GS1": {
+        "cores" : 2,
+        "ram" : 280
+      },
+      "Standard_GS2": {
+        "cores" : 4,
+        "ram" : 560
+      },
+      "Standard_GS3": {
+        "cores" : 8,
+        "ram" : 1120
+      },
+      "Standard_GS4": {
+        "cores" : 16,
+        "ram" : 2240
+      },
+      "Standard_GS5": {
+        "cores" : 32,
+        "ram" : 4480
+      }
+    }
+  },
+  "resources": [],
+  "outputs": {
+    "Result": {
+      "type": "object",
+      "value": "[variables('vms')[parameters('VM')]]"
+    }
+  }
+}

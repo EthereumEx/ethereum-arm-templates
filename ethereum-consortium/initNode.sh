@@ -21,10 +21,11 @@ if [ "$#" -ne 1 ]; then
         BOOTNODE_PUBLIC_IP=$3
         DASHBOARD_IP=$4
         REGISTRAR_IP=$5
-        GENESIS_URL=$6
-        NETWORK_ID=$7
-        WS_SECRET=$8
-        MINER_ADDRESS=$9
+        MINER_THREADS=$6
+        GENESIS_URL=$7
+        NETWORK_ID=$8
+        WS_SECRET=$9
+        MINER_ADDRESS=${10}
 
         WS_SERVER="ws://$DASHBOARD_IP:3000"
         BOOTNODE_URL="http://$REGISTRAR_IP:3001"
@@ -60,6 +61,7 @@ if [ "$#" -ne 1 ]; then
                 -e BOOTNODE_NETWORK=$BOOTNODE_NETWORK \
                 -e BOOTNODE_PUBLIC_IP=$BOOTNODE_PUBLIC_IP \
                 -e HOST_IP=$HOST_IP \
+                -e MINER_THREADS=$MINER_THREADS \
                 $ENABLE_MINER \
                 ethereumex/geth-node:$DOCKER_TAG
 fi

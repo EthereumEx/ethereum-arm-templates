@@ -127,6 +127,7 @@
     "dNetworkName": "[concat('Consortium.', parameters('consortiumName'), '.Network')]",
     "dVMSSTx": "[concat('Consortium.', parameters('consortiumName'), '.Tx')]",
     "dVMSSMiners": "[concat('Consortium.', parameters('consortiumName'), '.Miners')]",
+    "dMinerProperties": "[concat('Consortium.', parameters('consortiumName'), '.MinerProperties')]",
     "dScriptArguments": "[concat('Consortium.', parameters('consortiumName'), '.Arguments')]",
     "secureArguments": "[concat(parameters('genesisUrl'),' ',parameters('gethNetworkId'),' ',parameters('dashboardSecret'))]"
   },
@@ -166,6 +167,23 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
+      "name": "[variables('dMinerProperties')]",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.vmProperties.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "VM": {
+            "value": "[parameters('minerVMSku')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
       "name": "[variables('dScriptArguments')]",
       "apiVersion": "2015-01-01",
       "properties": {
@@ -186,7 +204,8 @@
               "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
               "[reference(variables('dNetworkName')).outputs.network.value.ip.ipAddress]",
               "[parameters('dashboardIp')]",
-              "[parameters('registrarIp')]"
+              "[parameters('registrarIp')]",
+              "[string(reference(variables('dMinerProperties')).outputs.result.value.cores)]"
             ]
           },
           "delimiter": {
@@ -198,7 +217,8 @@
         }
       },
       "dependsOn": [
-        "[variables('dNetworkName')]"
+        "[variables('dNetworkName')]",
+        "[variables('dMinerProperties')]"
       ]
     },
     {
