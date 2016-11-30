@@ -1,33 +1,37 @@
 #!/bin/bash
 
 echo "Starting Machine Initialization"
-if [ "$#" -eq 1 ]; then
-        WS_SECRET=$1
-        docker pull ethereumex/eth-stats-dashboard
+if [ "$#" -eq 2 ]; then
+        DOCKER_TAG=$1
+        WS_SECRET=$2
+
+        docker pull ethereumex/eth-stats-dashboard:$DOCKER_TAG
         docker run -td \
                 --name dashboard \
                 --restart always \
                 -p 0.0.0.0:3000:3000 \
                 -p 0.0.0.0:3001:3001 \
                 -e WS_SECRET=$WS_SECRET \
-                ethereumex/eth-stats-dashboard
+                ethereumex/eth-stats-dashboard:$DOCKER_TAG
 fi
 
 if [ "$#" -ne 1 ]; then
-        BOOTNODE_NETWORK=$1
-        BOOTNODE_PUBLIC_IP=$2
-        DASHBOARD_IP=$3
-        REGISTRAR_IP=$4
-        GENESIS_URL=$5
-        NETWORK_ID=$6
-        WS_SECRET=$7
-        
+        DOCKER_TAG=$1
+        BOOTNODE_NETWORK=$2
+        BOOTNODE_PUBLIC_IP=$3
+        DASHBOARD_IP=$4
+        REGISTRAR_IP=$5
+        GENESIS_URL=$6
+        NETWORK_ID=$7
+        WS_SECRET=$8
+        MINER_ADDRESS=$9
+
         WS_SERVER="ws://$DASHBOARD_IP:3000"
         BOOTNODE_URL="http://$REGISTRAR_IP:3001"
         ENABLE_MINER=
 
-        if [ "$8" ]; then
-                ENABLE_MINER="-e ENABLE_MINER=1 -e MINER_ADDRESS=$8"
+        if [ "$MINER_ADDRESS" ]; then
+                ENABLE_MINER="-e ENABLE_MINER=1 -e MINER_ADDRESS=$MINER_ADDRESS"
         fi
 
         USER=azureuser
@@ -39,7 +43,7 @@ if [ "$#" -ne 1 ]; then
         curl -S -s -o $GETHROOT/genesis.json $GENESIS_URL
         chown -R $USER $GETHROOT
 
-        docker pull ethereumex/geth-node
+        docker pull ethereumex/geth-node:$DOCKER_TAG
         docker run -td \
                 --name geth-node \
                 --restart always \
@@ -57,6 +61,6 @@ if [ "$#" -ne 1 ]; then
                 -e BOOTNODE_PUBLIC_IP=$BOOTNODE_PUBLIC_IP \
                 -e HOST_IP=$HOST_IP \
                 $ENABLE_MINER \
-                ethereumex/geth-node
+                ethereumex/geth-node:$DOCKER_TAG
 fi
 

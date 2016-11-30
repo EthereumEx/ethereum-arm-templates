@@ -57,7 +57,7 @@
           {
             "name": "allow-ssh",
             "properties": {
-              "protocol": "*",
+              "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "22",
               "sourceAddressPrefix": "VirtualNetwork",
@@ -83,7 +83,7 @@
           {
             "name": "allow-bootnodes",
             "properties": {
-              "protocol": "*",
+              "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "30303",
               "sourceAddressPrefix": "VirtualNetwork",
@@ -96,7 +96,7 @@
           {
             "name": "allow-dashboard",
             "properties": {
-              "protocol": "*",
+              "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "3000",
               "sourceAddressPrefix": "*",
@@ -109,7 +109,7 @@
           {
             "name": "allow-registrar",
             "properties": {
-              "protocol": "*",
+              "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "3001",
               "sourceAddressPrefix": "*",
@@ -132,7 +132,7 @@
           {
             "name": "allow-ssh",
             "properties": {
-              "protocol": "*",
+              "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "22",
               "sourceAddressPrefix": "*",
@@ -145,7 +145,7 @@
           {
             "name": "allow-geth-rpc",
             "properties": {
-              "protocol": "*",
+              "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "8545",
               "sourceAddressPrefix": "VirtualNetwork",
@@ -158,7 +158,7 @@
           {
             "name": "allow-bootnodes",
             "properties": {
-              "protocol": "*",
+              "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "30303",
               "sourceAddressPrefix": "*",
@@ -171,7 +171,7 @@
           {
             "name": "allow-dashboard",
             "properties": {
-              "protocol": "*",
+              "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "3000",
               "sourceAddressPrefix": "*",
@@ -184,7 +184,7 @@
           {
             "name": "allow-registrar",
             "properties": {
-              "protocol": "*",
+              "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "3001",
               "sourceAddressPrefix": "*",
@@ -298,26 +298,6 @@
               "enableFloatingIP": false,
               "idleTimeoutInMinutes": 4,
               "protocol": "Tcp",
-              "loadDistribution": "Default",
-              "backendAddressPool": {
-                "id": "[variables('publicLoadBalancer').backendPoolId]"
-              },
-              "probe": {
-                "id": "[variables('publicLoadBalancer').backendProbeId]"
-              }
-            }
-          },
-          {
-            "name": "Geth-P2P-UDP",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('publicLoadBalancer').frontendIPConfigId]"
-              },
-              "frontendPort": 30303,
-              "backendPort": 30303,
-              "enableFloatingIP": false,
-              "idleTimeoutInMinutes": 4,
-              "protocol": "Udp",
               "loadDistribution": "Default",
               "backendAddressPool": {
                 "id": "[variables('publicLoadBalancer').backendPoolId]"
