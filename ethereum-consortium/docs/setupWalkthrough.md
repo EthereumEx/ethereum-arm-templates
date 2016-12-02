@@ -66,6 +66,12 @@
             }
         ]
 
+5. **Completed Deployment**
+    * Once the deployment completes you will find a Dashboard IP address in the output of
+    of the template. You may also find it as a resource calle {consorsortium name}-dashboard-ip.
+        * Port 3000 - Eth Stats Dashboard, this is useful to see the nodes, their blocks, etc.
+        * Port 3001 - Boot node registrar
+    
 4. **Connect a local geth node**  
     * [Download Geth] or use your favorite installer
     * Create a folder  
