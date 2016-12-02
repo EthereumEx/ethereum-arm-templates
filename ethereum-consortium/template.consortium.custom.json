@@ -34,6 +34,13 @@
         "description": "A url used to download the JSON which describes the genesis block"
       }
     },
+    "minerGenesisUrlOverride": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "A url used to download the JSON which describes the genesis block"
+      }
+    },
     "gethNetworkId": {
       "type": "securestring",
       "metadata": {
@@ -130,7 +137,13 @@
       "[resourceGroup().location]",
       "[parameters('locationOverride')]"
     ],
-    "resourceLocation": "[tolower(variables('resourceLocations')[length(take(parameters('locationOverride'),1))])]"
+    "resourceLocation": "[tolower(variables('resourceLocations')[length(take(parameters('locationOverride'),1))])]",
+    "minerUrls": [
+      "[parameters('genesisUrl')]",
+      "[parameters('minerGenesisUrlOverride')]"
+    ],
+    "minerGenesisUrl": "[variables('minerUrls')[length(take(parameters('minerGenesisUrlOverride'),1))]]"
+    
   },
   "resources": [
     {
@@ -198,8 +211,11 @@
           "sshPublicKey": {
             "value": "[parameters('sshPublicKey')]"
           },
-          "genesisUrl": {
+          "txGenesisUrl": {
             "value": "[parameters('genesisUrl')]"
+          },
+          "minerGenesisUrl": {
+            "value": "[variables('minerGenesisUrl')]"
           },
           "gethNetworkId": {
             "value": "[parameters('gethNetworkId')]"

@@ -34,6 +34,13 @@
         "description": "A url used to download the JSON which describes the genesis block"
       }
     },
+    "minerGenesisUrlOverride": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "A url used to download the JSON which describes the genesis block"
+      }
+    },
     "gethNetworkId": {
       "type": "securestring",
       "metadata": {
@@ -170,6 +177,9 @@
           },
           "genesisUrl": {
             "value": "[parameters('genesisUrl')]"
+          },
+           "minerGenesisUrlOverride": {
+            "value": "[parameters('minerGenesisUrlOverride')]"
           },
           "gethNetworkId": {
             "value": "[parameters('gethNetworkId')]"

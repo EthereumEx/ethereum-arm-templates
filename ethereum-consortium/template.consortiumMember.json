@@ -22,7 +22,13 @@
         "description": "ssh public key for connecting to VMs."
       }
     },
-    "genesisUrl": {
+    "txGenesisUrl": {
+      "type": "securestring",
+      "metadata": {
+        "description": "A url used to download the JSON which describes the genesis block"
+      }
+    },
+    "minerGenesisUrl": {
       "type": "securestring",
       "metadata": {
         "description": "A url used to download the JSON which describes the genesis block"
@@ -170,7 +176,8 @@
     "dVMSSMiners": "[concat('Consortium.', parameters('consortiumName'), '.Miners')]",
     "dMinerProperties": "[concat('Consortium.', parameters('consortiumName'), '.MinerProperties')]",
     "dScriptArguments": "[concat('Consortium.', parameters('consortiumName'), '.Arguments')]",
-    "secureArguments": "[concat(parameters('genesisUrl'),' ',parameters('gethNetworkId'),' ',parameters('dashboardSecret'))]"
+    "txSecureArguments": "[concat(parameters('txGenesisUrl'),' ',parameters('gethNetworkId'),' ',parameters('dashboardSecret'))]",
+    "minerSecureArguments": "[concat(parameters('minerGenesisUrl'),' ',parameters('gethNetworkId'),' ',parameters('dashboardSecret'))]"
   },
   "resources": [
     {
@@ -301,7 +308,7 @@
             "value": "[variables('machineSetupScriptUri')]"
           },
           "scriptCommand": {
-            "value": "[concat(variables('scriptCommand'), ' ', parameters('txNodeDockerImage'), ' ', reference(variables('dScriptArguments')).outputs.result.value, ' ', variables('secureArguments'))]"
+            "value": "[concat(variables('scriptCommand'), ' ', parameters('txNodeDockerImage'), ' ', reference(variables('dScriptArguments')).outputs.result.value, ' ', variables('txSecureArguments'))]"
           },
           "networkConfiguration": {
             "value": {
@@ -365,7 +372,7 @@
             "value": "[variables('machineSetupScriptUri')]"
           },
           "scriptCommand": {
-            "value": "[concat(variables('scriptCommand'), ' ', parameters('minerNodeDockerImage'), ' ', reference(variables('dScriptArguments')).outputs.result.value, ' ', variables('secureArguments'), ' ', parameters('minerAddress'))]"
+            "value": "[concat(variables('scriptCommand'), ' ', parameters('minerNodeDockerImage'), ' ', reference(variables('dScriptArguments')).outputs.result.value, ' ', variables('minerSecureArguments'), ' ', parameters('minerAddress'))]"
           },
           "networkConfiguration": {
             "value": {
