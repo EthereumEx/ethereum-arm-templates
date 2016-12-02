@@ -99,12 +99,16 @@
       "defaultValue": "",
       "type": "string"
     },
-    "dashboardDockerTag": {
-      "defaultValue": "latest",
+    "dashboardDockerImage": {
+      "defaultValue": "ethereumex/eth-stats-dashboard:latest",
       "type": "string"
     },
-    "gethNodeDockerTag": {
-      "defaultValue": "latest",
+    "txNodeDockerImage": {
+      "defaultValue": "ethereumex/geth-node:latest",
+      "type": "string"
+    },
+    "minerNodeDockerImage": {
+      "defaultValue": "ethereumex/geth-node:latest",
       "type": "string"
     },
     "locationOverride": {
@@ -158,8 +162,8 @@
           "locationOverride": {
             "value": "[variables('resourceLocation')]"
           },
-          "dockerTag":{
-            "value" :"[parameters('dashboardDockerTag')]"
+          "dockerImage":{
+            "value" :"[parameters('dashboardDockerImage')]"
           },
           "contentVersion" :{
             "value" : "[parameters('contentVersion')]"
@@ -224,8 +228,11 @@
           "txnodeCount": {
             "value": "[parameters('members')[copyIndex()].txNodeCount]"
           },
-          "dockerTag":{
-            "value" :"[parameters('gethNodeDockerTag')]"
+          "txNodeDockerImage":{
+            "value" :"[parameters('txNodeDockerImage')]"
+          },
+          "minerNodeDockerImage":{
+            "value" :"[parameters('minerNodeDockerImage')]"
           },
           "locationOverride": {
             "value": "[parameters('members')[copyIndex()].location]"

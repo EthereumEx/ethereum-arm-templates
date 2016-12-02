@@ -103,8 +103,15 @@
       "defaultValue": 3,
       "type": "int"
     },
-    "dockerTag": {
-      "defaultValue": "latest",
+    "txNodeDockerImage": {
+      "defaultValue": "ethereumex/geth-node:latest",
+      "type": "string",
+      "metadata": {
+        "description": "The tag of the docker image to download"
+      }
+    },
+    "minerNodeDockerImage": {
+      "defaultValue": "ethereumex/geth-node:latest",
       "type": "string",
       "metadata": {
         "description": "The tag of the docker image to download"
@@ -157,7 +164,7 @@
     ],
     "scriptName": "runScripts.sh",
     "machineSetupScriptUri": "[concat(variables('contentRoot'), '/', variables('scriptName'))]",
-    "scriptCommand": "[concat('sh ', variables('scriptName'), ' ')]",
+    "scriptCommand": "[concat('sh ', variables('scriptName'), ' ', variables('contentRoot'))]",
     "dNetworkName": "[concat('Consortium.', parameters('consortiumName'), '.Network')]",
     "dVMSSTx": "[concat('Consortium.', parameters('consortiumName'), '.Tx')]",
     "dVMSSMiners": "[concat('Consortium.', parameters('consortiumName'), '.Miners')]",
@@ -232,9 +239,6 @@
           },
           "args": {
             "value": [
-              "[variables('scriptCommand')]",
-              "[variables('contentRoot')]",
-              "[parameters('dockerTag')]",
               "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
               "[reference(variables('dNetworkName')).outputs.network.value.ip.ipAddress]",
               "[parameters('dashboardIp')]",
@@ -297,7 +301,7 @@
             "value": "[variables('machineSetupScriptUri')]"
           },
           "scriptCommand": {
-            "value": "[concat(reference(variables('dScriptArguments')).outputs.result.value, ' ', variables('secureArguments'))]"
+            "value": "[concat(variables('scriptCommand'), ' ', parameters('txNodeDockerImage'), ' ', reference(variables('dScriptArguments')).outputs.result.value, ' ', variables('secureArguments'))]"
           },
           "networkConfiguration": {
             "value": {
@@ -361,7 +365,7 @@
             "value": "[variables('machineSetupScriptUri')]"
           },
           "scriptCommand": {
-            "value": "[concat(reference(variables('dScriptArguments')).outputs.result.value, ' ', variables('secureArguments'), ' ', parameters('minerAddress'))]"
+            "value": "[concat(variables('scriptCommand'), ' ', parameters('minerNodeDockerImage'), ' ', reference(variables('dScriptArguments')).outputs.result.value, ' ', variables('secureArguments'), ' ', parameters('minerAddress'))]"
           },
           "networkConfiguration": {
             "value": {

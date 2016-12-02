@@ -32,8 +32,8 @@
       "defaultValue": "Standard_DS1_v2",
       "type": "string"
     },
-    "dockerTag" :{
-      "defaultValue": "latest",
+    "dockerImage" :{
+      "defaultValue": "ethereumex/eth-stats-dashboard:latest",
       "type": "string",
       "metadata": {
         "description": "The tag of the docker image to download"
@@ -145,7 +145,7 @@
             "value": "[variables('machineSetupScriptUri')]"
           },
           "scriptCommand": {
-            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('dockerTag'), ' ', parameters('dashboardSecret'))]"
+            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('dockerImage'), ' ', parameters('dashboardSecret'))]"
           },
           "storageAccountName": {
             "value": "[variables('storageAccounts')[0]]"

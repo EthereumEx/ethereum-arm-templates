@@ -2,21 +2,21 @@
 
 echo "Starting Machine Initialization"
 if [ "$#" -eq 2 ]; then
-        DOCKER_TAG=$1
+        DOCKER_IMG=$1
         WS_SECRET=$2
 
-        docker pull ethereumex/eth-stats-dashboard:$DOCKER_TAG
+        docker pull $DOCKER_IMG
         docker run -td \
                 --name dashboard \
                 --restart always \
                 -p 0.0.0.0:3000:3000 \
                 -p 0.0.0.0:3001:3001 \
                 -e WS_SECRET=$WS_SECRET \
-                ethereumex/eth-stats-dashboard:$DOCKER_TAG
+                $DOCKER_IMG
 fi
 
 if [ "$#" -ne 1 ]; then
-        DOCKER_TAG=$1
+        DOCKER_IMG=$1
         BOOTNODE_NETWORK=$2
         BOOTNODE_PUBLIC_IP=$3
         DASHBOARD_IP=$4
@@ -44,7 +44,7 @@ if [ "$#" -ne 1 ]; then
         curl -S -s -o $GETHROOT/genesis.json $GENESIS_URL
         chown -R $USER $GETHROOT
 
-        docker pull ethereumex/geth-node:$DOCKER_TAG
+        docker pull $DOCKER_IMG
         docker run -td \
                 --name geth-node \
                 --restart always \
@@ -63,6 +63,6 @@ if [ "$#" -ne 1 ]; then
                 -e HOST_IP=$HOST_IP \
                 -e MINER_THREADS=$MINER_THREADS \
                 $ENABLE_MINER \
-                ethereumex/geth-node:$DOCKER_TAG
+                $DOCKER_IMG
 fi
 
