@@ -101,26 +101,15 @@
     },
     "dashboardDockerImage": {
       "defaultValue": "ethereumex/eth-stats-dashboard:latest",
-      "type": "string",
-      "allowedValues": [
-        "ethereumex/eth-stats-dashboard:latest"
-      ]
+      "type": "string"
     },
     "txNodeDockerImage": {
       "defaultValue": "ethereumex/geth-node:latest",
-      "type": "string",
-      "allowedValues": [
-        "ethereumex/geth-node:latest",
-        "ethereumex/parity-node:latest"
-      ]
-      
+      "type": "string"
     },
     "minerNodeDockerImage": {
       "defaultValue": "ethereumex/geth-node:latest",
-      "type": "string",
-      "allowedValues": [
-        "ethereumex/geth-node:latest"
-      ]
+      "type": "string"
     },
     "locationOverride": {
       "type": "string",
@@ -141,26 +130,67 @@
       "[resourceGroup().location]",
       "[parameters('locationOverride')]"
     ],
-    "resourceLocation": "[tolower(variables('resourceLocations')[length(take(parameters('locationOverride'),1))])]",
-    "dConsortiumName" : "[concat('Consortium.', parameters('consortiumName'))]"
+    "resourceLocation": "[tolower(variables('resourceLocations')[length(take(parameters('locationOverride'),1))])]"
   },
   "resources": [
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "[variables('dConsortiumName')]",
+      "name": "Consortium.Dashboard",
       "apiVersion": "2015-01-01",
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/template.consortium.custom.json')]"
+          "uri": "[concat(variables('contentRoot'), '/template.dashboard.json')]"
         },
         "mode": "Incremental",
         "parameters": {
           "consortiumName": {
             "value": "[parameters('consortiumName')]"
           },
-          "members": {
-            "value": "[parameters('members')]"
+          "username": {
+            "value": "[parameters('username')]"
+          },
+          "sshPublicKey": {
+            "value": "[parameters('sshPublicKey')]"
+          },
+          "dashboardSecret": {
+            "value": "[parameters('dashboardSecret')]"
+          },
+          "vmSku": {
+            "value": "[parameters('txnodeVMSku')]"
+          },
+          "locationOverride": {
+            "value": "[variables('resourceLocation')]"
+          },
+          "dockerImage":{
+            "value" :"[parameters('dashboardDockerImage')]"
+          },
+          "contentVersion" :{
+            "value" : "[parameters('contentVersion')]"
+          },
+          "contentRootOverride": {
+            "value": "[variables('contentRoot')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[concat('Consortium.', parameters('consortiumName'), '-', parameters('members')[copyIndex()].name)]",
+      "apiVersion": "2015-01-01",
+      "copy": {
+        "name": "storageLoop",
+        "count": "[length(parameters('members'))]"
+      },
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/template.consortiumMember.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "consortiumName": {
+            "value": "[concat(parameters('consortiumName'), '-', parameters('members')[copyIndex()].name)]"
           },
           "username": {
             "value": "[parameters('username')]"
@@ -177,38 +207,53 @@
           "dashboardSecret": {
             "value": "[parameters('dashboardSecret')]"
           },
+          "dashboardIp": {
+            "value": "[reference('Consortium.Dashboard').outputs.ip.value]"
+          },
+          "registrarIp": {
+            "value": "[reference('Consortium.Dashboard').outputs.ip.value]"
+          },
+          "minerAddress": {
+            "value": "[parameters('members')[copyIndex()].minerAddress]"
+          },
           "minerVMSku": {
             "value": "[parameters('minerVMSku')]"
+          },
+          "minerCount": {
+            "value": "[parameters('members')[copyIndex()].minerCount]"
           },
           "txnodeVMSku": {
             "value": "[parameters('txnodeVMSku')]"
           },
-          "contentVersion": {
-            "value": "[parameters('contentVersion')]"
+          "txnodeCount": {
+            "value": "[parameters('members')[copyIndex()].txNodeCount]"
           },
-          "contentRootOverride": {
-            "value": "[parameters('contentRootOverride')]"
+          "txNodeDockerImage":{
+            "value" :"[parameters('txNodeDockerImage')]"
           },
-          "dashboardDockerImage": {
-            "value": "[parameters('dashboardDockerImage')]"
-          },
-          "txNodeDockerImage": {
-            "value": "[parameters('txNodeDockerImage')]"
-          },
-          "minerNodeDockerImage": {
-            "value": "[parameters('minerNodeDockerImage')]"
+          "minerNodeDockerImage":{
+            "value" :"[parameters('minerNodeDockerImage')]"
           },
           "locationOverride": {
-            "value": "[variables('resourceLocation')]"
+            "value": "[parameters('members')[copyIndex()].location]"
+          },
+          "contentVersion" :{
+            "value" : "[parameters('contentVersion')]"
+          },
+          "contentRootOverride": {
+            "value": "[variables('contentRoot')]"
           }
         }
-      }
+      },
+      "dependsOn": [
+        "Consortium.Dashboard"
+      ]
     }
   ],
   "outputs": {
-    "DashboardIp": {
+    "DashboardIp" : {
       "type": "string",
-      "value": "[reference(variables('dConsortiumName')).outputs.DashboardIp.value]"
+      "value": "[reference('Consortium.Dashboard').outputs.ip.value]"
     }
   }
 }
