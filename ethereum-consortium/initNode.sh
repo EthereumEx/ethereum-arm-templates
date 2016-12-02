@@ -36,24 +36,23 @@ if [ "$#" -ne 1 ]; then
         fi
 
         USER=azureuser
-        GETHROOT=/home/$USER/geth
+        ETHROOT=/home/$USER/eth-node
         HOST_IP=$(ifconfig eth0 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://')
         NODE_NAME=$(hostname)
 
-        mkdir -p $GETHROOT/.data
-        curl -S -s -o $GETHROOT/genesis.json $GENESIS_URL
-        chown -R $USER $GETHROOT
+        mkdir -p $ETHROOT
+        curl -S -s -o $ETHROOT/genesis.json $GENESIS_URL
+        chown -R $USER $ETHROOT
 
         docker pull $DOCKER_IMG
         docker run -td \
-                --name geth-node \
+                --name eth-node \
                 --restart always \
                 -p 0.0.0.0:8545:8545 \
                 -p 0.0.0.0:8546:8546 \
                 -p 0.0.0.0:30303:30303 \
                 -p 0.0.0.0:30303:30303/udp \
-                -v $GETHROOT/genesis.json:/home/geth/genesis.json \
-                -v $GETHROOT/.data:/home/geth/.geth \
+                -v $ETHROOT/genesis.json:/home/eth-node/genesis.json \
                 -e NETWORKID=$NETWORK_ID -e WS_SERVER=$WS_SERVER -e WS_SECRET=$WS_SECRET \
                 -e NODE_NAME=$NODE_NAME \
                 -e INSTANCE_NAME=$NODE_NAME \
