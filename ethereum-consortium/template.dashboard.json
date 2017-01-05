@@ -145,7 +145,7 @@
             "value": "[variables('machineSetupScriptUri')]"
           },
           "scriptCommand": {
-            "value": "[concat(variables('scriptCommand'), variables('contentRoot'), ' ', parameters('dockerImage'), ' ', parameters('dashboardSecret'))]"
+            "value": "[concat(variables('scriptCommand'), '\"', variables('contentRoot'), '\" ', parameters('dockerImage'), ' ', parameters('dashboardSecret'))]"
           },
           "storageAccountName": {
             "value": "[variables('storageAccounts')[0]]"

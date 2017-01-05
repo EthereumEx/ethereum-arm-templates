@@ -170,14 +170,14 @@
     ],
     "scriptName": "runScripts.sh",
     "machineSetupScriptUri": "[concat(variables('contentRoot'), '/', variables('scriptName'))]",
-    "scriptCommand": "[concat('sh ', variables('scriptName'), ' ', variables('contentRoot'))]",
+    "scriptCommand": "[concat('sh ', variables('scriptName'), ' \"', variables('contentRoot'), '\" ')]",
     "dNetworkName": "[concat('Consortium.', parameters('consortiumName'), '.Network')]",
     "dVMSSTx": "[concat('Consortium.', parameters('consortiumName'), '.Tx')]",
     "dVMSSMiners": "[concat('Consortium.', parameters('consortiumName'), '.Miners')]",
     "dMinerProperties": "[concat('Consortium.', parameters('consortiumName'), '.MinerProperties')]",
     "dScriptArguments": "[concat('Consortium.', parameters('consortiumName'), '.Arguments')]",
-    "txSecureArguments": "[concat(parameters('txGenesisUrl'),' ',parameters('gethNetworkId'),' ',parameters('dashboardSecret'))]",
-    "minerSecureArguments": "[concat(parameters('minerGenesisUrl'),' ',parameters('gethNetworkId'),' ',parameters('dashboardSecret'))]"
+    "txSecureArguments": "[concat('\"', parameters('txGenesisUrl'),'\" ',parameters('gethNetworkId'),' ',parameters('dashboardSecret'))]",
+    "minerSecureArguments": "[concat('\"', parameters('minerGenesisUrl'),'\" ',parameters('gethNetworkId'),' ',parameters('dashboardSecret'))]"
   },
   "resources": [
     {

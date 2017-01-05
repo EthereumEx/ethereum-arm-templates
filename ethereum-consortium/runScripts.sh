@@ -5,6 +5,7 @@ SCRIPTS=/root/scripts
 CURLARGS="-S -s --connect-timeout 5 --retry 15"
 
 date > $LOG
+echo $0 $@ >> $LOG
 mkdir -p $SCRIPTS
 SCRIPT_COMPLETE=$SCRIPTS/.complete.0
 
