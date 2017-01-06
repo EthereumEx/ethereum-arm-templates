@@ -87,11 +87,11 @@
       resource and copy the IP.  
 
       Navigate to http://{copied ip}:3001/enodes. Save the returned value
-      {bootnodes}.
+      into a file in the same directory as geth.exe and name it static-nodes.json.
     * Start geth  
     For this step you'll need the {network id} used in Step 3
 
-            geth --datadir c:\geth\data --networkid {nework id} --bootnodes {bootnodes}
+            geth --datadir c:\geth\data --networkid {nework id}
 
     * Done   
     At this point geth should be running and will eventually sychronize blocks
