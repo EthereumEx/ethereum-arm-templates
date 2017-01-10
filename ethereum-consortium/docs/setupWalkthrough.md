@@ -27,17 +27,9 @@
                 }
             }
 
-3. **Deploy the template**  
-    [Ethereum Consortium Template](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FEthereumEx%2Fethereum-arm-templates%2Fmaster%2Fethereum-consortium%2Ftemplate.consortium.json)
-    
-    **Genesis Url**  
-    This is the URL from Step 2
-
-    **Geth Network Id**  
-    This is a shared secret that all geth nodes need to be started with in order to communicate
-
-    **Dashboard Secret**  
-    This is a shared secret between the dashboard and it's clients
+3. **Author the member json**  
+    The json below will be used when deploying the template in Azure. It describes each member in the
+    network, the number of tx nodes, miners, location, etc.
 
     **Members**  
     This value is expected to be an array of members that will be deployed the Network.
@@ -66,13 +58,28 @@
             }
         ]
 
+4. **Deploy the template**  
+    [Ethereum Consortium Template](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FEthereumEx%2Fethereum-arm-templates%2Fmaster%2Fethereum-consortium%2Ftemplate.consortium.json)
+    
+    **Genesis Url**  
+    This is the URL from Step 2
+
+    **Geth Network Id**  
+    This is a shared secret that all geth nodes need to be started with in order to communicate. This should be a numerical value.
+
+    **Dashboard Secret**  
+    This is a shared secret between the dashboard and it's clients
+
+    **Members**  
+    See step above
+
 5. **Completed Deployment**
     * Once the deployment completes you will find a Dashboard IP address in the output of
     of the template. You may also find it as a resource calle {consorsortium name}-dashboard-ip.
         * Port 3000 - Eth Stats Dashboard, this is useful to see the nodes, their blocks, etc.
         * Port 3001 - Boot node registrar
     
-4. **Connect a local geth node**  
+6. **Connect a local geth node**  
     * [Download Geth] or use your favorite installer
     * Create a folder  
         *c:\geth* will be used for this example
@@ -86,12 +93,15 @@
       There should be a resource called *XXXX-dashboard-ip*. Open this 
       resource and copy the IP.  
 
-      Navigate to http://{copied ip}:3001/enodes. Save the returned value
-      {bootnodes}.
+      Navigate to http://{copied ip}:3001/staticenodes. Save the returned value into a file called
+      *static-nodes.json* in the geth data directory. An example is shown below.
+            
+            c:\geth\data\static-nodes.json
+
     * Start geth  
     For this step you'll need the {network id} used in Step 3
 
-            geth --datadir c:\geth\data --networkid {nework id} --bootnodes {bootnodes}
+            geth --datadir c:\geth\data --networkid {nework id}
 
     * Done   
     At this point geth should be running and will eventually sychronize blocks
@@ -99,7 +109,7 @@
 
 
 
-5. **Connecting Etherem Wallet**   
+7. **Connecting Etherem Wallet**   
 This step will configure the [Ethereum Wallet] to use the account created
 in Step 1 and will talk to the network through the local geth instance from
 Step 4.

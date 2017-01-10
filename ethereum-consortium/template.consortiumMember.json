@@ -2,7 +2,7 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "consortiumName": {
+    "consortiumMemberName": {
       "type": "string",
       "maxLength": 25,
       "metadata": {
@@ -124,7 +124,7 @@
       }
     },
     "contentVersion": {
-      "defaultValue": "Release-v0.8",
+      "defaultValue": "Release-v0.8.1",
       "type": "string",
       "metadata": {
         "description": "The version of the templates to use. This refers to a git branch. This parameter is ignored if contentRootOverride is provided"
@@ -160,7 +160,7 @@
     "deploymentId": "[toLower(substring(uniqueString(concat(resourceGroup().Id, variables('resourceLocation'))), 0, 10))]",
     "storageAccountType": "Premium_LRS",
     "saCount": 5,
-    "namingInfix": "[toLower(parameters('consortiumName'))]",
+    "namingInfix": "[toLower(parameters('consortiumMemberName'))]",
     "storageAccounts": [
       "[concat('savmss', variables('deploymentId'), '01')]",
       "[concat('savmss', variables('deploymentId'), '02')]",
@@ -170,14 +170,14 @@
     ],
     "scriptName": "runScripts.sh",
     "machineSetupScriptUri": "[concat(variables('contentRoot'), '/', variables('scriptName'))]",
-    "scriptCommand": "[concat('sh ', variables('scriptName'), ' \"', variables('contentRoot'), '\" ')]",
-    "dNetworkName": "[concat('Consortium.', parameters('consortiumName'), '.Network')]",
-    "dVMSSTx": "[concat('Consortium.', parameters('consortiumName'), '.Tx')]",
-    "dVMSSMiners": "[concat('Consortium.', parameters('consortiumName'), '.Miners')]",
-    "dMinerProperties": "[concat('Consortium.', parameters('consortiumName'), '.MinerProperties')]",
-    "dScriptArguments": "[concat('Consortium.', parameters('consortiumName'), '.Arguments')]",
-    "txSecureArguments": "[concat('\"', parameters('txGenesisUrl'),'\" ',parameters('gethNetworkId'),' ',parameters('dashboardSecret'))]",
-    "minerSecureArguments": "[concat('\"', parameters('minerGenesisUrl'),'\" ',parameters('gethNetworkId'),' ',parameters('dashboardSecret'))]"
+    "scriptCommand": "[concat('sh ', variables('scriptName'), ' ', variables('contentRoot'))]",
+    "dNetworkName": "[concat('Consortium.', parameters('consortiumMemberName'), '.Network')]",
+    "dVMSSTx": "[concat('Consortium.', parameters('consortiumMemberName'), '.Tx')]",
+    "dVMSSMiners": "[concat('Consortium.', parameters('consortiumMemberName'), '.Miners')]",
+    "dMinerProperties": "[concat('Consortium.', parameters('consortiumMemberName'), '.MinerProperties')]",
+    "dScriptArguments": "[concat('Consortium.', parameters('consortiumMemberName'), '.Arguments')]",
+    "txSecureArguments": "[concat(parameters('txGenesisUrl'),' ',parameters('gethNetworkId'),' ',parameters('dashboardSecret'))]",
+    "minerSecureArguments": "[concat(parameters('minerGenesisUrl'),' ',parameters('gethNetworkId'),' ',parameters('dashboardSecret'))]"
   },
   "resources": [
     {

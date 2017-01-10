@@ -23,6 +23,7 @@ All of the nodes in the network are assembled by using docker containers from [E
 ## Getting Started
 * [Network setup walk through](docs/setupWalkthrough.md)
 * [Adding a new member to a network](docs/newMemberWalkthrough.md)
+* [Deploy using custom docker images](docs/customDockerDeployment.md)
 
 ## Example Parameters File
     {
