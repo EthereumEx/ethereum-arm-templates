@@ -15,7 +15,7 @@ if [ "$#" -eq 2 ]; then
                 $DOCKER_IMG
 fi
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 2 ]; then
         DOCKER_IMG=$1
         BOOTNODE_NETWORK=$2
         BOOTNODE_PUBLIC_IP=$3
