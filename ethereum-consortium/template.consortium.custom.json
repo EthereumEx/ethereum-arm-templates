@@ -157,8 +157,8 @@
         },
         "mode": "Incremental",
         "parameters": {
-          "consortiumName": {
-            "value": "[parameters('consortiumName')]"
+          "dashboardName": {
+            "value": "[concat(parameters('consortiumName'), '-Dashboard')]"
           },
           "username": {
             "value": "[parameters('username')]"
