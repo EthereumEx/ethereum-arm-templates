@@ -13,35 +13,31 @@
     }
   },
   "variables": {
-    "deploymentId": "[toLower(substring(uniqueString(resourceGroup().Id), 0, 10))]",
     "resourceLocation": "[parameters('location')]",
     "addressPrefix": "10.0.0.0/16",
     "namingInfix": "[parameters('namingInfix')]",
     "subnetDashboard": {
       "name": "subnet-dashboard",
-      "nsg": "[concat(variables('namingInfix'), '-dashboard-nsg')]",
-      "prefix": "10.0.2.0/24"
+      "nsg": "[concat(variables('namingInfix'), '-nsg')]",
+      "prefix": "10.0.0.0/24"
     },
-    "virtualNetworkName": "[concat(variables('namingInfix'), '-dashboard-vnet')]",
-    "publicIpName": "[concat(variables('namingInfix'), '-dashboard-ip')]",
-    "publicIpDns": "[concat('a', variables('deploymentId'), '-', variables('namingInfix'), '-dashboard')]",
+    "virtualNetworkName": "[concat(variables('namingInfix'), '-vnet')]",
+    "loadBalancerName": "[concat(variables('namingInfix'), '-lb')]",
+    "publicIpName": "[concat(variables('namingInfix'), '-public-ip')]",
+    "natPoolName": "[concat(variables('namingInfix'), '-natpool')]",
+    "loadBalancedNodePool": "[concat(variables('namingInfix'), '-bepool')]",
+    "nodeProbeName": "Node-Probe",
+    "publicLoadBalancerId": "[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName'))]",
+    "publicLoadBalancer": {
+      "id": "[variables('publicLoadBalancerId')]",
+      "backendProbeId": "[concat(variables('publicLoadBalancerId'), '/probes/', variables('nodeProbeName'))]",
+      "backendPoolId": "[concat(variables('publicLoadBalancerId'), '/backendAddressPools/', variables('loadBalancedNodePool'))]",
+      "frontendIPConfigId": "[concat(variables('publicLoadBalancerId'), '/frontendIPConfigurations/LoadBalancedPublicIp')]",
+      "natPoolId": "[concat(variables('publicLoadBalancerId'), '/inboundNatPools/', variables('natPoolName'))]"
+    },
     "subnetDashboardId": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')), '/subnets/', variables('subnetDashboard').name)]"
   },
   "resources": [
-    {
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('publicIpName')]",
-      "apiVersion": "2016-03-30",
-      "location": "[variables('resourceLocation')]",
-      "properties": {
-        "publicIPAllocationMethod": "Static",
-        "idleTimeoutInMinutes": 4,
-        "dnsSettings": {
-          "domainNameLabel": "[variables('publicIpDns')]"
-        }
-      },
-      "dependsOn": [ ]
-    },
     {
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[variables('subnetDashboard').nsg]",
@@ -52,10 +48,10 @@
           {
             "name": "allow-ssh",
             "properties": {
-              "protocol": "*",
+              "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "22",
-              "sourceAddressPrefix": "*",
+              "sourceAddressPrefix": "Internet",
               "destinationAddressPrefix": "*",
               "access": "Allow",
               "priority": 100,
@@ -65,10 +61,10 @@
           {
             "name": "allow-dashboard",
             "properties": {
-              "protocol": "*",
+              "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "3000",
-              "sourceAddressPrefix": "*",
+              "sourceAddressPrefix": "Internet",
               "destinationAddressPrefix": "*",
               "access": "Allow",
               "priority": 101,
@@ -78,10 +74,10 @@
           {
             "name": "allow-registrar",
             "properties": {
-              "protocol": "*",
+              "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "3001",
-              "sourceAddressPrefix": "*",
+              "sourceAddressPrefix": "Internet",
               "destinationAddressPrefix": "*",
               "access": "Allow",
               "priority": 102,
@@ -90,6 +86,17 @@
           }
         ]
       }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('publicIpName')]",
+      "apiVersion": "2016-03-30",
+      "location": "[variables('resourceLocation')]",
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 4
+      },
+      "dependsOn": []
     },
     {
       "type": "Microsoft.Network/virtualNetworks",
@@ -115,8 +122,107 @@
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]",
         "[resourceId('Microsoft.Network/networkSecurityGroups', variables('subnetDashboard').nsg)]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/loadBalancers",
+      "name": "[variables('loadBalancerName')]",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('resourceLocation')]",
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "LoadBalancedPublicIp",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[variables('loadBalancedNodePool')]"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "SSH",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('publicLoadBalancer').frontendIPConfigId]"
+              },
+              "frontendPort": 22,
+              "backendPort": 22,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "protocol": "Tcp",
+              "loadDistribution": "SourceIP",
+              "backendAddressPool": {
+                "id": "[variables('publicLoadBalancer').backendPoolId]"
+              },
+              "probe": {
+                "id": "[variables('publicLoadBalancer').backendProbeId]"
+              }
+            }
+          },
+          {
+            "name": "Dashboard",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('publicLoadBalancer').frontendIPConfigId]"
+              },
+              "frontendPort": 3000,
+              "backendPort": 3000,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "protocol": "Tcp",
+              "loadDistribution": "SourceIP",
+              "backendAddressPool": {
+                "id": "[variables('publicLoadBalancer').backendPoolId]"
+              },
+              "probe": {
+                "id": "[variables('publicLoadBalancer').backendProbeId]"
+              }
+            }
+          },
+          {
+            "name": "Registrar",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('publicLoadBalancer').frontendIPConfigId]"
+              },
+              "frontendPort": 3001,
+              "backendPort": 3001,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "protocol": "Tcp",
+              "loadDistribution": "SourceIP",
+              "backendAddressPool": {
+                "id": "[variables('publicLoadBalancer').backendPoolId]"
+              },
+              "probe": {
+                "id": "[variables('publicLoadBalancer').backendProbeId]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "[variables('nodeProbeName')]",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 22,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[variables('publicIpName')]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
       ]
     }
   ],
@@ -126,14 +232,18 @@
       "value": {
         "name": "[variables('virtualNetworkName')]",
         "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
-        "ipAddress": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))).ipAddress]",
+        "ip": "[reference(variables('publicIpName'))]",
+        "internal": {
+          "id": "[variables('publicLoadBalancerId')]",
+          "poolId": "[variables('publicLoadBalancer').backendPoolId]",
+          "natPoolId": "[variables('publicLoadBalancer').natPoolId]"
+        },
         "subnets": {
           "dashboard": "[variables('subnetDashboardId')]"
         },
         "nsg": {
           "dashboard": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('subnetDashboard').nsg)]"
-        },
-        "publicIpId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]"
+        }
       }
     }
   }

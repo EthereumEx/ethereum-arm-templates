@@ -22,7 +22,7 @@ if [ "$#" -ne 2 ]; then
         DASHBOARD_IP=$4
         REGISTRAR_IP=$5
         MINER_THREADS=$6
-        GENESIS_URL=$7
+        GENESIS_CONTENT=$7
         NETWORK_ID=$8
         WS_SECRET=$9
         MINER_ADDRESS=${10}
@@ -41,7 +41,7 @@ if [ "$#" -ne 2 ]; then
         NODE_NAME=$(hostname)
 
         mkdir -p $ETHROOT
-        curl -S -s -o $ETHROOT/genesis.json $GENESIS_URL
+        echo $GENESIS_CONTENT | base64 -d > $ETHROOT/genesis.json
         chown -R $USER $ETHROOT
 
         docker pull $DOCKER_IMG

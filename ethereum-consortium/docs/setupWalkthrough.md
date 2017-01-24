@@ -6,15 +6,14 @@
     * Download the Keystore file. We'll use this later.
     * Copy the address ex. 0x0000000000000000000000000000000000000000
 
-2. **Generate the a genesis.json file**
+2. **Generate the a genesis.json content**
     * Replace the 0x0000000000000000000000000000000000000000 in the alloc section of the json below with the address that you copied above.
     * Update the nonce with a valid hex value
-    * Save the contents somewhere that will be accessible via a URL
 
             {
                 "coinbase": "0x0",
                 "difficulty": "0x20000",
-                "extraData": "0x",
+                "extraData": "0x0",
                 "gasLimit": "0x2625A0",
                 "mixhash": "0x0",
                 "nonce": "0x0000",
@@ -61,8 +60,8 @@
 4. **Deploy the template**  
     [Ethereum Consortium Template](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FEthereumEx%2Fethereum-arm-templates%2Fmaster%2Fethereum-consortium%2Ftemplate.consortium.json)
     
-    **Genesis Url**  
-    This is the URL from Step 2
+    **Genesis Json**  
+    Paste the json contents from Step 2 into the text box
 
     **Geth Network Id**  
     This is a shared secret that all geth nodes need to be started with in order to communicate. This should be a numerical value.
