@@ -28,15 +28,15 @@
         "description": "ssh public key for connecting to VMs."
       }
     },
-    "genesisUrl": {
-      "type": "securestring",
+    "genesisJson": {
+      "type": "secureObject",
       "metadata": {
         "description": "A url used to download the JSON which describes the genesis block"
       }
     },
-    "minerGenesisUrlOverride": {
-      "type": "securestring",
-      "defaultValue": "",
+    "minerGenesisJsonOverride": {
+      "type": "secureObject",
+      "defaultValue": { },
       "metadata": {
         "description": "A url used to download the JSON which describes the genesis block"
       }
@@ -96,7 +96,7 @@
       ]
     },
     "contentVersion": {
-      "defaultValue": "Release-v0.8.2",
+      "defaultValue": "Release-v0.9.0",
       "type": "string",
       "metadata": {
         "description": "The version of the templates to use. This refers to a git branch. This parameter is ignored if contentRootOverride is provided"
@@ -138,11 +138,11 @@
       "[parameters('locationOverride')]"
     ],
     "resourceLocation": "[tolower(variables('resourceLocations')[length(take(parameters('locationOverride'),1))])]",
-    "minerUrls": [
-      "[parameters('genesisUrl')]",
-      "[parameters('minerGenesisUrlOverride')]"
+    "minerJson": [
+      "[parameters('genesisJson')]",
+      "[parameters('minerGenesisJsonOverride')]"
     ],
-    "minerGenesisUrl": "[variables('minerUrls')[length(take(parameters('minerGenesisUrlOverride'),1))]]"
+    "minerGenesisJson": "[variables('minerJson')[length(take(skip(string(parameters('minerGenesisJsonOverride')),3),1))]]"
     
   },
   "resources": [
@@ -211,11 +211,11 @@
           "sshPublicKey": {
             "value": "[parameters('sshPublicKey')]"
           },
-          "txGenesisUrl": {
-            "value": "[parameters('genesisUrl')]"
+          "txGenesisJson": {
+            "value": "[parameters('genesisJson')]"
           },
-          "minerGenesisUrl": {
-            "value": "[variables('minerGenesisUrl')]"
+          "minerGenesisJson": {
+            "value": "[variables('minerGenesisJson')]"
           },
           "gethNetworkId": {
             "value": "[parameters('gethNetworkId')]"

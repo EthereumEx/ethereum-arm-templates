@@ -8,19 +8,33 @@
     "members": {
       "value": [
         {
-          "name":"TEST",
-          "minerCount" : 1,
-          "txNodeCount" : 1,
-          "minerAddress" : "0x451FDfd8712fa3e4AeA8EE751F617Af39545290F",
-          "location" : "northeurope"
+          "name": "TEST",
+          "minerCount": 1,
+          "txNodeCount": 1,
+          "minerAddress": "0x451FDfd8712fa3e4AeA8EE751F617Af39545290F",
+          "location": "northeurope"
         }
       ]
     },
     "sshPublicKey": {
       "value": "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAhJ4Eftuf9ao38qTPLjEjjiOeZY09Kb/KPCvgNHAGSA1HjvQLgGhbgJ4i8jaELuFhhLYfnjV/Bi2vSszhzcLHvkc7uaU/AT+le67wCrsLZK2fywu/or//1F/04WSEnEJ0AhBDFtGdOKg/d0psgC35YZmESCZCBjJipDkefKFvdlvxh1V75/my0SJRTuEzf9zVY5mqwLlXfBoSj59T12xFfWP8Fz28cXgXlSQUSFUXMJoc/heJj799g0v2nlvPB2PUwT/CM5ZmGC2jOZAhgrUcGPXCRv8dtUzzskbSeYM5YgciwlHg/KAYUiNZeHKlN6Rwp+/1NUI4mrjP4zWyOrZdVw== test-key-ci"
     },
-    "genesisUrl": {
-      "value": "https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/master/ethereum-consortium/tests/ci/genesis.json"
+    "genesisJson": {
+      "value": {
+        "coinbase": "0x0",
+        "difficulty": "0x20000",
+        "extraData": "0x",
+        "gasLimit": "0x2625A0",
+        "mixhash": "0x0",
+        "nonce": "0x0F1A",
+        "parentHash": "0x0",
+        "timestamp": "0x00",
+        "alloc": {
+          "0x451FDfd8712fa3e4AeA8EE751F617Af39545290F": {
+            "balance": "10000000000"
+          }
+        }
+      }
     },
     "gethNetworkId": {
       "value": "test-network"

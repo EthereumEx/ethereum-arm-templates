@@ -54,7 +54,7 @@ All of the nodes in the network are assembled by using docker containers from [E
             "sshPublicKey": {
                 "value": ""
             },
-            "genesisUrl": {
+            "genesisJson": {
                 "value": ""
             },
             "gethNetworkId": {
