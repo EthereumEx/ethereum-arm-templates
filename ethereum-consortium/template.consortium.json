@@ -135,6 +135,18 @@
       "metadata": {
         "description": "Location to deploy resources. By default the template will use the Resource Group location"
       }
+    },
+    "WSID": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS WSID"
+      }
+    },
+    "OMSKey": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS Key"
+      }
     }
   },
   "variables": {
@@ -210,6 +222,12 @@
           },
           "locationOverride": {
             "value": "[variables('resourceLocation')]"
+          },
+          "WSID": {
+            "value": "[parameters('WSID')]"
+          },
+          "OMSKey": {
+            "value": "[parameters('OMSKey')]"
           }
         }
       }

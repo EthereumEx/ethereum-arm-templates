@@ -301,7 +301,7 @@
           "OMSEnvironment": {
             "value": {
               "WSID": "[parameters('WSID')]",
-              "KEY": "[variables('OMSKey')]"
+              "KEY": "[parameters('OMSKey')]"
             }
           },
           "networkConfiguration": {
@@ -389,7 +389,7 @@
           "OMSEnvironment": {
             "value": {
               "WSID": "[parameters('WSID')]",
-              "KEY": "[variables('OMSKey')]"
+              "KEY": "[parameters('OMSKey')]"
           },
           "networkConfiguration": {
             "value": {
