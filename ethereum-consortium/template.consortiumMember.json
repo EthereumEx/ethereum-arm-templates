@@ -34,6 +34,18 @@
         "description": "A url used to download the JSON which describes the genesis block"
       }
     },
+    "WSID": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS WSID"
+      }
+    },
+    "OMSKey": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS Key"
+      }
+    },
     "gethNetworkId": {
       "type": "securestring",
       "metadata": {
@@ -168,16 +180,15 @@
       "[concat('savmss', variables('deploymentId'), '04')]",
       "[concat('savmss', variables('deploymentId'), '05')]"
     ],
-   
     "dNetworkName": "[concat('Consortium.', parameters('consortiumMemberName'), '.Network')]",
     "dVMSSTx": "[concat('Consortium.', parameters('consortiumMemberName'), '.Tx.Nodes')]",
     "dVMSSMiners": "[concat('Consortium.', parameters('consortiumMemberName'), '.Miners.Nodes')]",
     "dMinerProperties": "[concat('Consortium.', parameters('consortiumMemberName'), '.MinerProperties')]",
-    "txGenesis" : "[base64(string(parameters('txGenesisJson')))]",
-    "minerGenesis" : "[base64(string(parameters('minerGenesisJson')))]",
+    "txGenesis": "[base64(string(parameters('txGenesisJson')))]",
+    "minerGenesis": "[base64(string(parameters('minerGenesisJson')))]",
     "bootNodeUrl": "[concat('http://', parameters('registrarIp'), ':3001')]",
     "wsServer": "[concat('ws://', parameters('dashboardIp'), ':3000')]"
- },
+  },
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
@@ -243,8 +254,8 @@
           "location": {
             "value": "[variables('resourceLocation')]"
           },
-          "contentRoot" :{
-            "value" : "[variables('contentRoot')]"
+          "contentRoot": {
+            "value": "[variables('contentRoot')]"
           },
           "vmssName": {
             "value": "[concat(variables('namingInfix'), '-n-tx')]"
@@ -270,11 +281,11 @@
           "sshPublicKey": {
             "value": "[parameters('sshPublicKey')]"
           },
-          "genesisContent" : {
-            "value" : "[variables('txGenesis')]"
+          "genesisContent": {
+            "value": "[variables('txGenesis')]"
           },
-          "nodeImage" : {
-            "value" : "[parameters('txNodeDockerImage')]"
+          "nodeImage": {
+            "value": "[parameters('txNodeDockerImage')]"
           },
           "nodeEnvironment": {
             "value": {
@@ -287,6 +298,12 @@
               "BOOTNODE_URL": "[variables('bootNodeUrl')]",
               "BOOTNODE_NETWORK": "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
               "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.publicIp]"
+            }
+          },
+          "OMSEnvironment": {
+            "value": {
+              "WSID": "[parameters('WSID')]",
+              "KEY": "[parameters('OMSKey')]"
             }
           },
           "networkConfiguration": {
@@ -352,11 +369,11 @@
           "sshPublicKey": {
             "value": "[parameters('sshPublicKey')]"
           },
-          "genesisContent" : {
-            "value" : "[variables('minerGenesis')]"
+          "genesisContent": {
+            "value": "[variables('minerGenesis')]"
           },
-          "nodeImage" : {
-            "value" : "[parameters('minerNodeDockerImage')]"
+          "nodeImage": {
+            "value": "[parameters('minerNodeDockerImage')]"
           },
           "nodeEnvironment": {
             "value": {
@@ -369,26 +386,32 @@
               "BOOTNODE_URL": "[variables('bootNodeUrl')]",
               "BOOTNODE_NETWORK": "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
               "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.publicIp]",
-              "ENABLE_MINER" : "1",
-              "MINER_ADDRESS" : "[parameters('minerAddress')]",
-              "MINER_THREADS" : "[string(reference(variables('dMinerProperties')).outputs.result.value.cores)]"
+              "ENABLE_MINER": "1",
+              "MINER_ADDRESS": "[parameters('minerAddress')]",
+              "MINER_THREADS": "[string(reference(variables('dMinerProperties')).outputs.result.value.cores)]"
             }
           },
-          "networkConfiguration": {
+          "OMSEnvironment": {
             "value": {
-              "subnet": {
-                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets.miners]"
+              "WSID": "[parameters('WSID')]",
+              "KEY": "[parameters('OMSKey')]"
+            },
+            "networkConfiguration": {
+              "value": {
+                "subnet": {
+                  "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets.miners]"
+                }
               }
             }
           }
-        }
-      },
-      "dependsOn": [
-        "storageLoop",
-        "[variables('dNetworkName')]",
-        "[variables('dVMSSTx')]",
-        "[variables('dMinerProperties')]"
-      ]
+        },
+        "dependsOn": [
+          "storageLoop",
+          "[variables('dNetworkName')]",
+          "[variables('dVMSSTx')]",
+          "[variables('dMinerProperties')]"
+        ]
+      }
     }
   ],
   "outputs": {
