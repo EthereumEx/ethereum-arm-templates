@@ -1,0 +1,127 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "location of resources"
+      }
+    },
+    "vmSku": {
+      "defaultValue": "Standard_D1_v2",
+      "type": "string",
+      "metadata": {
+        "description": "Size of VMs in the VM Scale Set."
+      }
+    },
+    "image": {
+      "type": "string",
+      "metadata": {
+        "description": "The os disk image for the VMs in the scale set."
+      }
+    },
+    "vmssName": {
+      "maxLength": 61,
+      "type": "string",
+      "metadata": {
+        "description": "String used as a base for naming resources. Must be 3-61 characters in length and globally unique across Azure. A hash is prepended to this string for some resources, and resource-specific information is appended."
+      }
+    },
+    "instanceCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of VM instances (100 or less)."
+      }
+    },
+    "username": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin username on all VMs."
+      }
+    },
+    "sshPublicKey": {
+      "defaultValue": "",
+      "type": "string",
+      "metadata": {
+        "description": "ssh public key for connecting to VMs."
+      }
+    },
+    "storageAccounts": {
+      "type": "array"
+    },
+    "virtualNetworkName": {
+      "type": "string"
+    },
+    "networkConfiguration": {
+      "type": "object"
+    },
+    "commandsJson" : {
+      "type": "secureObject",
+      "defaultValue": {
+        "Commands" : []
+      }
+    },
+    "contentRoot": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "resourceLocation": "[parameters('location')]",
+    "scriptName" : "runScripts.sh",
+    "machineSetupScriptUri": "[concat(parameters('contentRoot'), '/', variables('scriptName'))]",
+    "scriptCommand": "[concat('sh ', variables('scriptName'), ' ', parameters('contentRoot'), ' ', base64(string(parameters('commandsJson').Commands)))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[concat('ConsoritumNode.', parameters('vmssName'), '.VMSS')]",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/template.vmss.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('resourceLocation')]"
+          },
+          "vmssName": {
+            "value": "[parameters('vmssName')]"
+          },
+          "vmSku": {
+            "value": "[parameters('vmSku')]"
+          },
+          "image": {
+            "value": "[parameters('image')]"
+          },
+          "instanceCount": {
+            "value": "[parameters('instanceCount')]"
+          },
+          "storageAccounts": {
+            "value": "[parameters('storageAccounts')]"
+          },
+          "virtualNetworkName": {
+            "value": "[parameters('virtualNetworkName')]"
+          },
+          "username": {
+            "value": "[parameters('username')]"
+          },
+          "sshPublicKey": {
+            "value": "[parameters('sshPublicKey')]"
+          },
+          "scriptUri": {
+            "value": "[variables('machineSetupScriptUri')]"
+          },
+          "scriptCommand": {
+            "value": "[variables('scriptCommand')]"
+          },
+          "networkConfiguration": {
+            "value": "[parameters('networkConfiguration')]"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -168,17 +168,16 @@
       "[concat('savmss', variables('deploymentId'), '04')]",
       "[concat('savmss', variables('deploymentId'), '05')]"
     ],
-    "scriptName": "runScripts.sh",
-    "machineSetupScriptUri": "[concat(variables('contentRoot'), '/', variables('scriptName'))]",
-    "scriptCommand": "[concat('sh ', variables('scriptName'), ' ', variables('contentRoot'))]",
+   
     "dNetworkName": "[concat('Consortium.', parameters('consortiumMemberName'), '.Network')]",
-    "dVMSSTx": "[concat('Consortium.', parameters('consortiumMemberName'), '.Tx')]",
-    "dVMSSMiners": "[concat('Consortium.', parameters('consortiumMemberName'), '.Miners')]",
+    "dVMSSTx": "[concat('Consortium.', parameters('consortiumMemberName'), '.Tx.Nodes')]",
+    "dVMSSMiners": "[concat('Consortium.', parameters('consortiumMemberName'), '.Miners.Nodes')]",
     "dMinerProperties": "[concat('Consortium.', parameters('consortiumMemberName'), '.MinerProperties')]",
-    "dScriptArguments": "[concat('Consortium.', parameters('consortiumMemberName'), '.Arguments')]",
-    "txSecureArguments": "[concat(base64(string(parameters('txGenesisJson'))),' ',parameters('gethNetworkId'),' ',parameters('dashboardSecret'))]",
-    "minerSecureArguments": "[concat(base64(string(parameters('minerGenesisJson'))),' ',parameters('gethNetworkId'),' ',parameters('dashboardSecret'))]"
-  },
+    "txGenesis" : "[base64(string(parameters('txGenesisJson')))]",
+    "minerGenesis" : "[base64(string(parameters('minerGenesisJson')))]",
+    "bootNodeUrl": "[concat('http://', parameters('registrarIp'), ':3001')]",
+    "wsServer": "[concat('ws://', parameters('dashboardIp'), ':3000')]"
+ },
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
@@ -232,53 +231,20 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "[variables('dScriptArguments')]",
-      "apiVersion": "2015-01-01",
-      "properties": {
-        "templateLink": {
-          "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.arrayToString.json')]"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "templateId": {
-            "value": "[concat(variables('dScriptArguments'), '-')]"
-          },
-          "args": {
-            "value": [
-              "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
-              "[reference(variables('dNetworkName')).outputs.network.value.ip.ipAddress]",
-              "[parameters('dashboardIp')]",
-              "[parameters('registrarIp')]",
-              "[string(reference(variables('dMinerProperties')).outputs.result.value.cores)]"
-            ]
-          },
-          "delimiter": {
-            "value": " "
-          },
-          "contentRoot": {
-            "value": "[variables('contentRoot')]"
-          }
-        }
-      },
-      "dependsOn": [
-        "[variables('dNetworkName')]",
-        "[variables('dMinerProperties')]"
-      ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
       "name": "[variables('dVMSSTx')]",
       "apiVersion": "2015-01-01",
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.vmss.json')]"
+          "uri": "[concat(variables('contentRoot'), '/template.memberNode.json')]"
         },
         "mode": "Incremental",
         "parameters": {
           "location": {
             "value": "[variables('resourceLocation')]"
+          },
+          "contentRoot" :{
+            "value" : "[variables('contentRoot')]"
           },
           "vmssName": {
             "value": "[concat(variables('namingInfix'), '-n-tx')]"
@@ -304,11 +270,21 @@
           "sshPublicKey": {
             "value": "[parameters('sshPublicKey')]"
           },
-          "scriptUri": {
-            "value": "[variables('machineSetupScriptUri')]"
+          "genesisContent" : {
+            "value" : "[variables('txGenesis')]"
           },
-          "scriptCommand": {
-            "value": "[concat(variables('scriptCommand'), ' ', parameters('txNodeDockerImage'), ' ', reference(variables('dScriptArguments')).outputs.result.value, ' ', variables('txSecureArguments'))]"
+          "nodeImage" : {
+            "value" : "[parameters('txNodeDockerImage')]"
+          },
+          "nodeEnvironment": {
+            "value": {
+              "NETWORKID": "[parameters('gethNetworkId')]",
+              "WS_SERVER": "[variables('wsServer')]",
+              "WS_SECRET": "[parameters('dashboardSecret')]",
+              "BOOTNODE_URL": "[variables('bootNodeUrl')]",
+              "BOOTNODE_NETWORK": "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
+              "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.publicIp]"
+            }
           },
           "networkConfiguration": {
             "value": {
@@ -316,6 +292,9 @@
                 "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets.tx]"
               },
               "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[reference(variables('dNetworkName')).outputs.network.value.public.poolId]"
+                },
                 {
                   "id": "[reference(variables('dNetworkName')).outputs.network.value.internal.poolId]"
                 }
@@ -326,8 +305,7 @@
       },
       "dependsOn": [
         "storageLoop",
-        "[variables('dNetworkName')]",
-        "[variables('dScriptArguments')]"
+        "[variables('dNetworkName')]"
       ]
     },
     {
@@ -337,12 +315,15 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.vmss.json')]"
+          "uri": "[concat(variables('contentRoot'), '/template.memberNode.json')]"
         },
         "mode": "Incremental",
         "parameters": {
           "location": {
             "value": "[variables('resourceLocation')]"
+          },
+          "contentRoot": {
+            "value": "[variables('contentRoot')]"
           },
           "vmssName": {
             "value": "[concat(variables('namingInfix'), '-n-miner')]"
@@ -368,11 +349,24 @@
           "sshPublicKey": {
             "value": "[parameters('sshPublicKey')]"
           },
-          "scriptUri": {
-            "value": "[variables('machineSetupScriptUri')]"
+          "genesisContent" : {
+            "value" : "[variables('minerGenesis')]"
           },
-          "scriptCommand": {
-            "value": "[concat(variables('scriptCommand'), ' ', parameters('minerNodeDockerImage'), ' ', reference(variables('dScriptArguments')).outputs.result.value, ' ', variables('minerSecureArguments'), ' ', parameters('minerAddress'))]"
+          "nodeImage" : {
+            "value" : "[parameters('minerNodeDockerImage')]"
+          },
+          "nodeEnvironment": {
+            "value": {
+              "NETWORKID": "[parameters('gethNetworkId')]",
+              "WS_SERVER": "[variables('wsServer')]",
+              "WS_SECRET": "[parameters('dashboardSecret')]",
+              "BOOTNODE_URL": "[variables('bootNodeUrl')]",
+              "BOOTNODE_NETWORK": "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
+              "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.publicIp]",
+              "ENABLE_MINER" : "1",
+              "MINER_ADDRESS" : "[parameters('minerAddress')]",
+              "MINER_THREADS" : "[string(reference(variables('dMinerProperties')).outputs.result.value.cores)]"
+            }
           },
           "networkConfiguration": {
             "value": {
@@ -387,7 +381,7 @@
         "storageLoop",
         "[variables('dNetworkName')]",
         "[variables('dVMSSTx')]",
-        "[variables('dScriptArguments')]"
+        "[variables('dMinerProperties')]"
       ]
     }
   ],
@@ -395,7 +389,8 @@
     "Member": {
       "type": "object",
       "value": {
-        "ip": "[reference(variables('dNetworkName')).outputs.network.value.ip.ipAddress]"
+        "ip": "[reference(variables('dNetworkName')).outputs.network.value.publicIp]",
+        "network": "[reference(variables('dNetworkName')).outputs.network.value]"
       }
     }
   }

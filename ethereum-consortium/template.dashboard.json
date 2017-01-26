@@ -84,11 +84,8 @@
       "[concat('savmss', variables('deploymentId'), '04')]",
       "[concat('savmss', variables('deploymentId'), '05')]"
     ],
-    "scriptName": "runScripts.sh",
-    "machineSetupScriptUri": "[concat(variables('contentRoot'), '/', variables('scriptName'))]",
-    "scriptCommand": "[concat('sh ', variables('scriptName'), ' ')]",
     "dNetworkName": "[concat('Consortium.', parameters('dashboardName'), '.Network')]",
-    "dVMSSDashboard": "[concat('Consortium.', parameters('dashboardName'), '.VMSS')]"
+    "dVMSSDashboard": "[concat('Consortium.', parameters('dashboardName'), '.VMSSCommands')]"
   },
   "resources": [
     {
@@ -131,12 +128,15 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.vmss.json')]"
+          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.vmss.commands.json')]"
         },
         "mode": "Incremental",
         "parameters": {
           "location": {
             "value": "[variables('resourceLocation')]"
+          },
+          "contentRoot" :{
+            "value" : "[variables('contentRoot')]"
           },
           "vmssName": {
             "value": "[concat(variables('namingInfix'), '-n')]"
@@ -162,11 +162,22 @@
           "sshPublicKey": {
             "value": "[parameters('sshPublicKey')]"
           },
-          "scriptUri": {
-            "value": "[variables('machineSetupScriptUri')]"
-          },
-          "scriptCommand": {
-            "value": "[concat(variables('scriptCommand'), '\"', variables('contentRoot'), '\" ', parameters('dockerImage'), ' ', parameters('dashboardSecret'))]"
+          "commandsJson" : {
+            "value" : {
+              "Commands" : [
+                {
+                    "name" : "dashboard",
+                    "image" : "[parameters('dockerImage')]",
+                    "ports" : [
+                        { "port" : 3000, "protocol" : "tcp" },
+                        { "port" : 3001, "protocol" : "tcp" }
+                    ],
+                    "environment" :{
+                        "WS_SECRET" : "[parameters('dashboardSecret')]"
+                    }
+                }
+              ]
+            }
           },
           "networkConfiguration": {
             "value": {

@@ -2,13 +2,15 @@
 
 LOG=/root/install.log
 SCRIPTS=/root/scripts
+ROOT_URL=$1
+JSON_PAYLOAD=$2
 CURLARGS="-S -s --connect-timeout 5 --retry 15"
 
 download() {
   echo >> $LOG 2>&1
   date >> $LOG 2>&1
   echo "Downloading from $1" >> $LOG 2>&1
-  curl $CURLARGS -o $2 $1/initNode.sh >> $LOG 2>&1
+  curl $CURLARGS -o $2 $1 >> $LOG 2>&1
 
   if [ ! -f $2 ]; then
     echo "Failed to download $2" >> $LOG 2>&1
@@ -30,8 +32,10 @@ if [ ! -f $SCRIPT_COMPLETE ]; then
   echo > $SCRIPT_COMPLETE
 fi
 
-SCRIPT=$SCRIPTS/setupMachine.sh
-download $1/initNode.sh $SCRIPT 
+apt-get install -y nodejs-legacy npm >> $LOG 2>&1
+echo $JSON_PAYLOAD | base64 -d > $SCRIPTS/data.json
+download $ROOT_URL/initScripts/initNode.js $SCRIPTS/initNode.js 
+download $ROOT_URL/initScripts/package.json $SCRIPTS/package.json 
 
 for ARG in "$@"
 do
@@ -42,5 +46,8 @@ do
   fi
 done
 
-echo $NEWARGS >> $LOG 2>&1
-sh $SCRIPT $NEWARGS >> $LOG 2>&1
+ACTIVE_DIR=$(pwd)
+cd $SCRIPTS
+npm install >> $LOG 2>&1
+node initNode.js >> $LOG 2>&1
+cd $ACTIVE_DIR
