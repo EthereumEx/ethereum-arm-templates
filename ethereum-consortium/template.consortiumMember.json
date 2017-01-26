@@ -34,6 +34,18 @@
         "description": "A url used to download the JSON which describes the genesis block"
       }
     },
+    "WSID": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS WSID"
+      }
+    },
+    "OMSKey": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS Key"
+      }
+    },
     "gethNetworkId": {
       "type": "securestring",
       "metadata": {
@@ -286,6 +298,12 @@
               "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.publicIp]"
             }
           },
+          "OMSEnvironment": {
+            "value": {
+              "WSID": "[parameters('WSID')]",
+              "KEY": "[variables('OMSKey')]"
+            }
+          },
           "networkConfiguration": {
             "value": {
               "subnet": {
@@ -367,6 +385,11 @@
               "MINER_ADDRESS" : "[parameters('minerAddress')]",
               "MINER_THREADS" : "[string(reference(variables('dMinerProperties')).outputs.result.value.cores)]"
             }
+          },
+          "OMSEnvironment": {
+            "value": {
+              "WSID": "[parameters('WSID')]",
+              "KEY": "[variables('OMSKey')]"
           },
           "networkConfiguration": {
             "value": {
