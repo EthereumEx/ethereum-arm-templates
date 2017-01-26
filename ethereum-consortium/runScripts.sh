@@ -2,7 +2,21 @@
 
 LOG=/root/install.log
 SCRIPTS=/root/scripts
+ROOT_URL=$1
+JSON_PAYLOAD=$2
 CURLARGS="-S -s --connect-timeout 5 --retry 15"
+
+download() {
+  echo >> $LOG 2>&1
+  date >> $LOG 2>&1
+  echo "Downloading from $1" >> $LOG 2>&1
+  curl $CURLARGS -o $2 $1 >> $LOG 2>&1
+
+  if [ ! -f $2 ]; then
+    echo "Failed to download $2" >> $LOG 2>&1
+    exit 2
+  fi
+}
 
 date > $LOG
 echo $0 $@ >> $LOG
@@ -13,25 +27,15 @@ if [ ! -f $SCRIPT_COMPLETE ]; then
   export DEBIAN_FRONTEND=noninteractive
   apt-mark hold walinuxagent >> $LOG 2>&1
   URL=https://gist.githubusercontent.com/ericmaino/32d7155dedcf3d020f3a35bcea494ff7/raw/6824ea7d00f4c939c0f0ecba3351060a2820d2ea/install-docker-ubuntu1604.sh
-  echo "Downloading from $URL" >> $LOG 2>&1
-  curl $CURLARGS -o $SCRIPTS/installDocker.sh $URL >> $LOG 2>&1
+  download $URL $SCRIPTS/installDocker.sh
   sh $SCRIPTS/installDocker.sh >> $LOG 2>&1
   echo > $SCRIPT_COMPLETE
 fi
 
-echo >> $LOG 2>&1
-date >> $LOG 2>&1
-echo "Downloading from $1" >> $LOG 2>&1
-SCRIPT=$SCRIPTS/setupMachine.sh
-curl $CURLARGS -o $SCRIPT $1/initNode.sh >> $LOG 2>&1
-
-if [ ! -f $SCRIPT ]; then
-  echo "Failed to download $SCRIPT" >> $LOG 2>&1
-  exit 2
-fi
-
-NEWARGS=
-SKIP=
+apt-get install -y nodejs-legacy npm >> $LOG 2>&1
+echo $JSON_PAYLOAD | base64 -d > $SCRIPTS/data.json
+download $ROOT_URL/initScripts/initNode.js $SCRIPTS/initNode.js 
+download $ROOT_URL/initScripts/package.json $SCRIPTS/package.json 
 
 for ARG in "$@"
 do
@@ -42,5 +46,8 @@ do
   fi
 done
 
-echo $NEWARGS >> $LOG 2>&1
-sh $SCRIPT $NEWARGS >> $LOG 2>&1
+ACTIVE_DIR=$(pwd)
+cd $SCRIPTS
+npm install >> $LOG 2>&1
+node initNode.js >> $LOG 2>&1
+cd $ACTIVE_DIR
