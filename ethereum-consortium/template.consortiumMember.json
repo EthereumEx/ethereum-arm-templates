@@ -407,7 +407,6 @@
         "[variables('dMinerProperties')]"
       ]
     }
-  }
 ],
 "outputs": {
   "Member": {
