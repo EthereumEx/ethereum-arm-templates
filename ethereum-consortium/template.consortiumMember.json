@@ -389,32 +389,33 @@
             "value": {
               "WSID": "[parameters('WSID')]",
               "KEY": "[parameters('OMSKey')]"
-            },
-            "networkConfiguration": {
-              "value": {
-                "subnet": {
-                  "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets.miners]"
-                }
+            }
+          },
+          "networkConfiguration": {
+            "value": {
+              "subnet": {
+                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets.miners]"
               }
             }
           }
-        },
-        "dependsOn": [
-          "storageLoop",
-          "[variables('dNetworkName')]",
-          "[variables('dVMSSTx')]",
-          "[variables('dMinerProperties')]"
-        ]
-      }
-    }
-  ],
-  "outputs": {
-    "Member": {
-      "type": "object",
-      "value": {
-        "ip": "[reference(variables('dNetworkName')).outputs.network.value.publicIp]",
-        "network": "[reference(variables('dNetworkName')).outputs.network.value]"
-      }
+        }
+      },
+      "dependsOn": [
+        "storageLoop",
+        "[variables('dNetworkName')]",
+        "[variables('dVMSSTx')]",
+        "[variables('dMinerProperties')]"
+      ]
     }
   }
+],
+"outputs": {
+  "Member": {
+    "type": "object",
+    "value": {
+      "ip": "[reference(variables('dNetworkName')).outputs.network.value.publicIp]",
+      "network": "[reference(variables('dNetworkName')).outputs.network.value]"
+    }
+  }
+}
 }
