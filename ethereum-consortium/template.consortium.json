@@ -224,7 +224,7 @@
             "value": "[variables('resourceLocation')]"
           },
           "WSID": {
-            "value": "[parameters('WSID')]"
+            "value":"[parameters('WSID')]"
           },
           "OMSKey": {
             "value": "[parameters('OMSKey')]"
