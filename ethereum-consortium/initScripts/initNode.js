@@ -15,25 +15,19 @@ function deployDocker(item) {
     console.log("Deploy Docker - " + item.name);
     exec("docker pull " + item.image);
 
-    var runCmd = "docker run -td --restart always";
+    var hostName = ("" + execSync('hostname')).trim();
+    var hostIp = ("" + execSync("ifconfig eth0 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://'")).trim();
+    
+    var env = {
+        "HOST_IP" : hostIp,
+        "HOST_NAME" : hostName
+    }
+
+    var runCmd = "docker run";
     runCmd += " --name " + item.name;
 
     for (var envName in item.environment) {
         runCmd += " -e " + envName + "=" + item.environment[envName];
-    }
-
-    var hostName = ("" + execSync('hostname')).trim();
-    var hostIp = ("" + execSync("ifconfig eth0 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://'")).trim();
-    runCmd += " -e HOST_IP=" + hostIp;
-    
-    if (!item.environment["NODE_NAME"])
-    {
-        runCmd += " -e NODE_NAME=" + hostName;
-    }
-
-    if (!item.environment["INSTANCE_NAME"])
-    {
-        runCmd += " -e INSTANCE_NAME=" + hostName;
     }
 
     for (var portIndex in item.ports) {
@@ -47,7 +41,7 @@ function deployDocker(item) {
     }
 
     runCmd += " " + item.image;
-    exec(runCmd);
+    exec(runCmd, env);
 }
 
 function executeCommand(item) {

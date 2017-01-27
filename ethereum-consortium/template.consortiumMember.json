@@ -278,6 +278,9 @@
           },
           "nodeEnvironment": {
             "value": {
+              "INSTANCE_NAME" : "$HOST_NAME",
+              "NODE_NAME" : "$HOST_NAME",
+              "HOST_IP" : "$HOST_IP",
               "NETWORKID": "[parameters('gethNetworkId')]",
               "WS_SERVER": "[variables('wsServer')]",
               "WS_SECRET": "[parameters('dashboardSecret')]",
@@ -357,6 +360,9 @@
           },
           "nodeEnvironment": {
             "value": {
+              "INSTANCE_NAME" : "$HOST_NAME",
+              "NODE_NAME" : "$HOST_NAME",
+              "HOST_IP" : "$HOST_IP",
               "NETWORKID": "[parameters('gethNetworkId')]",
               "WS_SERVER": "[variables('wsServer')]",
               "WS_SECRET": "[parameters('dashboardSecret')]",
