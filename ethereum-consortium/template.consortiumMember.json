@@ -124,7 +124,7 @@
       }
     },
     "contentVersion": {
-      "defaultValue": "Release-v0.9.5",
+      "defaultValue": "Release-v0.9.6",
       "type": "string",
       "metadata": {
         "description": "The version of the templates to use. This refers to a git branch. This parameter is ignored if contentRootOverride is provided"
@@ -289,6 +289,9 @@
           },
           "nodeEnvironment": {
             "value": {
+              "INSTANCE_NAME" : "$HOST_NAME",
+              "NODE_NAME" : "$HOST_NAME",
+              "HOST_IP" : "$HOST_IP",
               "NETWORKID": "[parameters('gethNetworkId')]",
               "WS_SERVER": "[variables('wsServer')]",
               "WS_SECRET": "[parameters('dashboardSecret')]",
@@ -374,6 +377,9 @@
           },
           "nodeEnvironment": {
             "value": {
+              "INSTANCE_NAME" : "$HOST_NAME",
+              "NODE_NAME" : "$HOST_NAME",
+              "HOST_IP" : "$HOST_IP",
               "NETWORKID": "[parameters('gethNetworkId')]",
               "WS_SERVER": "[variables('wsServer')]",
               "WS_SECRET": "[parameters('dashboardSecret')]",

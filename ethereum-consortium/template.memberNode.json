@@ -108,7 +108,9 @@
         ],
         "environment": "[parameters('nodeEnvironment')]",
         "arguments" : [
-          "[concat('-v /home/', parameters('username'), '/eth-node/genesis.json:/home/eth-node/genesis.json')]"
+          "[concat('-v /home/', parameters('username'), '/eth-node/genesis.json:/home/eth-node/genesis.json')]",
+          "-td --restart always",
+          "--hostname ${HOST_NAME}-c"
         ]
       },
      {
