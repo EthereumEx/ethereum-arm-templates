@@ -32,7 +32,11 @@
       "defaultValue": "Standard_DS1_v2",
       "type": "string"
     },
-    "dockerImage" :{
+    "additionalCommands": {
+      "defaultValue": {},
+      "type": "secureObject"
+    },
+    "dockerImage": {
       "defaultValue": "ethereumex/eth-stats-dashboard:latest",
       "type": "string",
       "metadata": {
@@ -62,8 +66,8 @@
     }
   },
   "variables": {
-    "contentRootUrl" : "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium')]",
-    "contentRoots" : [
+    "contentRootUrl": "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium')]",
+    "contentRoots": [
       "[variables('contentRootUrl')]",
       "[parameters('contentRootOverride')]"
     ],
@@ -85,7 +89,37 @@
       "[concat('savmss', variables('deploymentId'), '05')]"
     ],
     "dNetworkName": "[concat('Consortium.', parameters('dashboardName'), '.Network')]",
-    "dVMSSDashboard": "[concat('Consortium.', parameters('dashboardName'), '.VMSSCommands')]"
+    "dVMSSDashboard": "[concat('Consortium.', parameters('dashboardName'), '.VMSSCommands')]",
+    "defaultCommands": [
+      {
+        "name": "dashboard",
+        "image": "[parameters('dockerImage')]",
+        "ports": [
+          {
+            "port": 3000,
+            "protocol": "tcp"
+          },
+          {
+            "port": 3001,
+            "protocol": "tcp"
+          }
+        ],
+        "environment": {
+          "WS_SECRET": "[parameters('dashboardSecret')]"
+        },
+        "arguments": [
+          "-td --restart always",
+          "--hostname ${HOST_NAME}-d"
+        ]
+      }
+    ],
+    "additionalCommandOptions": [
+      [],
+      "[parameters('additionalCommands').Commands]"
+    ],
+    "dashboardCommands": {
+      "Commands": "[concat(variables('defaultCommands'), variables('additionalCommandOptions')[length(take(skip(string(parameters('additionalCommands')),3),1))])]"
+    }
   },
   "resources": [
     {
@@ -135,8 +169,8 @@
           "location": {
             "value": "[variables('resourceLocation')]"
           },
-          "contentRoot" :{
-            "value" : "[variables('contentRoot')]"
+          "contentRoot": {
+            "value": "[variables('contentRoot')]"
           },
           "vmssName": {
             "value": "[concat(variables('namingInfix'), '-n')]"
@@ -162,26 +196,8 @@
           "sshPublicKey": {
             "value": "[parameters('sshPublicKey')]"
           },
-          "commandsJson" : {
-            "value" : {
-              "Commands" : [
-                {
-                    "name" : "dashboard",
-                    "image" : "[parameters('dockerImage')]",
-                    "ports" : [
-                        { "port" : 3000, "protocol" : "tcp" },
-                        { "port" : 3001, "protocol" : "tcp" }
-                    ],
-                    "environment" :{
-                        "WS_SECRET" : "[parameters('dashboardSecret')]"
-                    },
-                    "arguments" : [
-                      "-td --restart always",
-                      "--hostname ${HOST_NAME}-d"
-                    ]
-                }
-              ]
-            }
+          "commandsJson": {
+            "value": "[variables('dashboardCommands')]"
           },
           "networkConfiguration": {
             "value": {
