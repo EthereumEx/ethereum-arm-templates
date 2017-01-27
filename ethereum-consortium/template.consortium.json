@@ -95,6 +95,13 @@
         "Standard_GS5"
       ]
     },
+    "configOms" :{
+      "type" : "secureObject",
+      "defaultValue": {},
+      "metadata" : {
+        "description" : "If this value is defined then an OMS agent will be deployed to the machine. { KEY : \"\", WSID :\"\" }"
+      }
+    },
     "contentVersion": {
       "defaultValue": "Release-v0.9.6",
       "type": "string",
@@ -134,18 +141,6 @@
       "defaultValue": "",
       "metadata": {
         "description": "Location to deploy resources. By default the template will use the Resource Group location"
-      }
-    },
-    "WSID": {
-      "type": "string",
-      "metadata": {
-        "description": "OMS WSID"
-      }
-    },
-    "OMSKey": {
-      "type": "string",
-      "metadata": {
-        "description": "OMS Key"
       }
     }
   },
@@ -223,11 +218,8 @@
           "locationOverride": {
             "value": "[variables('resourceLocation')]"
           },
-          "WSID": {
-            "value":"[parameters('WSID')]"
-          },
-          "OMSKey": {
-            "value": "[parameters('OMSKey')]"
+          "configOms": {
+            "value":"[parameters('configOms')]"
           }
         }
       }

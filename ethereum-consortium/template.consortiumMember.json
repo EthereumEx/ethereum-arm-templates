@@ -59,6 +59,13 @@
         "description": "If miners is more than 0, then an address must be specified"
       }
     },
+    "configOms" :{
+      "type" : "secureObject",
+      "defaultValue": {},
+      "metadata" : {
+        "description" : "If this value is defined then an OMS agent will be deployed to the machine. { KEY : \"\", WSID :\"\" }"
+      }
+    },
     "minerVMSku": {
       "defaultValue": "Standard_DS2_v2",
       "type": "string",
@@ -143,18 +150,6 @@
       "metadata": {
         "description": "Location to deploy resources. By default the template will use the Resource Group location"
       }
-    },
-    "WSID": {
-      "type": "string",
-      "metadata": {
-        "description": "OMS WSID"
-      }
-    },
-    "OMSKey": {
-      "type": "string",
-      "metadata": {
-        "description": "OMS Key"
-      }
     }
   },
   "variables": {
@@ -187,7 +182,26 @@
     "txGenesis": "[base64(string(parameters('txGenesisJson')))]",
     "minerGenesis": "[base64(string(parameters('minerGenesisJson')))]",
     "bootNodeUrl": "[concat('http://', parameters('registrarIp'), ':3001')]",
-    "wsServer": "[concat('ws://', parameters('dashboardIp'), ':3000')]"
+    "wsServer": "[concat('ws://', parameters('dashboardIp'), ':3000')]",
+    "omsCommands": [
+      [],
+      [
+         {
+            "name": "oms-agent",
+            "image": "microsoft/oms",
+            "ports": [
+              { "port": 25225, "protocol": "tcp" }
+            ],
+            "environment": "[parameters('configOms')]",
+            "arguments" : [
+              "--privileged -v /var/run/docker.sock:/var/run/docker.sock -d --restart=always"
+            ]
+          }
+      ]
+    ],
+    "omsCommand": {
+      "Commands" : "[variables('omsCommands')[length(take(skip(string(parameters('configOms')),3),1))]]"
+    }
   },
   "resources": [
     {
@@ -300,11 +314,8 @@
               "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.publicIp]"
             }
           },
-          "OMSEnvironment": {
-            "value": {
-              "WSID": "[parameters('WSID')]",
-              "KEY": "[parameters('OMSKey')]"
-            }
+          "additionalCommands" : {
+            "value" : "[variables('omsCommand')]"
           },
           "networkConfiguration": {
             "value": {
@@ -391,11 +402,8 @@
               "MINER_THREADS": "[string(reference(variables('dMinerProperties')).outputs.result.value.cores)]"
             }
           },
-          "OMSEnvironment": {
-            "value": {
-              "WSID": "[parameters('WSID')]",
-              "KEY": "[parameters('OMSKey')]"
-            }
+          "additionalCommands" : {
+            "value" : "[variables('omsCommand')]"
           },
           "networkConfiguration": {
             "value": {

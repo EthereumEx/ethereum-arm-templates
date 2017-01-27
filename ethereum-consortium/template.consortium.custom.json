@@ -53,6 +53,13 @@
         "description": "A unique string to used to ensure only machines with the secret can post to the dashboard"
       }
     },
+    "configOms" :{
+      "type" : "secureObject",
+      "defaultValue": {},
+      "metadata" : {
+        "description" : "If this value is defined then an OMS agent will be deployed to the machine. { KEY : \"\", WSID :\"\" }"
+      }
+    },
     "minerVMSku": {
       "defaultValue": "Standard_DS2_v2",
       "type": "string",
@@ -123,18 +130,6 @@
       "defaultValue": "",
       "metadata": {
         "description": "Location to deploy resources. By default the template will use the Resource Group location"
-      }
-    },
-    "WSID": {
-      "type": "string",
-      "metadata": {
-        "description": "OMS WSID"
-      }
-    },
-    "OMSKey": {
-      "type": "string",
-      "metadata": {
-        "description": "OMS Key"
       }
     }
   },
@@ -271,11 +266,8 @@
           "contentRootOverride": {
             "value": "[variables('contentRoot')]"
           },
-          "WSID": {
-            "value":"[parameters('WSID')]"
-          },
-          "OMSKey": {
-            "value": "[parameters('OMSKey')]"
+          "configOms" : { 
+            "value":"[parameters('configOms')]"
           }
         }
       },
