@@ -65,6 +65,9 @@
     "nodeEnvironment" : {
       "type": "secureObject"
     },
+    "OMSEnvironment": {
+      "type": "secureObject"
+    },
     "genesisContent" : {
       "type": "securestring"
     },
@@ -108,6 +111,17 @@
           "[concat('-v /home/', parameters('username'), '/eth-node/genesis.json:/home/eth-node/genesis.json')]",
           "-td --restart always",
           "--hostname ${HOST_NAME}-c"
+        ]
+      },
+     {
+        "name": "oms-agent",
+        "image": "microsoft/oms",
+        "ports": [
+          { "port": 25225, "protocol": "tcp" }
+        ],
+        "environment": "[parameters('OMSEnvironment')]",
+        "arguments" : [
+          "--privileged -v /var/run/docker.sock:/var/run/docker.sock -d --restart=always"
         ]
       }
     ],
