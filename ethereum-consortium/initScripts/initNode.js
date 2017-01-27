@@ -23,12 +23,12 @@ function deployDocker(item) {
         "HOST_NAME" : hostName
     }
 
+    for (var envName in item.environment) {
+        env[envName] = item.environment[envName];
+    }
+
     var runCmd = "docker run";
     runCmd += " --name " + item.name;
-
-    for (var envName in item.environment) {
-        runCmd += " -e " + envName + "=" + item.environment[envName];
-    }
 
     for (var portIndex in item.ports) {
         var x = item.ports[portIndex];

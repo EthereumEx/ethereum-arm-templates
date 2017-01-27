@@ -56,20 +56,20 @@
     "networkConfiguration": {
       "type": "object"
     },
-    "additionalCommands" : {
+    "additionalCommands": {
       "type": "secureObject",
       "defaultValue": {
-        "Commands" : []
+        "Commands": []
       }
     },
-    "nodeEnvironment" : {
+    "nodeArguments": {
       "type": "secureObject"
     },
-    "genesisContent" : {
+    "genesisContent": {
       "type": "securestring"
     },
-    "nodeImage" : {
-      "type" : "string"
+    "nodeImage": {
+      "type": "string"
     },
     "contentRoot": {
       "type": "string"
@@ -78,40 +78,52 @@
   "variables": {
     "deploymentId": "[toLower(substring(uniqueString(resourceGroup().Id), 0, 10))]",
     "resourceLocation": "[parameters('location')]",
-    "commandsJson" : [
+    "defaultArguments": [
+      "[concat('-v /home/', parameters('username'), '/eth-node/genesis.json:/home/eth-node/genesis.json')]",
+      "-td --restart always",
+      "--hostname ${HOST_NAME}-c"
+    ],
+    "commandsJson": [
       {
-        "name" : "WriteGeth",
-        "command" : "mkdir -p /home/$USER/eth-node && echo $GENESIS_CONTENT | base64 -d > /home/$USER/eth-node/genesis.json",
-        "environment" : {
-          "USER" : "[parameters('username')]",
-          "GENESIS_CONTENT" : "[parameters('genesisContent')]"
+        "name": "WriteGeth",
+        "command": "mkdir -p /home/$USER/eth-node && echo $GENESIS_CONTENT | base64 -d > /home/$USER/eth-node/genesis.json",
+        "environment": {
+          "USER": "[parameters('username')]",
+          "GENESIS_CONTENT": "[parameters('genesisContent')]"
         }
       },
       {
-        "name" : "ChownDirectory",
-        "command" : "chown -R $USER /home/$USER/eth-node",
-         "environment" : {
-          "USER" : "[parameters('username')]"
+        "name": "ChownDirectory",
+        "command": "chown -R $USER /home/$USER/eth-node",
+        "environment": {
+          "USER": "[parameters('username')]"
         }
       },
       {
         "name": "eth-node",
         "image": "[parameters('nodeImage')]",
         "ports": [
-          { "port": 8545, "protocol": "tcp" },
-          { "port": 8546, "protocol": "tcp" },
-          { "port": 30303, "protocol": "tcp" },
-          { "port": 30303, "protocol": "udp" }
+          {
+            "port": 8545,
+            "protocol": "tcp"
+          },
+          {
+            "port": 8546,
+            "protocol": "tcp"
+          },
+          {
+            "port": 30303,
+            "protocol": "tcp"
+          },
+          {
+            "port": 30303,
+            "protocol": "udp"
+          }
         ],
-        "environment": "[parameters('nodeEnvironment')]",
-        "arguments" : [
-          "[concat('-v /home/', parameters('username'), '/eth-node/genesis.json:/home/eth-node/genesis.json')]",
-          "-td --restart always",
-          "--hostname ${HOST_NAME}-c"
-        ]
+        "arguments": "[concat(variables('defaultArguments'), parameters('nodeArguments').arguments)]"
       }
     ],
-    "combinedCommands" : "[concat(variables('commandsJson'), parameters('additionalCommands').Commands)]"
+    "combinedCommands": "[concat(variables('commandsJson'), parameters('additionalCommands').Commands)]"
   },
   "resources": [
     {
@@ -128,8 +140,8 @@
           "location": {
             "value": "[variables('resourceLocation')]"
           },
-          "contentRoot" : {
-            "value" : "[parameters('contentRoot')]"
+          "contentRoot": {
+            "value": "[parameters('contentRoot')]"
           },
           "vmssName": {
             "value": "[parameters('vmssName')]"
@@ -155,9 +167,9 @@
           "sshPublicKey": {
             "value": "[parameters('sshPublicKey')]"
           },
-          "commandsJson" : {
-            "value" : {
-              "Commands" : "[variables('combinedCommands')]"
+          "commandsJson": {
+            "value": {
+              "Commands": "[variables('combinedCommands')]"
             }
           },
           "networkConfiguration": {

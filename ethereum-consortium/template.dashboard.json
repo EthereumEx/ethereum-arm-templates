@@ -104,12 +104,10 @@
             "protocol": "tcp"
           }
         ],
-        "environment": {
-          "WS_SECRET": "[parameters('dashboardSecret')]"
-        },
         "arguments": [
           "-td --restart always",
-          "--hostname ${HOST_NAME}-d"
+          "--hostname ${HOST_NAME}-d",
+          "[concat('-e WS_SECRET=', parameters('dashboardSecret'))]"
         ]
       }
     ],
