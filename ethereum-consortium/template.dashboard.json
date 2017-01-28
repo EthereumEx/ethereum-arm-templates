@@ -33,7 +33,9 @@
       "type": "string"
     },
     "additionalCommands": {
-      "defaultValue": {},
+      "defaultValue": {
+        "Commands" : []
+      },
       "type": "secureObject"
     },
     "dockerImage": {
