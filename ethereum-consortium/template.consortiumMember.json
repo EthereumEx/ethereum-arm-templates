@@ -403,9 +403,9 @@
                 "[concat('-e BOOTNODE_URL=', variables('bootNodeUrl'))]",
                 "[concat('-e BOOTNODE_NETWORK=', substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10))]",
                 "[concat('-e BOOTNODE_PUBLIC_IP=', reference(variables('dNetworkName')).outputs.network.value.publicIp)]",
-                "ENABLE_MINER=1",
-                "[concat('MINER_ADDRESS=', parameters('minerAddress'))]",
-                "[concat('MINER_THREADS=', string(reference(variables('dMinerProperties')).outputs.result.value.cores))]"
+                "-e ENABLE_MINER=1",
+                "[concat('-e MINER_ADDRESS=', parameters('minerAddress'))]",
+                "[concat('-e MINER_THREADS=', string(reference(variables('dMinerProperties')).outputs.result.value.cores))]"
               ]
             }
           },
