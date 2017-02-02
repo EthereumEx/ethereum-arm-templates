@@ -17,10 +17,10 @@
 3. **Deploy the template**  
     [Ethereum Consortium Template](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FEthereumEx%2Fethereum-arm-templates%2Fmaster%2Fethereum-consortium%2Ftemplate.consortiumMember.json)
     
-    **tx Genesis Url**  
+    **tx Genesis JSON**  
     The path to the URL to access the genesis file from the consortium.
 
-    **miner Genesis Url**  
+    **miner Genesis JSON**  
     The path to the URL to access the genesis file from the consortium.
 
     **Geth Network Id**  
@@ -34,31 +34,9 @@
 
     **Registrar Ip**  
     This is the same value as the Dashboard Ip.
-
-    **Members**  
-    This value is expected to be an array of members that will be deployed the Network.
-    *txNodeCount* - the number of transaction nodes to create for this members  
-    *minerCount* - the number of miners to create for this members. This number can be 0.  
-    *minerAddress* - the address that will recieve rewards for successful mining. Use the address saved from Step 1.  
-    *location* - this the Azure data center location this member will be deployed to.  
-
-
-        [
-            {
-                "name":"M1",
-                "minerCount" : 2,
-                "txNodeCount" : 3,
-                "minerAddress" : "0x0000000000000000000000000000000000000000",
-                "location" : "westus"
-            },
-            {
-                "name":"M2",
-                "minerCount" : 2,
-                "txNodeCount" : 3,
-                "minerAddress" : "0x0000000000000000000000000000000000000000",
-                "location" : "eastus"
-            }
-        ]
+    
+    **Miner Address**
+    This is the account address you generated above at Step 2.
 
 5. **Completed Deployment**
     * Once the deployment completes you will find a Dashboard IP address in the output of
