@@ -14,7 +14,7 @@
                 "coinbase": "0x0",
                 "difficulty": "0x20000",
                 "extraData": "0x0",
-                "gasLimit": "0x2625A0",
+                "gasLimit": "0x5F5E100",
                 "mixhash": "0x0",
                 "nonce": "0x0000",
                 "parentHash": "0x0",
