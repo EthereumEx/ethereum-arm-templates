@@ -19,6 +19,12 @@
             "defaultValue": {
                 "dockerImage": "ethereumex/eth-stats-dashboard:latest"
             }
+        },
+        "parentName": {
+            "type": "string"
+        },
+        "contentRoot": {
+            "type": "string"
         }
     },
     "variables": {

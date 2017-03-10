@@ -57,6 +57,12 @@
           },
           "data": {
             "value": "[parameters('extensions')[copyIndex()].data]"
+          },
+          "parentName": {
+            "value": "[concat(variables('rootName'), add(copyIndex(),1))]"
+          },
+          "contentRoot": {
+            "value": "[parameters('contentRoot')]"
           }
         }
       },

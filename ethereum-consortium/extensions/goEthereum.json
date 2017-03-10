@@ -1,0 +1,114 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "commands": {
+      "type": "array",
+      "defaultValue": []
+    },
+    "nsgRules": {
+      "type": "array",
+      "defaultValue": []
+    },
+    "ruleSeed": {
+      "type": "int",
+      "defaultValue": 100
+    },
+    "data": {
+      "type": "object",
+      "defaultValue": {
+        "dockerImage": "ethereumex/geth-node:latest",
+        "arguments": []
+      }
+    }
+  },
+  "variables": {
+    "defaultNsgRules": [
+      {
+        "name": "allow-dashboard",
+        "properties": {
+          "protocol": "Tcp",
+          "sourcePortRange": "*",
+          "destinationPortRange": "3000",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "Internet",
+          "access": "Allow",
+          "priority": "[add(parameters('ruleSeed'), 1)]",
+          "direction": "Outbound"
+        }
+      },
+      {
+        "name": "allow-registrar",
+        "properties": {
+          "protocol": "Tcp",
+          "sourcePortRange": "*",
+          "destinationPortRange": "3001",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "Internet",
+          "access": "Allow",
+          "priority": "[add(parameters('ruleSeed'), 2)]",
+          "direction": "Outbound"
+        }
+      }
+    ],
+    "nsgRules" : "[concat(parameters('nsgRules'), variables('defaultNsgRules'))]",
+    "defaultArguments": [
+      "[concat('-v /home/${USERNAME}/eth-node/genesis.json:/home/eth-node/genesis.json')]",
+      "-td --restart always",
+      "--hostname ${HOST_NAME}-c",
+      "-e INSTANCE_NAME=${HOST_NAME}",
+      "-e NODE_NAME=${HOST_NAME}",
+      "-e HOST_IP=${HOST_IP}",
+      "-e NETWORKID=${NETWORK_ID}",
+      "-e WS_SERVER=${WS_SERVER}",
+      "-e WS_SECRET=${WS_SECRET}",
+      "-e BOOTNODE_URL=${BOOTNODE_URL}",
+      "-e BOOTNODE_NETWORK=${BOOTNODE_NETWORK}",
+      "-e BOOTNODE_PUBLIC_IP=${BOOTNODE_PUBLICIP}"
+    ],
+    "commands": [
+      {
+        "name": "WriteGeth",
+        "command": "mkdir -p /home/${USERNAME}/eth-node && echo ${GENESIS_CONTENT} | base64 -d > /home/${USERNAME}/eth-node/genesis.json"
+      },
+      {
+        "name": "ChownDirectory",
+        "command": "chown -R ${USERNAME} /home/${USERNAME}/eth-node"
+      },
+      {
+        "name": "eth-node",
+        "image": "[parameters('data').dockerImage]",
+        "ports": [
+          {
+            "port": 8545,
+            "protocol": "tcp"
+          },
+          {
+            "port": 8546,
+            "protocol": "tcp"
+          },
+          {
+            "port": 30303,
+            "protocol": "tcp"
+          },
+          {
+            "port": 30303,
+            "protocol": "udp"
+          }
+        ],
+        "arguments": "[concat(variables('defaultArguments'), parameters('data').arguments)]"
+      }
+    ]
+  },
+  "resources": [],
+  "outputs": {
+    "Result": {
+      "type": "object",
+      "value": {
+        "Commands": "[concat(parameters('commands'), variables('commands'))]",
+        "NsgRules": "[variables('nsgRules')]",
+        "RuleSeed": "[add(parameters('ruleSeed'), length(variables('defaultNsgRules')))]"
+      }
+    }
+  }
+}

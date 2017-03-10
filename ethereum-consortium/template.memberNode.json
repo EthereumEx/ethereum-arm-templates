@@ -53,74 +53,26 @@
     "networkConfiguration": {
       "type": "object"
     },
-    "additionalCommands": {
+    "configuration": {
       "type": "secureObject",
       "defaultValue": {
-        "Commands": []
+        "globalEnvironment" : {},
+        "commands": []
       }
-    },
-    "nodeArguments": {
-      "type": "secureObject"
-    },
-    "genesisContent": {
-      "type": "securestring"
-    },
-    "nodeImage": {
-      "type": "string"
     },
     "contentRoot": {
       "type": "string"
     }
   },
   "variables": {
-    "deploymentId": "[toLower(substring(uniqueString(resourceGroup().Id), 0, 10))]",
     "resourceLocation": "[parameters('location')]",
-    "defaultArguments": [
-      "[concat('-v /home/', parameters('username'), '/eth-node/genesis.json:/home/eth-node/genesis.json')]",
-      "-td --restart always",
-      "--hostname ${HOST_NAME}-c"
-    ],
-    "commandsJson": [
+    "initCommands": [
       {
-        "name": "WriteGeth",
-        "command": "mkdir -p /home/$USER/eth-node && echo $GENESIS_CONTENT | base64 -d > /home/$USER/eth-node/genesis.json",
-        "environment": {
-          "USER": "[parameters('username')]",
-          "GENESIS_CONTENT": "[parameters('genesisContent')]"
-        }
-      },
-      {
-        "name": "ChownDirectory",
-        "command": "chown -R $USER /home/$USER/eth-node",
-        "environment": {
-          "USER": "[parameters('username')]"
-        }
-      },
-      {
-        "name": "eth-node",
-        "image": "[parameters('nodeImage')]",
-        "ports": [
-          {
-            "port": 8545,
-            "protocol": "tcp"
-          },
-          {
-            "port": 8546,
-            "protocol": "tcp"
-          },
-          {
-            "port": 30303,
-            "protocol": "tcp"
-          },
-          {
-            "port": 30303,
-            "protocol": "udp"
-          }
-        ],
-        "arguments": "[concat(variables('defaultArguments'), parameters('nodeArguments').arguments)]"
+        "name": "secrets",
+        "globalEnvironment":  "[parameters('configuration').globalEnvironment]"
       }
     ],
-    "combinedCommands": "[concat(variables('commandsJson'), parameters('additionalCommands').Commands)]"
+    "commands" : "[concat(variables('initCommands'), parameters('configuration').commands)]"
   },
   "resources": [
     {
@@ -163,7 +115,7 @@
           },
           "commandsJson": {
             "value": {
-              "Commands": "[variables('combinedCommands')]"
+              "Commands": "[variables('commands')]"
             }
           },
           "networkConfiguration": {

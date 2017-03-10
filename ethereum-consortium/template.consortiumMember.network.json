@@ -10,6 +10,12 @@
     },
     "namingInfix": {
       "type": "string"
+    },
+    "txNsgRules": {
+      "type": "array"
+    },
+    "minerNsgRules": {
+      "type": "array"
     }
   },
   "variables": {
@@ -55,7 +61,39 @@
       "natPoolId": "[concat(variables('internalLoadBalancerId'), '/inboundNatPools/', variables('natPoolName'))]"
     },
     "subnetTxNodeId": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')), '/subnets/', variables('subnetTxNode').name)]",
-    "subnetMinerNodeId": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')), '/subnets/', variables('subnetMiner').name)]"
+    "subnetMinerNodeId": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')), '/subnets/', variables('subnetMiner').name)]",
+    "defaultxNsgRules": [
+      {
+        "name": "allow-ssh",
+        "properties": {
+          "protocol": "Tcp",
+          "sourcePortRange": "*",
+          "destinationPortRange": "22",
+          "sourceAddressPrefix": "Internet",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": 100,
+          "direction": "Inbound"
+        }
+      }
+    ],
+     "defaultMinerNsgRules": [
+      {
+        "name": "allow-ssh",
+        "properties": {
+          "protocol": "Tcp",
+          "sourcePortRange": "*",
+          "destinationPortRange": "22",
+          "sourceAddressPrefix": "VirtualNetwork",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": 100,
+          "direction": "Inbound"
+        }
+      }
+    ],
+    "txNsgRules": "[concat(variables('defaultxNsgRules'), parameters('txNsgRules'))]",
+    "minerNsgRules": "[concat(variables('defaultMinerNsgRules'), parameters('minerNsgRules'))]"
   },
   "resources": [
     {
@@ -64,73 +102,7 @@
       "apiVersion": "2016-03-30",
       "location": "[variables('resourceLocation')]",
       "properties": {
-        "securityRules": [
-          {
-            "name": "allow-ssh",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "22",
-              "sourceAddressPrefix": "VirtualNetwork",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 100,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "block-bootnodes",
-            "properties": {
-              "protocol": "*",
-              "sourcePortRange": "*",
-              "destinationPortRange": "30303",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "Internet",
-              "access": "Deny",
-              "priority": 101,
-              "direction": "Outbound"
-            }
-          },
-          {
-            "name": "allow-bootnodes",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "30303",
-              "sourceAddressPrefix": "VirtualNetwork",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 102,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "allow-dashboard",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "3000",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "Internet",
-              "access": "Allow",
-              "priority": 102,
-              "direction": "Outbound"
-            }
-          },
-          {
-            "name": "allow-registrar",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "3001",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "Internet",
-              "access": "Allow",
-              "priority": 103,
-              "direction": "Outbound"
-            }
-          }
-        ]
+        "securityRules": "[variables('minerNsgRules')]"
       }
     },
     {
@@ -139,73 +111,7 @@
       "apiVersion": "2016-03-30",
       "location": "[variables('resourceLocation')]",
       "properties": {
-        "securityRules": [
-          {
-            "name": "allow-ssh",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "22",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 100,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "allow-geth-rpc",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "8545",
-              "sourceAddressPrefix": "VirtualNetwork",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 102,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "allow-bootnodes",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "30303",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 103,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "allow-dashboard",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "3000",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "Internet",
-              "access": "Allow",
-              "priority": 100,
-              "direction": "Outbound"
-            }
-          },
-          {
-            "name": "allow-registrar",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "3001",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "Internet",
-              "access": "Allow",
-              "priority": 102,
-              "direction": "Outbound"
-            }
-          }
-        ]
+        "securityRules": "[variables('txNsgRules')]"
       }
     },
     {

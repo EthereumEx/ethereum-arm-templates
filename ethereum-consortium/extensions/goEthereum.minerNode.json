@@ -1,0 +1,100 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "commands": {
+      "type": "array",
+      "defaultValue": []
+    },
+    "nsgRules": {
+      "type": "array",
+      "defaultValue": []
+    },
+    "ruleSeed": {
+      "type": "int",
+      "defaultValue": 100
+    },
+    "data": {
+      "type": "object",
+      "defaultValue": {
+        "dockerImage": "ethereumex/geth-node:latest",
+        "arguments": []
+      }
+    },
+    "parentName": {
+      "type": "string"
+    },
+    "contentRoot": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "nsgRules": [
+      {
+        "name": "block-bootnodes",
+        "properties": {
+          "protocol": "*",
+          "sourcePortRange": "*",
+          "destinationPortRange": "30303",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "Internet",
+          "access": "Deny",
+          "priority": "[add(parameters('ruleSeed'), 1)]",
+          "direction": "Outbound"
+        }
+      },
+      {
+        "name": "allow-bootnodes",
+        "properties": {
+          "protocol": "Tcp",
+          "sourcePortRange": "*",
+          "destinationPortRange": "30303",
+          "sourceAddressPrefix": "VirtualNetwork",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": "[add(parameters('ruleSeed'), 2)]",
+          "direction": "Inbound"
+        }
+      }
+    ],
+    "templateName": "[concat(parameters('parentName'), '.Miner')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[variables('templateName')]",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(parameters('contentRoot'), '/extensions/goEthereum.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "commands": {
+            "value": "[parameters('commands')]"
+          },
+          "nsgRules": {
+            "value": "[variables('nsgRules')]"
+          },
+          "ruleSeed": {
+            "value": "[add(parameters('ruleSeed'), length(variables('nsgRules')))]"
+          },
+          "data": {
+            "value": "[parameters('data')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "Result": {
+      "type": "object",
+      "value": {
+        "Commands": "[reference(variables('templateName')).outputs.result.value.commands]",
+        "NsgRules": "[concat(parameters('nsgRules'), reference(variables('templateName')).outputs.result.value.nsgRules)]",
+        "RuleSeed": "[reference(variables('templateName')).outputs.result.value.ruleSeed]"
+      }
+    }
+  }
+}
