@@ -6,39 +6,59 @@
             "type": "array",
             "defaultValue": []
         },
-        "exports": {
+        "nsgRules": {
             "type": "array",
             "defaultValue": []
         },
-        "ports": {
-            "type": "array",
-            "defaultValue": []
+        "ruleSeed": {
+            "type": "int",
+            "defaultValue": 100
         },
         "data": {
             "type": "object",
             "defaultValue": {
-                "dockerImage" : "ethereumex/eth-stats-dashboard:latest"
+                "dockerImage": "ethereumex/eth-stats-dashboard:latest"
             }
         }
     },
     "variables": {
-        "ports": [
+        "nsgRules": [
             {
-                "port": 3000,
-                "protocol": "tcp"
+                "name": "allow-dashboard",
+                "properties": {
+                    "protocol": "Tcp",
+                    "sourcePortRange": "*",
+                    "destinationPortRange": "3000",
+                    "sourceAddressPrefix": "Internet",
+                    "destinationAddressPrefix": "*",
+                    "access": "Allow",
+                    "priority": "[add(parameters('ruleSeed'), 1)]",
+                    "direction": "Inbound"
+                }
             },
             {
-                "port": 3001,
-                "protocol": "tcp"
+                "name": "allow-registrar",
+                "properties": {
+                    "protocol": "Tcp",
+                    "sourcePortRange": "*",
+                    "destinationPortRange": "3001",
+                    "sourceAddressPrefix": "Internet",
+                    "destinationAddressPrefix": "*",
+                    "access": "Allow",
+                    "priority": "[add(parameters('ruleSeed'), 2)]",
+                    "direction": "Inbound"
+                }
             }
         ],
         "exports": [
             {
+                "Name": "Dashboard",
                 "Source": 3000,
                 "Destination": 3000,
                 "Protocol": "TCP"
             },
             {
+                "Name": "Registrar",
                 "Source": 3001,
                 "Destination": 3001,
                 "Protocol": "TCP"
@@ -48,7 +68,16 @@
             {
                 "name": "dashboard",
                 "image": "[parameters('data').dockerImage]",
-                "ports": "[variables('ports')]",
+                "ports": [
+                    {
+                        "port": 3000,
+                        "protocol": "tcp"
+                    },
+                    {
+                        "port": 3001,
+                        "protocol": "tcp"
+                    }
+                ],
                 "arguments": [
                     "-td --restart always",
                     "--hostname ${HOST_NAME}-d",
@@ -63,8 +92,8 @@
             "type": "object",
             "value": {
                 "Commands": "[concat(parameters('commands'), variables('commands'))]",
-                "Exports": "[concat(parameters('exports'), variables('exports'))]",
-                "Ports": "[concat(parameters('ports'), variables('ports'))]"
+                "NsgRules": "[concat(parameters('nsgRules'), variables('nsgRules'))]",
+                "RuleSeed": "[add(parameters('ruleSeed'), length(variables('nsgRules')))]"
             }
         }
     }

@@ -8,6 +8,10 @@
         "description": "location of resources"
       }
     },
+    "securityRules" : {
+      "type": "array",
+      "defaultValue": []
+    },
     "namingInfix": {
       "type": "string"
     }
@@ -35,7 +39,22 @@
       "frontendIPConfigId": "[concat(variables('publicLoadBalancerId'), '/frontendIPConfigurations/LoadBalancedPublicIp')]",
       "natPoolId": "[concat(variables('publicLoadBalancerId'), '/inboundNatPools/', variables('natPoolName'))]"
     },
-    "subnetDashboardId": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')), '/subnets/', variables('subnetDashboard').name)]"
+    "subnetDashboardId": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')), '/subnets/', variables('subnetDashboard').name)]",
+    "defaultSecurityRules": [
+      {
+        "name": "allow-ssh",
+        "properties": {
+          "protocol": "Tcp",
+          "sourcePortRange": "*",
+          "destinationPortRange": "22",
+          "sourceAddressPrefix": "Internet",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": 100,
+          "direction": "Inbound"
+        }
+      }
+    ]
   },
   "resources": [
     {
@@ -44,47 +63,7 @@
       "apiVersion": "2016-03-30",
       "location": "[variables('resourceLocation')]",
       "properties": {
-        "securityRules": [
-          {
-            "name": "allow-ssh",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "22",
-              "sourceAddressPrefix": "Internet",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 100,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "allow-dashboard",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "3000",
-              "sourceAddressPrefix": "Internet",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 101,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "allow-registrar",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "3001",
-              "sourceAddressPrefix": "Internet",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 102,
-              "direction": "Inbound"
-            }
-          }
-        ]
+        "securityRules": "[concat(variables('defaultSecurityRules'), parameters('securityRules'))]"
       }
     },
     {

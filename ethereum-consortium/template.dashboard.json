@@ -84,34 +84,47 @@
     "dVMSSDashboard": "[concat('Consortium.', parameters('dashboardName'), '.VMSSCommands')]",
     "defaultCommands": [
       {
-        "name": "dashboard",
-        "image": "[parameters('dockerImage')]",
-        "ports": [
-          {
-            "port": 3000,
-            "protocol": "tcp"
-          },
-          {
-            "port": 3001,
-            "protocol": "tcp"
-          }
-        ],
-        "arguments": [
-          "-td --restart always",
-          "--hostname ${HOST_NAME}-d",
-          "[concat('-e WS_SECRET=', parameters('dashboardSecret'))]"
-        ]
+        "name": "secrets",
+        "globalEnvironment": {
+          "WS_SECRET": "[parameters('dashboardSecret')]"
+        }
       }
     ],
-    "additionalCommandOptions": [
-      [],
-      "[parameters('additionalCommands').Commands]"
-    ],
-    "dashboardCommands": {
-      "Commands": "[concat(variables('defaultCommands'), variables('additionalCommandOptions')[length(take(skip(string(parameters('additionalCommands')),3),1))])]"
-    }
+    "extensionName": "[concat(variables('rootName'), '.Extensions')]",
+    "extensions": [
+      {
+        "name": "EthStats-Dashboard",
+        "extension": "ethStats.dashboard.json",
+        "data": {
+          "dockerImage": "[parameters('dockerImage')]"
+        }
+      }
+    ]
   },
   "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[variables('extensionName')]",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.extensions.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "rootName": {
+            "value": "[variables('extensionName')]"
+          },
+          "contentRoot": {
+            "value": "[variables('contentRoot')]"
+          },
+          "extensions": {
+            "value": "[variables('extensions')]"
+          }
+        }
+      }
+    },
     {
       "type": "Microsoft.Resources/deployments",
       "name": "[variables('dNetworkName')]",
@@ -128,9 +141,15 @@
           },
           "namingInfix": {
             "value": "[variables('namingInfix')]"
+          },
+          "securityRules": {
+            "value": "[reference(variables('extensionName')).outputs.result.value.nsgRules]"
           }
         }
-      }
+      },
+      "dependsOn": [
+        "[variables('extensionName')]"
+      ]
     },
     {
       "type": "Microsoft.Resources/deployments",
@@ -171,7 +190,9 @@
             "value": "[parameters('sshPublicKey')]"
           },
           "commandsJson": {
-            "value": "[variables('dashboardCommands')]"
+            "value": {
+              "Commands": "[concat(variables('initCommands'), reference(variables('extensionName')).outputs.result.value.commands)]"
+            }
           },
           "networkConfiguration": {
             "value": {

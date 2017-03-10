@@ -13,7 +13,7 @@
     }
   },
   "variables": {
-    "rootName" : "[concat(parameters('rootName'), '.Extension.')]"
+    "rootName" : "[concat(parameters('rootName'), '.')]"
   },
   "resources": [
     {
@@ -49,11 +49,11 @@
           "commands": {
             "value": "[reference(concat(variables('rootName'), copyIndex())).outputs.result.value.commands]"
           },
-          "exports": {
-            "value": "[reference(concat(variables('rootName'), copyIndex())).outputs.result.value.exports]"
+          "nsgRules": {
+            "value": "[reference(concat(variables('rootName'), copyIndex())).outputs.result.value.nsgRules]"
           },
-          "ports": {
-            "value": "[reference(concat(variables('rootName'), copyIndex())).outputs.result.value.ports]"
+          "ruleSeed": {
+            "value": "[reference(concat(variables('rootName'), copyIndex())).outputs.result.value.ruleSeed]"
           },
           "data": {
             "value": "[parameters('extensions')[copyIndex()].data]"

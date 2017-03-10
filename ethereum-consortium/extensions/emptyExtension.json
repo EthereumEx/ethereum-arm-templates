@@ -9,8 +9,8 @@
             "type": "object",
             "value": {
                 "Commands": [],
-                "Exports": [],
-                "Ports": []
+                "NsgRules": [],
+                "RuleSeed" : 100
             }
         }
     }
