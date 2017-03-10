@@ -1,0 +1,71 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "commands": {
+            "type": "array",
+            "defaultValue": []
+        },
+        "exports": {
+            "type": "array",
+            "defaultValue": []
+        },
+        "ports": {
+            "type": "array",
+            "defaultValue": []
+        },
+        "data": {
+            "type": "object",
+            "defaultValue": {
+                "dockerImage" : "ethereumex/eth-stats-dashboard:latest"
+            }
+        }
+    },
+    "variables": {
+        "ports": [
+            {
+                "port": 3000,
+                "protocol": "tcp"
+            },
+            {
+                "port": 3001,
+                "protocol": "tcp"
+            }
+        ],
+        "exports": [
+            {
+                "Source": 3000,
+                "Destination": 3000,
+                "Protocol": "TCP"
+            },
+            {
+                "Source": 3001,
+                "Destination": 3001,
+                "Protocol": "TCP"
+            }
+        ],
+        "commands": [
+            {
+                "name": "dashboard",
+                "image": "[parameters('data').dockerImage]",
+                "ports": "[variables('ports')]",
+                "arguments": [
+                    "-td --restart always",
+                    "--hostname ${HOST_NAME}-d",
+                    "-e WS_SECRET=${WS_SECRET}"
+                ]
+            }
+        ]
+    },
+    "resources": [],
+    "outputs": {
+        "Result": {
+            "type": "object",
+            "value": {
+                "Commands": "[concat(parameters('commands'), variables('commands'))]",
+                "Exports": "[concat(parameters('exports'), variables('exports'))]",
+                "Ports": "[concat(parameters('ports'), variables('ports'))]"
+            }
+        }
+    }
+}
