@@ -47,9 +47,6 @@
         "description": "ssh public key for connecting to VMs."
       }
     },
-    "storageAccounts": {
-      "type": "array"
-    },
     "virtualNetworkName": {
       "type": "string"
     },
@@ -98,9 +95,6 @@
           },
           "instanceCount": {
             "value": "[parameters('instanceCount')]"
-          },
-          "storageAccounts": {
-            "value": "[parameters('storageAccounts')]"
           },
           "virtualNetworkName": {
             "value": "[parameters('virtualNetworkName')]"

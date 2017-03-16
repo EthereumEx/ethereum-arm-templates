@@ -164,17 +164,7 @@
       "[parameters('locationOverride')]"
     ],
     "resourceLocation": "[tolower(variables('resourceLocations')[length(take(parameters('locationOverride'),1))])]",
-    "deploymentId": "[toLower(substring(uniqueString(concat(resourceGroup().Id, variables('resourceLocation'))), 0, 10))]",
-    "storageAccountType": "Premium_LRS",
-    "saCount": 5,
     "namingInfix": "[toLower(parameters('consortiumMemberName'))]",
-    "storageAccounts": [
-      "[concat('savmss', variables('deploymentId'), '01')]",
-      "[concat('savmss', variables('deploymentId'), '02')]",
-      "[concat('savmss', variables('deploymentId'), '03')]",
-      "[concat('savmss', variables('deploymentId'), '04')]",
-      "[concat('savmss', variables('deploymentId'), '05')]"
-    ],
     "dNetworkName": "[concat('Consortium.', parameters('consortiumMemberName'), '.Network')]",
     "dVMSSTx": "[concat('Consortium.', parameters('consortiumMemberName'), '.Tx.Nodes')]",
     "dVMSSMiners": "[concat('Consortium.', parameters('consortiumMemberName'), '.Miners.Nodes')]",
@@ -207,19 +197,6 @@
     }
   },
   "resources": [
-    {
-      "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('storageAccounts')[copyIndex()]]",
-      "apiVersion": "2015-06-15",
-      "location": "[variables('resourceLocation')]",
-      "copy": {
-        "name": "storageLoop",
-        "count": "[variables('saCount')]"
-      },
-      "properties": {
-        "accountType": "[variables('storageAccountType')]"
-      }
-    },
     {
       "type": "Microsoft.Resources/deployments",
       "name": "[variables('dNetworkName')]",
@@ -286,9 +263,6 @@
           "instanceCount": {
             "value": "[parameters('txnodeCount')]"
           },
-          "storageAccounts": {
-            "value": "[variables('storageAccounts')]"
-          },
           "virtualNetworkName": {
             "value": "[reference(variables('dNetworkName')).outputs.network.value.name]"
           },
@@ -340,7 +314,6 @@
         }
       },
       "dependsOn": [
-        "storageLoop",
         "[variables('dNetworkName')]"
       ]
     },
@@ -372,9 +345,6 @@
           },
           "instanceCount": {
             "value": "[parameters('minerCount')]"
-          },
-          "storageAccounts": {
-            "value": "[variables('storageAccounts')]"
           },
           "virtualNetworkName": {
             "value": "[reference(variables('dNetworkName')).outputs.network.value.name]"
@@ -422,7 +392,6 @@
         }
       },
       "dependsOn": [
-        "storageLoop",
         "[variables('dNetworkName')]",
         "[variables('dVMSSTx')]",
         "[variables('dMinerProperties')]"

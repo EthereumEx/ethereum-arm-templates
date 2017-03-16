@@ -47,17 +47,10 @@
         "description": "ssh public key for connecting to VMs."
       }
     },
-    "storageAccounts": {
-      "type": "array"
-    },
     "virtualNetworkName": {
       "type": "string"
     },
     "networkConfiguration": {
-      "type": "object"
-    },
-    "testArgument": {
-      "defaultValue": { },
       "type": "object"
     },
     "scriptUri": {
@@ -68,17 +61,10 @@
     }
   },
   "variables": {
-    "deploymentId": "[toLower(substring(uniqueString(resourceGroup().Id), 0, 10))]",
     "instanceCount": "[int(parameters('instanceCount'))]",
     "apiVersion": "2015-06-15",
-    "vmssApiVersion": "2016-03-30",
     "resourceLocation": "[parameters('location')]",
-    "saCount": 5,
-    "storageAccounts": "[parameters('storageAccounts')]",
     "namingInfix": "[toLower(parameters('vmssName'))]",
-    "vhdContainerName": "[concat('vhd', variables('namingInfix'))]",
-    "osDiskName": "[concat('osdisk-', variables('namingInfix'))]",
-    "virtualNetworkName": "[parameters('virtualNetworkName')]",
     "nicName": "[concat('nic-', variables('namingInfix'))]",
     "ipConfigName": "[concat('ipconfig-', variables('namingInfix'))]",
     "imageUbuntu14.04.5-LTS": {
@@ -100,10 +86,8 @@
       "offer": "UbuntuServer"
     },
     "imageReference": "[variables(concat('image', parameters('image')))]",
-    "osType": "Linux",
-    "authenticationType": "sshPublicKey",
     "sshKeyPath": "[concat('/home/',parameters('username'),'/.ssh/authorized_keys')]",
-    "osProfilesshPublicKey": {
+    "osProfileReference": {
       "computerNamePrefix": "[variables('namingInfix')]",
       "adminUsername": "[parameters('username')]",
       "adminPassword": "",
@@ -119,7 +103,6 @@
         }
       }
     },
-    "osProfileReference": "[variables(concat('osProfile', variables('authenticationType')))]",
     "networkConfiguration" : "[parameters('networkConfiguration')]"
   },
   "resources": [
@@ -131,24 +114,16 @@
         "capacity": "[variables('instanceCount')]"
       },
       "name": "[variables('namingInfix')]",
-      "apiVersion": "[variables('vmssApiVersion')]",
+      "apiVersion" :"2016-04-30-preview",
       "location": "[variables('resourceLocation')]",
       "properties": {
-        "overprovision": "false",
+        "overprovision" : false,
         "upgradePolicy": {
           "mode": "Manual"
         },
         "virtualMachineProfile": {
           "storageProfile": {
             "osDisk": {
-              "vhdContainers": [
-                "[concat(reference(concat('Microsoft.Storage/storageAccounts/', concat(variables('storageAccounts')[0])), variables('apiVersion')).primaryEndpoints.blob, variables('vhdContainerName'))]",
-                "[concat(reference(concat('Microsoft.Storage/storageAccounts/', concat(variables('storageAccounts')[1])), variables('apiVersion')).primaryEndpoints.blob, variables('vhdContainerName'))]",
-                "[concat(reference(concat('Microsoft.Storage/storageAccounts/', concat(variables('storageAccounts')[2])), variables('apiVersion')).primaryEndpoints.blob, variables('vhdContainerName'))]",
-                "[concat(reference(concat('Microsoft.Storage/storageAccounts/', concat(variables('storageAccounts')[3])), variables('apiVersion')).primaryEndpoints.blob, variables('vhdContainerName'))]",
-                "[concat(reference(concat('Microsoft.Storage/storageAccounts/', concat(variables('storageAccounts')[4])), variables('apiVersion')).primaryEndpoints.blob, variables('vhdContainerName'))]"
-              ],
-              "name": "[variables('osDiskName')]",
               "caching": "ReadOnly",
               "createOption": "FromImage"
             },
@@ -160,7 +135,7 @@
               {
                 "name": "[variables('nicName')]",
                 "properties": {
-                  "primary": "true",
+                  "primary": true,
                   "ipConfigurations": [
                     {
                       "name": "[variables('ipConfigName')]",
