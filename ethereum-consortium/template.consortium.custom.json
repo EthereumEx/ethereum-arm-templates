@@ -103,7 +103,7 @@
       ]
     },
     "contentVersion": {
-      "defaultValue": "Release-v0.9.9",
+      "defaultValue": "Release-v1.0.0",
       "type": "string",
       "metadata": {
         "description": "The version of the templates to use. This refers to a git branch. This parameter is ignored if contentRootOverride is provided"
@@ -199,7 +199,7 @@
       "name": "[concat('Consortium.', parameters('consortiumName'), '-', parameters('members')[copyIndex()].name)]",
       "apiVersion": "2015-01-01",
       "copy": {
-        "name": "storageLoop",
+        "name": "consortiumLoop",
         "count": "[length(parameters('members'))]"
       },
       "properties": {

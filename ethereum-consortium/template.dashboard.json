@@ -34,7 +34,7 @@
     },
     "additionalCommands": {
       "defaultValue": {
-        "Commands" : []
+        "Commands": []
       },
       "type": "secureObject"
     },
@@ -46,7 +46,7 @@
       }
     },
     "contentVersion": {
-      "defaultValue": "Release-v0.9.9",
+      "defaultValue": "Release-v1.0.0",
       "type": "string",
       "metadata": {
         "description": "The version of the templates to use. This refers to a git branch. This parameter is ignored if contentRootOverride is provided"
@@ -79,17 +79,7 @@
       "[parameters('locationOverride')]"
     ],
     "resourceLocation": "[tolower(variables('resourceLocations')[length(take(parameters('locationOverride'),1))])]",
-    "deploymentId": "[toLower(substring(uniqueString(concat(resourceGroup().Id, variables('resourceLocation'))), 0, 10))]",
-    "storageAccountType": "Premium_LRS",
-    "saCount": 5,
     "namingInfix": "[toLower(parameters('dashboardName'))]",
-    "storageAccounts": [
-      "[concat('savmss', variables('deploymentId'), '01')]",
-      "[concat('savmss', variables('deploymentId'), '02')]",
-      "[concat('savmss', variables('deploymentId'), '03')]",
-      "[concat('savmss', variables('deploymentId'), '04')]",
-      "[concat('savmss', variables('deploymentId'), '05')]"
-    ],
     "dNetworkName": "[concat('Consortium.', parameters('dashboardName'), '.Network')]",
     "dVMSSDashboard": "[concat('Consortium.', parameters('dashboardName'), '.VMSSCommands')]",
     "defaultCommands": [
@@ -122,19 +112,6 @@
     }
   },
   "resources": [
-    {
-      "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('storageAccounts')[copyIndex()]]",
-      "apiVersion": "2015-06-15",
-      "location": "[variables('resourceLocation')]",
-      "copy": {
-        "name": "storageLoop",
-        "count": "[variables('saCount')]"
-      },
-      "properties": {
-        "accountType": "[variables('storageAccountType')]"
-      }
-    },
     {
       "type": "Microsoft.Resources/deployments",
       "name": "[variables('dNetworkName')]",
@@ -184,9 +161,6 @@
           "instanceCount": {
             "value": 1
           },
-          "storageAccounts": {
-            "value": "[variables('storageAccounts')]"
-          },
           "virtualNetworkName": {
             "value": "[reference(variables('dNetworkName')).outputs.network.value.name]"
           },
@@ -214,7 +188,6 @@
         }
       },
       "dependsOn": [
-        "storageLoop",
         "[variables('dNetworkName')]"
       ]
     }
