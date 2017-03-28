@@ -1,0 +1,107 @@
+{
+  "handler": "Microsoft.Compute.MultiVm",
+  "version": "0.0.1-preview",
+  "parameters": {
+    "basics": [
+      {
+        "name": "namePrefix",
+        "type": "Microsoft.Common.TextBox",
+        "label": "Consortium prefix",
+        "toolTip": "String used as a base for naming resources (6 alphanumeric characters or less).  A unique hash is prepended to the string for some resources, while resource-specific information is appended.",
+        "constraints": {
+          "required": true,
+          "regex": "^[a-Z0-9]{2,6}$",
+          "validationMessage": "Resource prefix must be between 2 and 6 characters long, and can contain only numbers and lowercase letters."
+        }
+      },
+      {
+        "name": "adminUsername",
+        "type": "Microsoft.Compute.UserNameTextBox",
+        "label": "VM user name",
+        "defaultValue": "gethadmin",
+        "toolTip": "Admin username for all of the deployed virtual machines.",
+        "osPlatform": "Linux"
+      },
+      {
+        "name": "adminPublicKey",
+        "type": "Microsoft.Common.TextBox",
+        "label": "SSH public key",
+        "defaultValue": "",
+        "toolTip": "SSH public key"
+      }
+    ],
+    "steps": [
+      {
+        "name": "NetworkConfig",
+        "label": "Blockchain Network Configuration",
+        "subLabel": {
+          "preValidation": "Configure the network",
+          "postValidation": "Done"
+        },
+        "bladeTitle": "Blockchain Network and Configuration",
+        "elements": [
+          {
+            "name": "membersJson",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Members json",
+            "defaultValue": "",
+            "toolTip": "Members json"
+          },
+          {
+            "name": "genesisJson",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Genesis block json",
+            "defaultValue": "",
+            "toolTip": "Genesis block json"
+          },
+          {
+            "name": "networkId",
+            "type": "Microsoft.Common.PasswordBox",
+            "label": {
+              "password": "Ethereum Network Id",
+              "confirmPassword": "Confirm Ethereum Network Id"
+            },
+            "defaultValue": "",
+            "toolTip": "Ethereum Network Id",
+            "constraints": {
+              "required": true,
+              "regex": "^[0-9]{1,15}$",
+              "validationMessage": "The network id must be a length 1 and 15 and only contain characters 0-9"
+            },
+            "options": {
+              "hideConfirmation": true
+            }
+          },
+          {
+            "name": "dashboardSecret",
+            "type": "Microsoft.Common.PasswordBox",
+            "label": {
+              "password": "Dashboard secret",
+              "confirmPassword": "Confirm Dashboard secret"
+            },
+            "defaultValue": "",
+            "toolTip": "Dashboard secret",
+            "constraints": {
+              "required": true,
+              "regex": "^.{1,15}$",
+              "validationMessage": "The dashboard secret id must be a length 1 and 15"
+            },
+            "options": {
+              "hideConfirmation": true
+            }
+          }
+        ]
+      }
+    ],
+    "outputs": {
+      "consoritumName": "[basics('namePrefix')]",
+      "username": "[basics('adminUsername')]",
+      "sshPublicKey": "[basics('adminPublicKey')]",
+      "gethNetworkId": "[steps('NetworkConfig').networkId]",
+      "members": "[steps('NetworkConfig').membersJson]",
+      "genesisJson": "[steps('NetworkConfig').genesisJson]",
+      "dashboardSecret": "[steps('NetworkConfig').dashboardSecret]",
+      "contentRootOverride": "[location()]"
+    }
+  }
+}
