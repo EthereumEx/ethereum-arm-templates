@@ -10,7 +10,6 @@
         "toolTip": "String used as a base for naming resources (6 alphanumeric characters or less).  A unique hash is prepended to the string for some resources, while resource-specific information is appended.",
         "constraints": {
           "required": true,
-          "regex": "^[a-Z0-9]{2,6}$",
           "validationMessage": "Resource prefix must be between 2 and 6 characters long, and can contain only numbers and lowercase letters."
         }
       },
@@ -65,7 +64,6 @@
             "toolTip": "Ethereum Network Id",
             "constraints": {
               "required": true,
-              "regex": "^[0-9]{1,15}$",
               "validationMessage": "The network id must be a length 1 and 15 and only contain characters 0-9"
             },
             "options": {
