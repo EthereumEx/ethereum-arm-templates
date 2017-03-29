@@ -1,6 +1,6 @@
 {
   "handler": "Microsoft.Compute.MultiVm",
-  "version": "0.0.1-preview",
+  "version": "0.1.2-preview",
   "parameters": {
     "basics": [
       {
@@ -110,14 +110,15 @@
       }
     ],
     "outputs": {
-      "consoritumName": "[basics('namePrefix')]",
+      "consortiumName": "[basics('namePrefix')]",
       "username": "[basics('adminUsername')]",
       "sshPublicKey": "[basics('adminPublicKey')]",
       "gethNetworkId": "[steps('NetworkConfig').networkId]",
-      "members": "[steps('NetworkConfig').membersJson]",
+      "members": {
+        "value" : "[steps('NetworkConfig').membersJson]"
+      },
       "genesisJson": "[steps('NetworkConfig').genesisJson]",
-      "dashboardSecret": "[steps('NetworkConfig').dashboardSecret]",
-      "contentRootOverride": "[location()]"
+      "dashboardSecret": "[steps('NetworkConfig').dashboardSecret]"
     }
   }
 }

@@ -109,10 +109,6 @@
         "description": "The version of the templates to use. This refers to a git branch. This parameter is ignored if contentRootOverride is provided"
       }
     },
-    "contentRootOverride": {
-      "defaultValue": "",
-      "type": "string"
-    },
     "dashboardDockerImage": {
       "defaultValue": "ethereumex/eth-stats-dashboard:latest",
       "type": "string",
@@ -142,15 +138,23 @@
       "metadata": {
         "description": "Location to deploy resources. By default the template will use the Resource Group location"
       }
+    },
+    "baseUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "The base URL for dependent assets",
+        "artifactsBaseUrl": ""
+      },
+      "defaultValue": ""
     }
   },
   "variables": {
     "contentRootUrl": "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium')]",
     "contentRoots": [
       "[variables('contentRootUrl')]",
-      "[parameters('contentRootOverride')]"
+      "[parameters('baseUrl')]"
     ],
-    "contentRoot": "[variables('contentRoots')[length(take(parameters('contentRootOverride'),1))]]",
+    "contentRoot": "[variables('contentRoots')[length(take(parameters('baseUrl'),1))]]",
     "resourceLocations": [
       "[resourceGroup().location]",
       "[parameters('locationOverride')]"
