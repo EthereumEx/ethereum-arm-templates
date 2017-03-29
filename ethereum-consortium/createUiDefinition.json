@@ -10,6 +10,7 @@
         "toolTip": "String used as a base for naming resources (6 alphanumeric characters or less).  A unique hash is prepended to the string for some resources, while resource-specific information is appended.",
         "constraints": {
           "required": true,
+          "regex": "^[\\w\\d]{1,8}$",
           "validationMessage": "Resource prefix must be between 2 and 6 characters long, and can contain only numbers and lowercase letters."
         }
       },
@@ -19,14 +20,22 @@
         "label": "VM user name",
         "defaultValue": "gethadmin",
         "toolTip": "Admin username for all of the deployed virtual machines.",
-        "osPlatform": "Linux"
+        "osPlatform": "Linux",
+        "constraints": {
+          "required": true,
+          "validationMessage": "The username is required"
+        }
       },
       {
         "name": "adminPublicKey",
         "type": "Microsoft.Common.TextBox",
         "label": "SSH public key",
         "defaultValue": "",
-        "toolTip": "SSH public key"
+        "toolTip": "SSH public key",
+        "constraints": {
+          "required": true,
+          "validationMessage": "The SSH public key is required"
+        }
       }
     ],
     "steps": [
@@ -44,14 +53,22 @@
             "type": "Microsoft.Common.TextBox",
             "label": "Members json",
             "defaultValue": "",
-            "toolTip": "Members json"
+            "toolTip": "Members json",
+            "constraints": {
+              "required": true,
+              "validationMessage": "The members json is required"
+            }
           },
           {
             "name": "genesisJson",
             "type": "Microsoft.Common.TextBox",
             "label": "Genesis block json",
             "defaultValue": "",
-            "toolTip": "Genesis block json"
+            "toolTip": "Genesis block json",
+            "constraints": {
+              "required": true,
+              "validationMessage": "The genesis json is required"
+            }
           },
           {
             "name": "networkId",
@@ -64,6 +81,7 @@
             "toolTip": "Ethereum Network Id",
             "constraints": {
               "required": true,
+              "regex": "^[0-9]{1,15}$",
               "validationMessage": "The network id must be a length 1 and 15 and only contain characters 0-9"
             },
             "options": {
