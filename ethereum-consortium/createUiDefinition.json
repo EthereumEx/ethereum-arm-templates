@@ -114,10 +114,8 @@
       "username": "[basics('adminUsername')]",
       "sshPublicKey": "[basics('adminPublicKey')]",
       "gethNetworkId": "[steps('NetworkConfig').networkId]",
-      "members": {
-        "value" : "[steps('NetworkConfig').membersJson]"
-      },
-      "genesisJson": "[steps('NetworkConfig').genesisJson]",
+      "members": "[parse(steps('NetworkConfig').membersJson)]",
+      "genesisJson": "[parse(steps('NetworkConfig').genesisJson)]",
       "dashboardSecret": "[steps('NetworkConfig').dashboardSecret]"
     }
   }
