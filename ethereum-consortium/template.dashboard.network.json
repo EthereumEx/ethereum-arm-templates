@@ -26,18 +26,17 @@
       "prefix": "10.0.0.0/24"
     },
     "virtualNetworkName": "[concat(variables('namingInfix'), '-vnet')]",
-    "loadBalancerName": "[concat(variables('namingInfix'), '-lb')]",
     "publicIpName": "[concat(variables('namingInfix'), '-public-ip')]",
-    "natPoolName": "[concat(variables('namingInfix'), '-natpool')]",
     "loadBalancedNodePool": "[concat(variables('namingInfix'), '-bepool')]",
     "nodeProbeName": "Node-Probe",
+    "loadBalancerName": "[concat(variables('namingInfix'), '-lb')]",
     "publicLoadBalancerId": "[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName'))]",
     "publicLoadBalancer": {
       "id": "[variables('publicLoadBalancerId')]",
       "backendProbeId": "[concat(variables('publicLoadBalancerId'), '/probes/', variables('nodeProbeName'))]",
       "backendPoolId": "[concat(variables('publicLoadBalancerId'), '/backendAddressPools/', variables('loadBalancedNodePool'))]",
       "frontendIPConfigId": "[concat(variables('publicLoadBalancerId'), '/frontendIPConfigurations/LoadBalancedPublicIp')]",
-      "natPoolId": "[concat(variables('publicLoadBalancerId'), '/inboundNatPools/', variables('natPoolName'))]"
+      "natPoolId": "[concat(variables('publicLoadBalancerId'), '/inboundNatPools/', variables('namingInfix'), '-natpool')]"
     },
     "subnetDashboardId": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')), '/subnets/', variables('subnetDashboard').name)]",
     "defaultSecurityRules": [

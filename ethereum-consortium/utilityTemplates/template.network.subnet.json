@@ -1,0 +1,49 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "location of resources"
+      }
+    },
+    "namingInfix": {
+      "type": "string"
+    },
+    "subnet": {
+      "type": "object"
+    }
+  },
+  "variables": {
+    "resourceLocation": "[parameters('location')]",
+    "namingInfix": "[parameters('namingInfix')]",
+    "subnetName": "[concat(variables('namingInfix'), '-subnet-', parameters('subnet').name)]",
+    "nsgName": "[concat(variables('subnetName'), '-nsg')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('nsgName')]",
+      "apiVersion": "2016-03-30",
+      "location": "[variables('resourceLocation')]",
+      "properties": {
+        "securityRules": "[parameters('subnet').rules]"
+      }
+    }
+  ],
+  "outputs": {
+    "nsg": {
+      "type": "object",
+      "value": {
+        "name": "[variables('subnetName')]",
+        "properties": {
+          "addressPrefix": "[parameters('subnet').prefix]",
+          "networkSecurityGroup": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+          }
+        }
+      }
+    }
+  }
+}

@@ -47,9 +47,6 @@
         "description": "ssh public key for connecting to VMs."
       }
     },
-    "virtualNetworkName": {
-      "type": "string"
-    },
     "networkConfiguration": {
       "type": "object"
     },
