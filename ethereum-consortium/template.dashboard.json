@@ -80,9 +80,10 @@
     ],
     "resourceLocation": "[tolower(variables('resourceLocations')[length(take(parameters('locationOverride'),1))])]",
     "namingInfix": "[toLower(parameters('dashboardName'))]",
-    "dNetworkName": "[concat('Consortium.', parameters('dashboardName'), '.Network')]",
-    "dVMSSDashboard": "[concat('Consortium.', parameters('dashboardName'), '.VMSSCommands')]",
-    "defaultCommands": [
+    "rootName" : "[concat('Consortium.', parameters('dashboardName'))]",
+    "dNetworkName": "[concat(variables('rootName'), '.Network')]",
+    "dVMSSDashboard": "[concat(variables('rootName'), '.VMSSCommands')]",
+    "initCommands": [
       {
         "name": "secrets",
         "globalEnvironment": {
