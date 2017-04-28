@@ -277,7 +277,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/template.consortiumMember.network.json')]"
+          "uri": "[concat(variables('contentRoot'), '/template.network.loadBalanced.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -287,11 +287,25 @@
           "namingInfix": {
             "value": "[variables('namingInfix')]"
           },
-          "txNsgRules": {
-            "value": "[reference(variables('txExtensionName')).outputs.result.value.nsgRules]"
+          "subnets": {
+            "value": [
+              {
+                "name": "txs",
+                "prefix": "10.0.1.0/24",
+                "rules": "[reference(variables('txExtensionName')).outputs.result.value.nsgRules]"
+              },
+              {
+                "name": "miners",
+                "prefix": "10.0.2.0/24",
+                "rules": "[reference(variables('minerExtensionName')).outputs.result.value.nsgRules]"
+              }
+            ]
           },
-          "minerNsgRules": {
-            "value": "[reference(variables('minerExtensionName')).outputs.result.value.nsgRules]"
+          "exportRules": {
+            "value": "[concat(reference(variables('minerExtensionName')).outputs.result.value.exports, reference(variables('txExtensionName')).outputs.result.value.exports)]"
+          },
+          "contentRoot": {
+            "value": "[variables('contentRoot')]"
           }
         }
       },
@@ -346,9 +360,6 @@
           "instanceCount": {
             "value": "[parameters('txnodeCount')]"
           },
-          "virtualNetworkName": {
-            "value": "[reference(variables('dNetworkName')).outputs.network.value.name]"
-          },
           "username": {
             "value": "[parameters('username')]"
           },
@@ -365,7 +376,7 @@
                 "WS_SECRET": "[parameters('dashboardSecret')]",
                 "BOOTNODE_URL": "[variables('bootNodeUrl')]",
                 "BOOTNODE_NETWORK": "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
-                "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.publicIp]"
+                "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.ip]"
               },
               "commands": "[concat(reference(variables('txExtensionName')).outputs.result.value.commands, variables('omsCommand').Commands)]"
             }
@@ -373,14 +384,11 @@
           "networkConfiguration": {
             "value": {
               "subnet": {
-                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets.tx]"
+                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets[0].id]"
               },
               "loadBalancerBackendAddressPools": [
                 {
-                  "id": "[reference(variables('dNetworkName')).outputs.network.value.public.poolId]"
-                },
-                {
-                  "id": "[reference(variables('dNetworkName')).outputs.network.value.internal.poolId]"
+                  "id": "[reference(variables('dNetworkName')).outputs.network.value.poolId]"
                 }
               ]
             }
@@ -420,9 +428,6 @@
           "instanceCount": {
             "value": "[parameters('minerCount')]"
           },
-          "virtualNetworkName": {
-            "value": "[reference(variables('dNetworkName')).outputs.network.value.name]"
-          },
           "username": {
             "value": "[parameters('username')]"
           },
@@ -439,7 +444,7 @@
                 "WS_SECRET": "[parameters('dashboardSecret')]",
                 "BOOTNODE_URL": "[variables('bootNodeUrl')]",
                 "BOOTNODE_NETWORK": "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
-                "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.publicIp]",
+                "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.ip]",
                 "MINER_ADDRESS" : "[parameters('minerAddress')]",
                 "MINER_THREADS" : "[string(reference(variables('dMinerProperties')).outputs.result.value.cores)]"
               },
@@ -449,7 +454,7 @@
           "networkConfiguration": {
             "value": {
               "subnet": {
-                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets.miners]"
+                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets[1].id]"
               }
             }
           }

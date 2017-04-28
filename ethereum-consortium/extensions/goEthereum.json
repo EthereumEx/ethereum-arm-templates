@@ -10,6 +10,10 @@
       "type": "array",
       "defaultValue": []
     },
+    "exports": {
+      "type": "array",
+      "defaultValue": []
+    },
     "ruleSeed": {
       "type": "int",
       "defaultValue": 100
@@ -51,7 +55,7 @@
         }
       }
     ],
-    "nsgRules" : "[concat(parameters('nsgRules'), variables('defaultNsgRules'))]",
+    "nsgRules": "[concat(parameters('nsgRules'), variables('defaultNsgRules'))]",
     "defaultArguments": [
       "[concat('-v /home/${USERNAME}/eth-node/genesis.json:/home/eth-node/genesis.json')]",
       "-td --restart always",
@@ -107,6 +111,7 @@
       "value": {
         "Commands": "[concat(parameters('commands'), variables('commands'))]",
         "NsgRules": "[variables('nsgRules')]",
+        "Exports": "[parameters('exports')]",
         "RuleSeed": "[add(parameters('ruleSeed'), length(variables('defaultNsgRules')))]"
       }
     }

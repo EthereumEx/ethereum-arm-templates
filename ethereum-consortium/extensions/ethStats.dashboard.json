@@ -10,6 +10,10 @@
             "type": "array",
             "defaultValue": []
         },
+        "exports": {
+            "type": "array",
+            "defaultValue": []
+        },
         "ruleSeed": {
             "type": "int",
             "defaultValue": 100
@@ -99,6 +103,7 @@
             "value": {
                 "Commands": "[concat(parameters('commands'), variables('commands'))]",
                 "NsgRules": "[concat(parameters('nsgRules'), variables('nsgRules'))]",
+                "Exports": "[concat(parameters('exports'), variables('exports'))]",
                 "RuleSeed": "[add(parameters('ruleSeed'), length(variables('nsgRules')))]"
             }
         }

@@ -10,6 +10,7 @@
             "value": {
                 "Commands": [],
                 "NsgRules": [],
+                "Exports" : [],
                 "RuleSeed" : 100
             }
         }

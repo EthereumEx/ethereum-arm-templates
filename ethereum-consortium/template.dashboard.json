@@ -80,7 +80,7 @@
     ],
     "resourceLocation": "[tolower(variables('resourceLocations')[length(take(parameters('locationOverride'),1))])]",
     "namingInfix": "[toLower(parameters('dashboardName'))]",
-    "rootName" : "[concat('Consortium.', parameters('dashboardName'))]",
+    "rootName": "[concat('Consortium.', parameters('dashboardName'))]",
     "dNetworkName": "[concat(variables('rootName'), '.Network')]",
     "dVMSSDashboard": "[concat(variables('rootName'), '.VMSSCommands')]",
     "initCommands": [
@@ -98,6 +98,21 @@
         "extension": "ethStats.dashboard.json",
         "data": {
           "dockerImage": "[parameters('dockerImage')]"
+        }
+      }
+    ],
+    "defaultSecurityRules": [
+      {
+        "name": "allow-ssh",
+        "properties": {
+          "protocol": "Tcp",
+          "sourcePortRange": "*",
+          "destinationPortRange": "22",
+          "sourceAddressPrefix": "Internet",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": 100,
+          "direction": "Inbound"
         }
       }
     ]
@@ -133,7 +148,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/template.dashboard.network.json')]"
+          "uri": "[concat(variables('contentRoot'), '/template.network.loadBalanced.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -143,8 +158,20 @@
           "namingInfix": {
             "value": "[variables('namingInfix')]"
           },
-          "securityRules": {
-            "value": "[reference(variables('extensionName')).outputs.result.value.nsgRules]"
+          "subnets": {
+            "value": [
+              {
+                "name": "default",
+                "prefix": "10.0.0.0/24",
+                "rules": "[concat(variables('defaultSecurityRules'), reference(variables('extensionName')).outputs.result.value.nsgRules)]"
+              }
+            ]
+          },
+          "exportRules": {
+            "value": "[reference(variables('extensionName')).outputs.result.value.exports]"
+          },
+          "contentRoot": {
+            "value": "[variables('contentRoot')]"
           }
         }
       },
@@ -181,9 +208,6 @@
           "instanceCount": {
             "value": 1
           },
-          "virtualNetworkName": {
-            "value": "[reference(variables('dNetworkName')).outputs.network.value.name]"
-          },
           "username": {
             "value": "[parameters('username')]"
           },
@@ -198,11 +222,11 @@
           "networkConfiguration": {
             "value": {
               "subnet": {
-                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets.dashboard]"
+                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets[0].id]"
               },
               "loadBalancerBackendAddressPools": [
                 {
-                  "id": "[reference(variables('dNetworkName')).outputs.network.value.internal.poolId]"
+                  "id": "[reference(variables('dNetworkName')).outputs.network.value.poolId]"
                 }
               ]
             }
@@ -217,7 +241,7 @@
   "outputs": {
     "ip": {
       "type": "string",
-      "value": "[reference(variables('dNetworkName')).outputs.network.value.ip.ipAddress]"
+      "value": "[reference(variables('dNetworkName')).outputs.network.value.ip]"
     }
   }
 }

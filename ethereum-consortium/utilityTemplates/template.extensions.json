@@ -52,6 +52,9 @@
           "nsgRules": {
             "value": "[reference(concat(variables('rootName'), copyIndex())).outputs.result.value.nsgRules]"
           },
+          "exports": {
+            "value": "[reference(concat(variables('rootName'), copyIndex())).outputs.result.value.exports]"
+          },
           "ruleSeed": {
             "value": "[reference(concat(variables('rootName'), copyIndex())).outputs.result.value.ruleSeed]"
           },

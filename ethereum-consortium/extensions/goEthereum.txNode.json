@@ -10,6 +10,10 @@
       "type": "array",
       "defaultValue": []
     },
+    "exports": {
+      "type": "array",
+      "defaultValue": []
+    },
     "ruleSeed": {
       "type": "int",
       "defaultValue": 100
@@ -31,6 +35,19 @@
   "variables": {
     "nsgRules": [
       {
+        "name": "SSH",
+        "properties": {
+          "protocol": "Tcp",
+          "sourcePortRange": "*",
+          "destinationPortRange": "22",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": "[add(parameters('ruleSeed'), 1)]",
+          "direction": "Inbound"
+        }
+      },
+      {
         "name": "allow-geth-rpc",
         "properties": {
           "protocol": "Tcp",
@@ -39,7 +56,7 @@
           "sourceAddressPrefix": "VirtualNetwork",
           "destinationAddressPrefix": "*",
           "access": "Allow",
-          "priority": "[add(parameters('ruleSeed'), 1)]",
+          "priority": "[add(parameters('ruleSeed'), 2)]",
           "direction": "Inbound"
         }
       },
@@ -52,9 +69,17 @@
           "sourceAddressPrefix": "*",
           "destinationAddressPrefix": "*",
           "access": "Allow",
-          "priority": "[add(parameters('ruleSeed'), 2)]",
+          "priority": "[add(parameters('ruleSeed'), 3)]",
           "direction": "Inbound"
         }
+      }
+    ],
+    "exports": [
+      {
+        "Name": "GethP2P",
+        "Source": 30303,
+        "Destination": 30303,
+        "Protocol": "TCP"
       }
     ],
     "templateName": "[concat(parameters('parentName'), '.Tx')]"
@@ -93,6 +118,7 @@
       "value": {
         "Commands": "[reference(variables('templateName')).outputs.result.value.commands]",
         "NsgRules": "[concat(parameters('nsgRules'), reference(variables('templateName')).outputs.result.value.nsgRules)]",
+        "Exports": "[concat(parameters('exports'), variables('exports'))]",
         "RuleSeed": "[reference(variables('templateName')).outputs.result.value.ruleSeed]"
       }
     }

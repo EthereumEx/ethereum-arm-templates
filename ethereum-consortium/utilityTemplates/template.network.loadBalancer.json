@@ -74,16 +74,16 @@
           "arrayA": {
             "value": [
               {
-                "name": "[parameters('rules')[copyIndex()].name]",
+                "name": "[parameters('rules')[copyIndex()].Name]",
                 "properties": {
                   "frontendIPConfiguration": {
                     "id": "[variables('frontendIPConfigId')]"
                   },
-                  "frontendPort": "[parameters('rules')[copyIndex()].frontendPort]",
-                  "backendPort": "[parameters('rules')[copyIndex()].backendPort]",
+                  "frontendPort": "[parameters('rules')[copyIndex()].Source]",
+                  "backendPort": "[parameters('rules')[copyIndex()].Destination]",
                   "enableFloatingIP": false,
                   "idleTimeoutInMinutes": 4,
-                  "protocol": "[parameters('rules')[copyIndex()].protocol]",
+                  "protocol": "[parameters('rules')[copyIndex()].Protocol]",
                   "loadDistribution": "Default",
                   "backendAddressPool": {
                     "id": "[variables('backendPoolId')]"

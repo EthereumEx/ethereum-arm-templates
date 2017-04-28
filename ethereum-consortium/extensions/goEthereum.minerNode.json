@@ -10,6 +10,10 @@
       "type": "array",
       "defaultValue": []
     },
+    "exports": {
+      "type": "array",
+      "defaultValue": []
+    },
     "ruleSeed": {
       "type": "int",
       "defaultValue": 100
@@ -31,6 +35,19 @@
   "variables": {
     "nsgRules": [
       {
+        "name": "SSH",
+        "properties": {
+          "protocol": "Tcp",
+          "sourcePortRange": "*",
+          "destinationPortRange": "22",
+          "sourceAddressPrefix": "VirtualNetwork",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": "[add(parameters('ruleSeed'), 1)]",
+          "direction": "Inbound"
+        }
+      },
+      {
         "name": "block-bootnodes",
         "properties": {
           "protocol": "*",
@@ -39,7 +56,7 @@
           "sourceAddressPrefix": "*",
           "destinationAddressPrefix": "Internet",
           "access": "Deny",
-          "priority": "[add(parameters('ruleSeed'), 1)]",
+          "priority": "[add(parameters('ruleSeed'), 2)]",
           "direction": "Outbound"
         }
       },
@@ -52,7 +69,7 @@
           "sourceAddressPrefix": "VirtualNetwork",
           "destinationAddressPrefix": "*",
           "access": "Allow",
-          "priority": "[add(parameters('ruleSeed'), 2)]",
+          "priority": "[add(parameters('ruleSeed'), 3)]",
           "direction": "Inbound"
         }
       }
@@ -93,6 +110,7 @@
       "value": {
         "Commands": "[reference(variables('templateName')).outputs.result.value.commands]",
         "NsgRules": "[concat(parameters('nsgRules'), reference(variables('templateName')).outputs.result.value.nsgRules)]",
+        "Exports": "[parameters('exports')]",
         "RuleSeed": "[reference(variables('templateName')).outputs.result.value.ruleSeed]"
       }
     }
