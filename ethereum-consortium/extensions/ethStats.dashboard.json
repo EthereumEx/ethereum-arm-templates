@@ -1,0 +1,111 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "commands": {
+            "type": "array",
+            "defaultValue": []
+        },
+        "nsgRules": {
+            "type": "array",
+            "defaultValue": []
+        },
+        "exports": {
+            "type": "array",
+            "defaultValue": []
+        },
+        "ruleSeed": {
+            "type": "int",
+            "defaultValue": 100
+        },
+        "data": {
+            "type": "object",
+            "defaultValue": {
+                "dockerImage": "ethereumex/eth-stats-dashboard:latest"
+            }
+        },
+        "parentName": {
+            "type": "string"
+        },
+        "contentRoot": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "nsgRules": [
+            {
+                "name": "allow-dashboard",
+                "properties": {
+                    "protocol": "Tcp",
+                    "sourcePortRange": "*",
+                    "destinationPortRange": "3000",
+                    "sourceAddressPrefix": "Internet",
+                    "destinationAddressPrefix": "*",
+                    "access": "Allow",
+                    "priority": "[add(parameters('ruleSeed'), 1)]",
+                    "direction": "Inbound"
+                }
+            },
+            {
+                "name": "allow-registrar",
+                "properties": {
+                    "protocol": "Tcp",
+                    "sourcePortRange": "*",
+                    "destinationPortRange": "3001",
+                    "sourceAddressPrefix": "Internet",
+                    "destinationAddressPrefix": "*",
+                    "access": "Allow",
+                    "priority": "[add(parameters('ruleSeed'), 2)]",
+                    "direction": "Inbound"
+                }
+            }
+        ],
+        "exports": [
+            {
+                "Name": "Dashboard",
+                "Source": 3000,
+                "Destination": 3000,
+                "Protocol": "TCP"
+            },
+            {
+                "Name": "Registrar",
+                "Source": 3001,
+                "Destination": 3001,
+                "Protocol": "TCP"
+            }
+        ],
+        "commands": [
+            {
+                "name": "dashboard",
+                "image": "[parameters('data').dockerImage]",
+                "ports": [
+                    {
+                        "port": 3000,
+                        "protocol": "tcp"
+                    },
+                    {
+                        "port": 3001,
+                        "protocol": "tcp"
+                    }
+                ],
+                "arguments": [
+                    "-td --restart always",
+                    "--hostname ${HOST_NAME}-d",
+                    "-e WS_SECRET=${WS_SECRET}"
+                ]
+            }
+        ]
+    },
+    "resources": [],
+    "outputs": {
+        "Result": {
+            "type": "object",
+            "value": {
+                "Commands": "[concat(parameters('commands'), variables('commands'))]",
+                "NsgRules": "[concat(parameters('nsgRules'), variables('nsgRules'))]",
+                "Exports": "[concat(parameters('exports'), variables('exports'))]",
+                "RuleSeed": "[add(parameters('ruleSeed'), length(variables('nsgRules')))]"
+            }
+        }
+    }
+}

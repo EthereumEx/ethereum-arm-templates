@@ -47,9 +47,6 @@
         "description": "ssh public key for connecting to VMs."
       }
     },
-    "virtualNetworkName": {
-      "type": "string"
-    },
     "networkConfiguration": {
       "type": "object"
     },
@@ -95,9 +92,6 @@
           },
           "instanceCount": {
             "value": "[parameters('instanceCount')]"
-          },
-          "virtualNetworkName": {
-            "value": "[parameters('virtualNetworkName')]"
           },
           "username": {
             "value": "[parameters('username')]"

@@ -1,0 +1,102 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "location of resources"
+      }
+    },
+    "namingInfix": {
+      "type": "string"
+    },
+    "subnets": {
+      "type": "array"
+    },
+    "contentRoot": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "resourceLocation": "[parameters('location')]",
+    "namingInfix": "[parameters('namingInfix')]"
+  },
+  "resources": [
+   {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[concat(variables('namingInfix'),'-nsgLoop-', copyIndex())]",
+      "apiVersion": "2015-01-01",
+      "copy": {
+        "name": "nsgLoop",
+        "count": "[length(parameters('subnets'))]"
+      },
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/template.network.subnet.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('resourceLocation')]"
+          },
+          "namingInfix": {
+            "value": "[variables('namingInfix')]"
+          },
+          "subnet": {
+            "value": "[parameters('subnets')[copyIndex()]]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[concat(variables('namingInfix'),'-nsgLoop-merge-0')]",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/template.array.merge.json')]"
+        },
+        "mode": "Incremental"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[concat(variables('namingInfix'),'-nsgLoop-merge-', copyIndex(1))]",
+      "apiVersion": "2015-01-01",
+      "copy": {
+        "name": "mergeLoop",
+        "count": "[length(parameters('subnets'))]"
+      },
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/template.array.merge.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "arrayA": {
+            "value": "[reference(concat(variables('namingInfix'),'-nsgLoop-merge-', copyIndex())).outputs.result.value]"
+          },
+          "arrayB": {
+            "value": [
+              "[reference(concat(variables('namingInfix'),'-nsgLoop-', copyIndex())).outputs.nsg.value]"
+            ]
+          }
+        }
+      },
+      "dependsOn": [
+        "nsgLoop",
+        "[concat(variables('namingInfix'),'-nsgLoop-merge-', copyIndex())]"
+      ]
+    }
+  ],
+  "outputs": {
+    "subnets": {
+      "type": "array",
+      "value": "[reference(concat(variables('namingInfix'),'-nsgLoop-merge-', length(parameters('subnets')))).outputs.result.value]"
+    }
+  }
+}

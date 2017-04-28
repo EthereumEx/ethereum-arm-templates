@@ -80,38 +80,67 @@
     ],
     "resourceLocation": "[tolower(variables('resourceLocations')[length(take(parameters('locationOverride'),1))])]",
     "namingInfix": "[toLower(parameters('dashboardName'))]",
-    "dNetworkName": "[concat('Consortium.', parameters('dashboardName'), '.Network')]",
-    "dVMSSDashboard": "[concat('Consortium.', parameters('dashboardName'), '.VMSSCommands')]",
-    "defaultCommands": [
+    "rootName": "[concat('Consortium.', parameters('dashboardName'))]",
+    "dNetworkName": "[concat(variables('rootName'), '.Network')]",
+    "dVMSSDashboard": "[concat(variables('rootName'), '.VMSSCommands')]",
+    "initCommands": [
       {
-        "name": "dashboard",
-        "image": "[parameters('dockerImage')]",
-        "ports": [
-          {
-            "port": 3000,
-            "protocol": "tcp"
-          },
-          {
-            "port": 3001,
-            "protocol": "tcp"
-          }
-        ],
-        "arguments": [
-          "-td --restart always",
-          "--hostname ${HOST_NAME}-d",
-          "[concat('-e WS_SECRET=', parameters('dashboardSecret'))]"
-        ]
+        "name": "secrets",
+        "globalEnvironment": {
+          "WS_SECRET": "[parameters('dashboardSecret')]"
+        }
       }
     ],
-    "additionalCommandOptions": [
-      [],
-      "[parameters('additionalCommands').Commands]"
+    "extensionName": "[concat(variables('rootName'), '.Extensions')]",
+    "extensions": [
+      {
+        "name": "EthStats-Dashboard",
+        "extension": "ethStats.dashboard.json",
+        "data": {
+          "dockerImage": "[parameters('dockerImage')]"
+        }
+      }
     ],
-    "dashboardCommands": {
-      "Commands": "[concat(variables('defaultCommands'), variables('additionalCommandOptions')[length(take(skip(string(parameters('additionalCommands')),3),1))])]"
-    }
+    "defaultSecurityRules": [
+      {
+        "name": "allow-ssh",
+        "properties": {
+          "protocol": "Tcp",
+          "sourcePortRange": "*",
+          "destinationPortRange": "22",
+          "sourceAddressPrefix": "Internet",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": 100,
+          "direction": "Inbound"
+        }
+      }
+    ]
   },
   "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[variables('extensionName')]",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.extensions.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "rootName": {
+            "value": "[variables('extensionName')]"
+          },
+          "contentRoot": {
+            "value": "[variables('contentRoot')]"
+          },
+          "extensions": {
+            "value": "[variables('extensions')]"
+          }
+        }
+      }
+    },
     {
       "type": "Microsoft.Resources/deployments",
       "name": "[variables('dNetworkName')]",
@@ -119,7 +148,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/template.dashboard.network.json')]"
+          "uri": "[concat(variables('contentRoot'), '/template.network.loadBalanced.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -128,9 +157,27 @@
           },
           "namingInfix": {
             "value": "[variables('namingInfix')]"
+          },
+          "subnets": {
+            "value": [
+              {
+                "name": "default",
+                "prefix": "10.0.0.0/24",
+                "rules": "[concat(variables('defaultSecurityRules'), reference(variables('extensionName')).outputs.result.value.nsgRules)]"
+              }
+            ]
+          },
+          "exportRules": {
+            "value": "[reference(variables('extensionName')).outputs.result.value.exports]"
+          },
+          "contentRoot": {
+            "value": "[variables('contentRoot')]"
           }
         }
-      }
+      },
+      "dependsOn": [
+        "[variables('extensionName')]"
+      ]
     },
     {
       "type": "Microsoft.Resources/deployments",
@@ -161,9 +208,6 @@
           "instanceCount": {
             "value": 1
           },
-          "virtualNetworkName": {
-            "value": "[reference(variables('dNetworkName')).outputs.network.value.name]"
-          },
           "username": {
             "value": "[parameters('username')]"
           },
@@ -171,16 +215,18 @@
             "value": "[parameters('sshPublicKey')]"
           },
           "commandsJson": {
-            "value": "[variables('dashboardCommands')]"
+            "value": {
+              "Commands": "[concat(variables('initCommands'), reference(variables('extensionName')).outputs.result.value.commands)]"
+            }
           },
           "networkConfiguration": {
             "value": {
               "subnet": {
-                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets.dashboard]"
+                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets[0].id]"
               },
               "loadBalancerBackendAddressPools": [
                 {
-                  "id": "[reference(variables('dNetworkName')).outputs.network.value.internal.poolId]"
+                  "id": "[reference(variables('dNetworkName')).outputs.network.value.poolId]"
                 }
               ]
             }
@@ -195,7 +241,7 @@
   "outputs": {
     "ip": {
       "type": "string",
-      "value": "[reference(variables('dNetworkName')).outputs.network.value.ip.ipAddress]"
+      "value": "[reference(variables('dNetworkName')).outputs.network.value.ip]"
     }
   }
 }

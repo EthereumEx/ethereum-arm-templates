@@ -1,0 +1,85 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "location of resources"
+      }
+    },
+    "namingInfix": {
+      "type": "string"
+    },
+    "addressPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/16"
+    },
+    "subnets": {
+      "type": "array"
+    },
+    "contentRoot": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "resourceLocation": "[parameters('location')]",
+    "contentRoot": "[parameters('contentRoot')]",
+    "namingInfix": "[parameters('namingInfix')]",
+    "virtualNetworkName": "[concat(variables('namingInfix'), '-vnet')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[concat(variables('namingInfix'),'-nsgs')]",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/template.network.subnets.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "namingInfix": {
+            "value": "[variables('namingInfix')]"
+          },
+          "location": {
+            "value": "[variables('resourceLocation')]"
+          },
+          "subnets": {
+            "value": "[parameters('subnets')]"
+          },
+          "contentRoot": {
+            "value": "[variables('contentRoot')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('virtualNetworkName')]",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('resourceLocation')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('addressPrefix')]"
+          ]
+        },
+        "subnets": "[reference(concat(variables('namingInfix'),'-nsgs')).outputs.subnets.value]"
+      },
+      "dependsOn": [
+        "[concat(variables('namingInfix'),'-nsgs')]"
+      ]
+    }
+  ],
+  "outputs": {
+    "Result": {
+      "type": "object",
+      "value": {
+        "network" : "[reference(variables('virtualNetworkName'))]",
+        "id" : "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+      }
+    }
+  }
+}

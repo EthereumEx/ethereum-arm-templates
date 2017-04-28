@@ -49,18 +49,48 @@ function executeCommand(item) {
     exec(item.command, item.environment);
 }
 
-for (var index in data) {
-    var item = data[index];
-
-    if (item.image) {
-        deployDocker(item);
-    }
-    else if (item.command) {
-        executeCommand(item);
-    }
-    else {
-        console.log("Invalid item[" + index + "] " + item.name);
+function updateEnvironment(item, globalEnv)
+{
+    if (!item.environment && globalEnv)
+    {
+        item.environment = {};
     }
 
-    console.log("");
+    for (var envName in globalEnv) {
+        if (!item.environment[envName])
+        {
+            item.environment[envName] = globalEnv[envName];
+        }
+    }
 }
+
+function orchestrateCommands()
+{
+    var globalEnvironment = {};
+
+    for (var index in data) {
+        var item = data[index];
+
+        if (item.globalEnvironment)
+        {
+            for (var envName in item.globalEnvironment) {
+                globalEnvironment[envName] = item.globalEnvironment[envName];
+            }
+        }
+        else if (item.image) {
+            updateEnvironment(item, globalEnvironment);
+            deployDocker(item);
+        }
+        else if (item.command) {
+            updateEnvironment(item, globalEnvironment);
+            executeCommand(item);
+        }
+        else {
+            console.log("Invalid item[" + index + "] " + item.name);
+        }
+
+        console.log("");
+    }
+}
+
+orchestrateCommands();

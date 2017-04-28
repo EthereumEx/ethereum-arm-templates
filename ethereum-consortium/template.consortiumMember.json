@@ -165,10 +165,11 @@
     ],
     "resourceLocation": "[tolower(variables('resourceLocations')[length(take(parameters('locationOverride'),1))])]",
     "namingInfix": "[toLower(parameters('consortiumMemberName'))]",
-    "dNetworkName": "[concat('Consortium.', parameters('consortiumMemberName'), '.Network')]",
-    "dVMSSTx": "[concat('Consortium.', parameters('consortiumMemberName'), '.Tx.Nodes')]",
-    "dVMSSMiners": "[concat('Consortium.', parameters('consortiumMemberName'), '.Miners.Nodes')]",
-    "dMinerProperties": "[concat('Consortium.', parameters('consortiumMemberName'), '.MinerProperties')]",
+    "rootName": "[concat('Consortium.', parameters('consortiumMemberName'))]",
+    "dNetworkName": "[concat(variables('rootName'), '.Network')]",
+    "dVMSSTx": "[concat(variables('rootName'), '.Tx.Nodes')]",
+    "dVMSSMiners": "[concat(variables('rootName'), '.Miners.Nodes')]",
+    "dMinerProperties": "[concat(variables('rootName'), '.MinerProperties')]",
     "txGenesis": "[base64(string(parameters('txGenesisJson')))]",
     "minerGenesis": "[base64(string(parameters('minerGenesisJson')))]",
     "bootNodeUrl": "[concat('http://', parameters('registrarIp'), ':3001')]",
@@ -194,9 +195,81 @@
     ],
     "omsCommand": {
       "Commands": "[variables('omsCommands')[length(take(skip(string(parameters('configOms')),3),1))]]"
-    }
+    },
+    "txExtensionName": "[concat(variables('rootName'), '.Tx.Extensions')]",
+    "txExtensions": [
+      {
+        "name": "GoEthereum-Tx",
+        "extension": "goEthereum.txNode.json",
+        "data": {
+          "dockerImage": "[parameters('txNodeDockerImage')]",
+          "arguments" : []
+        }
+      }
+    ],
+    "minerExtensionName": "[concat(variables('rootName'), '.Miner.Extensions')]",
+    "minerExtensions": [
+      {
+        "name": "GoEthereum-Miner",
+        "extension": "goEthereum.minerNode.json",
+        "data": {
+          "dockerImage": "[parameters('minerNodeDockerImage')]",
+          "arguments": [
+            "-e ENABLE_MINER=1",
+            "-e MINER_ADDRESS=${MINER_ADDRESS}",
+            "-e MINER_THREADS=${MINER_THREADS}"
+          ]
+        }
+      }
+    ]
   },
   "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[variables('txExtensionName')]",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.extensions.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "rootName": {
+            "value": "[variables('txExtensionName')]"
+          },
+          "contentRoot": {
+            "value": "[variables('contentRoot')]"
+          },
+          "extensions": {
+            "value": "[variables('txExtensions')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[variables('minerExtensionName')]",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.extensions.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "rootName": {
+            "value": "[variables('minerExtensionName')]"
+          },
+          "contentRoot": {
+            "value": "[variables('contentRoot')]"
+          },
+          "extensions": {
+            "value": "[variables('minerExtensions')]"
+          }
+        }
+      }
+    },
     {
       "type": "Microsoft.Resources/deployments",
       "name": "[variables('dNetworkName')]",
@@ -204,7 +277,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/template.consortiumMember.network.json')]"
+          "uri": "[concat(variables('contentRoot'), '/template.network.loadBalanced.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -213,9 +286,33 @@
           },
           "namingInfix": {
             "value": "[variables('namingInfix')]"
+          },
+          "subnets": {
+            "value": [
+              {
+                "name": "txs",
+                "prefix": "10.0.1.0/24",
+                "rules": "[reference(variables('txExtensionName')).outputs.result.value.nsgRules]"
+              },
+              {
+                "name": "miners",
+                "prefix": "10.0.2.0/24",
+                "rules": "[reference(variables('minerExtensionName')).outputs.result.value.nsgRules]"
+              }
+            ]
+          },
+          "exportRules": {
+            "value": "[concat(reference(variables('minerExtensionName')).outputs.result.value.exports, reference(variables('txExtensionName')).outputs.result.value.exports)]"
+          },
+          "contentRoot": {
+            "value": "[variables('contentRoot')]"
           }
         }
-      }
+      },
+      "dependsOn": [
+        "[variables('txExtensionName')]",
+        "[variables('minerExtensionName')]"
+      ]
     },
     {
       "type": "Microsoft.Resources/deployments",
@@ -263,50 +360,35 @@
           "instanceCount": {
             "value": "[parameters('txnodeCount')]"
           },
-          "virtualNetworkName": {
-            "value": "[reference(variables('dNetworkName')).outputs.network.value.name]"
-          },
           "username": {
             "value": "[parameters('username')]"
           },
           "sshPublicKey": {
             "value": "[parameters('sshPublicKey')]"
           },
-          "genesisContent": {
-            "value": "[variables('txGenesis')]"
-          },
-          "nodeImage": {
-            "value": "[parameters('txNodeDockerImage')]"
-          },
-          "nodeArguments": {
+          "configuration": {
             "value": {
-              "arguments": [
-                "-e INSTANCE_NAME=$HOST_NAME",
-                "-e NODE_NAME=$HOST_NAME",
-                "-e HOST_IP=$HOST_IP",
-                "[concat('-e NETWORKID=', parameters('gethNetworkId'))]",
-                "[concat('-e WS_SERVER=', variables('wsServer'))]",
-                "[concat('-e WS_SECRET=', parameters('dashboardSecret'))]",
-                "[concat('-e BOOTNODE_URL=', variables('bootNodeUrl'))]",
-                "[concat('-e BOOTNODE_NETWORK=', substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10))]",
-                "[concat('-e BOOTNODE_PUBLIC_IP=', reference(variables('dNetworkName')).outputs.network.value.publicIp)]"
-              ]
+              "globalEnvironment": {
+                "USERNAME" : "[parameters('username')]",
+                "GENESIS_CONTENT": "[variables('txGenesis')]",
+                "NETWORK_ID": "[parameters('gethNetworkId')]",
+                "WS_SERVER": "[variables('wsServer')]",
+                "WS_SECRET": "[parameters('dashboardSecret')]",
+                "BOOTNODE_URL": "[variables('bootNodeUrl')]",
+                "BOOTNODE_NETWORK": "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
+                "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.ip]"
+              },
+              "commands": "[concat(reference(variables('txExtensionName')).outputs.result.value.commands, variables('omsCommand').Commands)]"
             }
-          },
-          "additionalCommands": {
-            "value": "[variables('omsCommand')]"
           },
           "networkConfiguration": {
             "value": {
               "subnet": {
-                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets.tx]"
+                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets[0].id]"
               },
               "loadBalancerBackendAddressPools": [
                 {
-                  "id": "[reference(variables('dNetworkName')).outputs.network.value.public.poolId]"
-                },
-                {
-                  "id": "[reference(variables('dNetworkName')).outputs.network.value.internal.poolId]"
+                  "id": "[reference(variables('dNetworkName')).outputs.network.value.poolId]"
                 }
               ]
             }
@@ -346,46 +428,33 @@
           "instanceCount": {
             "value": "[parameters('minerCount')]"
           },
-          "virtualNetworkName": {
-            "value": "[reference(variables('dNetworkName')).outputs.network.value.name]"
-          },
           "username": {
             "value": "[parameters('username')]"
           },
           "sshPublicKey": {
             "value": "[parameters('sshPublicKey')]"
           },
-          "genesisContent": {
-            "value": "[variables('minerGenesis')]"
-          },
-          "nodeImage": {
-            "value": "[parameters('minerNodeDockerImage')]"
-          },
-          "nodeArguments": {
+          "configuration": {
             "value": {
-              "arguments": [
-                "-e INSTANCE_NAME=$HOST_NAME",
-                "-e NODE_NAME=$HOST_NAME",
-                "-e HOST_IP=$HOST_IP",
-                "[concat('-e NETWORKID=', parameters('gethNetworkId'))]",
-                "[concat('-e WS_SERVER=', variables('wsServer'))]",
-                "[concat('-e WS_SECRET=', parameters('dashboardSecret'))]",
-                "[concat('-e BOOTNODE_URL=', variables('bootNodeUrl'))]",
-                "[concat('-e BOOTNODE_NETWORK=', substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10))]",
-                "[concat('-e BOOTNODE_PUBLIC_IP=', reference(variables('dNetworkName')).outputs.network.value.publicIp)]",
-                "-e ENABLE_MINER=1",
-                "[concat('-e MINER_ADDRESS=', parameters('minerAddress'))]",
-                "[concat('-e MINER_THREADS=', string(reference(variables('dMinerProperties')).outputs.result.value.cores))]"
-              ]
+              "globalEnvironment": {
+                "USERNAME" : "[parameters('username')]",
+                "GENESIS_CONTENT": "[variables('minerGenesis')]",
+                "NETWORK_ID": "[parameters('gethNetworkId')]",
+                "WS_SERVER": "[variables('wsServer')]",
+                "WS_SECRET": "[parameters('dashboardSecret')]",
+                "BOOTNODE_URL": "[variables('bootNodeUrl')]",
+                "BOOTNODE_NETWORK": "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
+                "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.ip]",
+                "MINER_ADDRESS" : "[parameters('minerAddress')]",
+                "MINER_THREADS" : "[string(reference(variables('dMinerProperties')).outputs.result.value.cores)]"
+              },
+              "commands": "[concat(reference(variables('minerExtensionName')).outputs.result.value.commands, variables('omsCommand').Commands)]"
             }
-          },
-          "additionalCommands": {
-            "value": "[variables('omsCommand')]"
           },
           "networkConfiguration": {
             "value": {
               "subnet": {
-                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets.miners]"
+                "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets[1].id]"
               }
             }
           }
