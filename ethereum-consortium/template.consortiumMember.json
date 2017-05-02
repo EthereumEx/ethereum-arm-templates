@@ -471,7 +471,7 @@
     "Member": {
       "type": "object",
       "value": {
-        "ip": "[reference(variables('dNetworkName')).outputs.network.value.publicIp]",
+        "ip": "[reference(variables('dNetworkName')).outputs.network.value.ip]",
         "network": "[reference(variables('dNetworkName')).outputs.network.value]"
       }
     }
