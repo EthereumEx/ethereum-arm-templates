@@ -1,0 +1,146 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sshPublicKey": {
+      "type": "string",
+      "metadata": {
+        "description": "ssh public key(s) for connecting to VMs."
+      }
+    },
+    "genesisAccount": {
+      "type": "string",
+      "defaultValue": "0xcd2051a37cdc02db5da21d61415de21af4058a5e"
+    },
+    "consortiumName": {
+      "type": "string",
+      "maxLength": 10,
+      "defaultValue": "TEST",
+      "metadata": {
+        "description": "A short identifier to distinguish machines in this membership"
+      }
+    },
+    "ethereumNetworkId": {
+      "type": "securestring",
+      "defaultValue": "54321"
+    },
+    "dashboardSecret": {
+      "type": "securestring",
+      "defaultValue": "12345"
+    },
+    "txNodes": {
+      "type": "int",
+      "defaultValue": 3
+    },
+    "miningNodes": {
+      "type": "int",
+      "defaultValue": 2
+    },
+    "username": {
+      "type": "string",
+      "defaultValue": "azureuser",
+      "metadata": {
+        "description": "Admin username on all VMs."
+      }
+    },
+    "contentVersionOverride": {
+      "defaultValue": "",
+      "type": "string",
+      "metadata": {
+        "description": "This parameter is ignored if contentRootOverride is provided"
+      }
+    },
+    "contentRootOverride": {
+      "defaultValue": "",
+      "type": "string"
+    }
+  },
+  "variables": {
+    "contentVersions": [
+      "Release-v2.0.4",
+      "[parameters('contentVersionOverride')]"
+    ],
+    "contentVersion": "[variables('contentVersions')[length(take(parameters('contentVersionOverride'),1))]]",
+    "contentRootUrl": "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', variables('contentVersion'), '/ethereum-consortium')]",
+    "contentRoots": [
+      "[variables('contentRootUrl')]",
+      "[parameters('contentRootOverride')]"
+    ],
+    "contentRoot": "[variables('contentRoots')[length(take(parameters('contentRootOverride'),1))]]",
+    "resourceLocation": "[resourceGroup().location]",
+    "dConsortiumName": "[concat('Consortium.', parameters('consortiumName'))]",
+    "genesisJson": {
+      "coinbase": "0x0",
+      "difficulty": "0x20000",
+      "extraData": "0x0",
+      "gasLimit": "0x493E00",
+      "mixhash": "0x0",
+      "nonce": "0x0000",
+      "parentHash": "0x0",
+      "timestamp": "0x00",
+      "alloc": {
+        "[parameters('genesisAccount')]": {
+          "balance": "1000000000000000000000000"
+        }
+      }
+    },
+    "members": [
+      {
+        "name": "M1",
+        "minerCount": "[parameters('miningNodes')]",
+        "txNodeCount": "[parameters('txNodes')]",
+        "minerAddress": "[parameters('genesisAccount')]",
+        "location": "[variables('resourceLocation')]"
+      }
+    ]
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[variables('dConsortiumName')]",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(variables('contentRoot'), '/template.consortium.custom.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "consortiumName": {
+            "value": "[parameters('consortiumName')]"
+          },
+          "members": {
+            "value": "[variables('members')]"
+          },
+          "username": {
+            "value": "[parameters('username')]"
+          },
+          "sshPublicKey": {
+            "value": "[parameters('sshPublicKey')]"
+          },
+          "genesisJson": {
+            "value": "[variables('genesisJson')]"
+          },
+          "minerGenesisJsonOverride": {
+            "value": "[variables('genesisJson')]"
+          },
+          "gethNetworkId": {
+            "value": "[parameters('ethereumNetworkId')]"
+          },
+          "dashboardSecret": {
+            "value": "[parameters('dashboardSecret')]"
+          },
+          "contentVersion": {
+            "value": "[variables('contentVersion')]"
+          },
+          "contentRootOverride": {
+            "value": "[parameters('contentRootOverride')]"
+          },
+          "locationOverride": {
+            "value": "[variables('resourceLocation')]"
+          }
+        }
+      }
+    }
+  ]
+}

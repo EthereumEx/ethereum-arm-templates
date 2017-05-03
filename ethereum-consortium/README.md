@@ -25,6 +25,9 @@ All of the nodes in the network are assembled by using docker containers from [E
 * [Adding a new member to a network](docs/newMemberWalkthrough.md)
 * [Deploy using custom docker images](docs/customDockerDeployment.md)
 
+## Quick Deployments
+* [Preconfigured Deployment](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FEthereumEx%2Fethereum-arm-templates%2Fmaster%2Fethereum-consortium%2Ftemplate.clickOnce.json)
+
 ## Example Parameters File
     {
         "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
