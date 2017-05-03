@@ -80,6 +80,12 @@
         "Source": 30303,
         "Destination": 30303,
         "Protocol": "TCP"
+      },
+      {
+        "Name": "Ethereum-RPC",
+        "Source": 8545,
+        "Destination": 8545,
+        "Protocol": "TCP"
       }
     ],
     "templateName": "[concat(parameters('parentName'), '.Tx')]"
