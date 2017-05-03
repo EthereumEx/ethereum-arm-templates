@@ -68,7 +68,7 @@
       "-e WS_SECRET=${WS_SECRET}",
       "-e BOOTNODE_URL=${BOOTNODE_URL}",
       "-e BOOTNODE_NETWORK=${BOOTNODE_NETWORK}",
-      "-e BOOTNODE_PUBLIC_IP=${BOOTNODE_PUBLICIP}"
+      "-e BOOTNODE_PUBLIC_IP=${BOOTNODE_PUBLIC_IP}"
     ],
     "commands": [
       {
