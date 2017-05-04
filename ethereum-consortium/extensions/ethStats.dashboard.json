@@ -29,9 +29,14 @@
         },
         "contentRoot": {
             "type": "string"
+        },
+        "internalExports": {
+            "type": "array",
+            "defaultValue": []
         }
     },
     "variables": {
+        "internalExports": [],
         "nsgRules": [
             {
                 "name": "allow-dashboard",
@@ -104,6 +109,7 @@
                 "Commands": "[concat(parameters('commands'), variables('commands'))]",
                 "NsgRules": "[concat(parameters('nsgRules'), variables('nsgRules'))]",
                 "Exports": "[concat(parameters('exports'), variables('exports'))]",
+                "InternalExports": "[concat(parameters('internalExports'), variables('internalExports'))]",
                 "RuleSeed": "[add(parameters('ruleSeed'), length(variables('nsgRules')))]"
             }
         }

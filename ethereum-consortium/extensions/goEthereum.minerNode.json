@@ -30,9 +30,14 @@
     },
     "contentRoot": {
       "type": "string"
+    },
+    "internalExports" :{
+      "type" : "array",
+      "defaultValue": []
     }
   },
   "variables": {
+    "internalExports" : [],
     "nsgRules": [
       {
         "name": "SSH",
@@ -111,6 +116,7 @@
         "Commands": "[reference(variables('templateName')).outputs.result.value.commands]",
         "NsgRules": "[concat(parameters('nsgRules'), reference(variables('templateName')).outputs.result.value.nsgRules)]",
         "Exports": "[parameters('exports')]",
+        "InternalExports": "[concat(parameters('internalExports'), variables('internalExports'))]",
         "RuleSeed": "[reference(variables('templateName')).outputs.result.value.ruleSeed]"
       }
     }

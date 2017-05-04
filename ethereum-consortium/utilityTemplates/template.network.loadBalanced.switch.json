@@ -1,0 +1,80 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "location of resources"
+      }
+    },
+    "subnets": {
+      "type": "array",
+      "defaultValue": []
+    },
+    "exportRules": {
+      "type": "array",
+      "defaultValue": []
+    },
+    "internalExportRules": {
+      "type": "array",
+      "defaultValue": []
+    },
+    "namingInfix": {
+      "type": "string"
+    },
+    "contentRoot": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "resourceLocation": "[parameters('location')]",
+    "namingInfix": "[parameters('namingInfix')]",
+    "loadBalancerTemplate": "[concat(variables('namingInfix'), '-lb-switch')]",
+    "templateNames" : [
+      "template.network.loadBalanced.json",
+      "template.network.loadBalanced.plusInternal.json"
+    ],
+    "templateName" : "[variables('templateNames')[length(take(parameters('internalExportRules'), 1))]]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[variables('loadBalancerTemplate')]",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/', variables('templateName'))]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('resourceLocation')]"
+          },
+          "namingInfix": {
+            "value": "[parameters('namingInfix')]"
+          },
+          "subnets": {
+            "value": "[parameters('subnets')]"
+          },
+          "exportRules": {
+            "value": "[parameters('exportRules')]"
+          },
+          "internalExportRules": {
+            "value": "[parameters('internalExportRules')]"
+          },
+          "contentRoot": {
+            "value": "[parameters('contentRoot')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "Network": {
+      "type": "object",
+      "value": "[reference(variables('loadBalancerTemplate')).outputs.Network.value]"
+    }
+  }
+}

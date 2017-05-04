@@ -55,6 +55,9 @@
           "exports": {
             "value": "[reference(concat(variables('rootName'), copyIndex())).outputs.result.value.exports]"
           },
+          "internalExports": {
+            "value": "[reference(concat(variables('rootName'), copyIndex())).outputs.result.value.internalExports]"
+          },
           "ruleSeed": {
             "value": "[reference(concat(variables('rootName'), copyIndex())).outputs.result.value.ruleSeed]"
           },

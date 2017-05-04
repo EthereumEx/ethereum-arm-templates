@@ -1,0 +1,77 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "location of resources"
+      }
+    },
+    "rules": {
+      "type": "array",
+      "defaultValue": []
+    },
+    "namingInfix": {
+      "type": "string"
+    },
+    "subnetId": {
+      "type": "string"
+    },
+    "contentRoot": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "resourceLocation": "[parameters('location')]",
+    "contentRoot": "[parameters('contentRoot')]",
+    "loadBalancerName": "[concat(parameters('namingInfix'), '-ilb')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "[variables('loadBalancerName')]",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/template.network.loadBalancer.json')]"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('resourceLocation')]"
+          },
+          "rules": {
+            "value": "[parameters('rules')]"
+          },
+          "ipConfiguration": {
+            "value": {
+              "name": "InternalLoadBalancedIp",
+              "properties": {
+                "privateIPAllocationMethod": "Dynamic",
+                "subnet": {
+                  "id": "[parameters('subnetId')]"
+                }
+              }
+            }
+          },
+          "loadBalancerName": {
+            "value": "[variables('loadBalancerName')]"
+          },
+          "contentRoot": {
+            "value": "[variables('contentRoot')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "LoadBalancer": {
+      "type": "object",
+      "value": {
+        "backendPools": "[reference(variables('loadBalancerName')).outputs.LoadBalancer.value.backendPools]"
+      }
+    }
+  }
+}

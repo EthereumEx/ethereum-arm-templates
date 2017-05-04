@@ -12,8 +12,11 @@
       "type": "array",
       "defaultValue": []
     },
-    "namingInfix": {
+    "loadBalancerName": {
       "type": "string"
+    },
+    "ipConfiguration" : {
+      "type" : "object"
     },
     "contentRoot": {
       "type": "string"
@@ -21,32 +24,21 @@
   },
   "variables": {
     "resourceLocation": "[parameters('location')]",
-    "contentRoot": "[parameters('contentRoot')]",
-    "loadBalancerName": "[concat(parameters('namingInfix'), '-lb')]",
-    "namingInfix": "[variables('loadBalancerName')]",
-    "publicIpName": "[concat(variables('namingInfix'), '-public-ip')]",
-    "loadBalancedNodePool": "[concat(variables('namingInfix'), '-bepool')]",
+    "loadBalancerName": "[parameters('loadBalancerName')]",
+    "loadBalancedNodePool": "[concat(variables('loadBalancerName'), '-bepool')]",
     "nodeProbeName": "Node-Probe",
     "publicLoadBalancerId": "[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName'))]",
     "probeId": "[concat(variables('publicLoadBalancerId'), '/probes/', variables('nodeProbeName'))]",
     "backendPoolId": "[concat(variables('publicLoadBalancerId'), '/backendAddressPools/', variables('loadBalancedNodePool'))]",
-    "frontendIPConfigId": "[concat(variables('publicLoadBalancerId'), '/frontendIPConfigurations/LoadBalancedPublicIp')]"
+    "frontendIPConfigId": "[concat(variables('publicLoadBalancerId'), '/frontendIPConfigurations/', parameters('ipConfiguration').name)]",
+    "ipConfiguration" : [
+      "[parameters('ipConfiguration')]"
+    ]
   },
   "resources": [
     {
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('publicIpName')]",
-      "apiVersion": "2016-03-30",
-      "location": "[variables('resourceLocation')]",
-      "properties": {
-        "publicIPAllocationMethod": "Static",
-        "idleTimeoutInMinutes": 4
-      },
-      "dependsOn": []
-    },
-    {
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat(variables('namingInfix'),'-lbLoop-0')]",
+      "name": "[concat(variables('loadBalancerName'),'-lbLoop-0')]",
       "apiVersion": "2015-01-01",
       "properties": {
         "templateLink": {
@@ -58,7 +50,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat(variables('namingInfix'),'-lbLoop-', copyIndex(1))]",
+      "name": "[concat(variables('loadBalancerName'),'-lbLoop-', copyIndex(1))]",
       "apiVersion": "2015-01-01",
       "copy": {
         "name": "mergeLoop",
@@ -96,12 +88,12 @@
             ]
           },
           "arrayB": {
-            "value": "[reference(concat(variables('namingInfix'),'-lbLoop-', copyIndex())).outputs.Result.value]"
+            "value": "[reference(concat(variables('loadBalancerName'),'-lbLoop-', copyIndex())).outputs.Result.value]"
           }
         }
       },
       "dependsOn": [
-        "[concat(variables('namingInfix'),'-lbLoop-', copyIndex())]"
+        "[concat(variables('loadBalancerName'),'-lbLoop-', copyIndex())]"
       ]
     },
     {
@@ -110,22 +102,13 @@
       "apiVersion": "2015-06-15",
       "location": "[variables('resourceLocation')]",
       "properties": {
-        "frontendIPConfigurations": [
-          {
-            "name": "LoadBalancedPublicIp",
-            "properties": {
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]"
-              }
-            }
-          }
-        ],
+        "frontendIPConfigurations": "[variables('ipConfiguration')]",
         "backendAddressPools": [
           {
             "name": "[variables('loadBalancedNodePool')]"
           }
         ],
-        "loadBalancingRules": "[reference(concat(variables('namingInfix'),'-lbLoop-', length(parameters('rules')))).outputs.Result.value]",
+        "loadBalancingRules": "[reference(concat(variables('loadBalancerName'),'-lbLoop-', length(parameters('rules')))).outputs.Result.value]",
         "probes": [
           {
             "name": "[variables('nodeProbeName')]",
@@ -139,8 +122,7 @@
         ]
       },
       "dependsOn": [
-        "mergeLoop",
-        "[variables('publicIpName')]"
+        "mergeLoop"
       ]
     }
   ],
@@ -148,8 +130,11 @@
     "LoadBalancer": {
       "type": "object",
       "value": {
-        "backendPoolId": "[variables('backendPoolId')]",
-        "ip": "[reference(variables('publicIpName')).ipAddress]"
+        "backendPools" : [
+          {
+            "id": "[variables('backendPoolId')]"
+          }
+        ]
       }
     }
   }

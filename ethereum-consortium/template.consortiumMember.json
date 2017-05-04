@@ -131,7 +131,7 @@
       }
     },
     "contentVersion": {
-      "defaultValue": "Release-v2.0.4",
+      "defaultValue": "Release-v2.0.5",
       "type": "string",
       "metadata": {
         "description": "The version of the templates to use. This refers to a git branch. This parameter is ignored if contentRootOverride is provided"
@@ -166,7 +166,7 @@
     "resourceLocation": "[tolower(variables('resourceLocations')[length(take(parameters('locationOverride'),1))])]",
     "namingInfix": "[toLower(parameters('consortiumMemberName'))]",
     "rootName": "[concat('Consortium.', parameters('consortiumMemberName'))]",
-    "dNetworkName": "[concat(variables('rootName'), '.Network')]",
+    "dNetworkName": "[concat(variables('rootName'), '.LoadBalancedNetwork')]",
     "dVMSSTx": "[concat(variables('rootName'), '.Tx.Nodes')]",
     "dVMSSMiners": "[concat(variables('rootName'), '.Miners.Nodes')]",
     "dMinerProperties": "[concat(variables('rootName'), '.MinerProperties')]",
@@ -277,7 +277,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.network.loadBalanced.json')]"
+          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.network.loadBalanced.switch.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -303,6 +303,9 @@
           },
           "exportRules": {
             "value": "[concat(reference(variables('minerExtensionName')).outputs.result.value.exports, reference(variables('txExtensionName')).outputs.result.value.exports)]"
+          },
+          "internalExportRules": {
+            "value": "[concat(reference(variables('minerExtensionName')).outputs.result.value.internalExports, reference(variables('txExtensionName')).outputs.result.value.internalExports)]"
           },
           "contentRoot": {
             "value": "[variables('contentRoot')]"
@@ -386,11 +389,7 @@
               "subnet": {
                 "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets[0].id]"
               },
-              "loadBalancerBackendAddressPools": [
-                {
-                  "id": "[reference(variables('dNetworkName')).outputs.network.value.poolId]"
-                }
-              ]
+              "loadBalancerBackendAddressPools": "[reference(variables('dNetworkName')).outputs.network.value.backendPools]"
             }
           }
         }
