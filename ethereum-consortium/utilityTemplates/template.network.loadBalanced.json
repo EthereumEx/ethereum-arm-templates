@@ -28,7 +28,6 @@
     "contentRoot": "[parameters('contentRoot')]",
     "namingInfix": "[parameters('namingInfix')]",
     "networkName": "[concat(variables('namingInfix'), '.Network')]",
-    
     "defaultExportRules": [
       {
         "Name": "SSH",
@@ -37,7 +36,7 @@
         "Protocol": "Tcp"
       }
     ],
-    "loadBalancerName": "[concat(variables('namingInfix'), '-lb')]"
+    "loadBalancerTemplate": "[concat(variables('namingInfix'), '-lb-t')]"
   },
   "resources": [
     {
@@ -68,12 +67,12 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "[variables('loadBalancerName')]",
+      "name": "[variables('loadBalancerTemplate')]",
       "apiVersion": "2015-01-01",
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/template.network.loadBalancer.json')]"
+          "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/template.network.loadBalancer.public.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -98,8 +97,8 @@
       "type": "object",
       "value": {
         "id": "[reference(variables('networkName')).outputs.Result.value.id]",
-        "ip": "[reference(variables('loadbalancerName')).outputs.LoadBalancer.value.ip]",
-        "poolId": "[reference(variables('loadbalancerName')).outputs.LoadBalancer.value.backendPoolId]",
+        "ip": "[reference(variables('loadBalancerTemplate')).outputs.LoadBalancer.value.ip]",
+        "backendPools": "[reference(variables('loadBalancerTemplate')).outputs.LoadBalancer.value.backendPools]",
         "subnets": "[reference(variables('networkName')).outputs.Result.value.network.subnets]"
       }
     }

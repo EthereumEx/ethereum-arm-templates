@@ -166,7 +166,7 @@
     "resourceLocation": "[tolower(variables('resourceLocations')[length(take(parameters('locationOverride'),1))])]",
     "namingInfix": "[toLower(parameters('consortiumMemberName'))]",
     "rootName": "[concat('Consortium.', parameters('consortiumMemberName'))]",
-    "dNetworkName": "[concat(variables('rootName'), '.Network')]",
+    "dNetworkName": "[concat(variables('rootName'), '.LoadBalancedNetwork')]",
     "dVMSSTx": "[concat(variables('rootName'), '.Tx.Nodes')]",
     "dVMSSMiners": "[concat(variables('rootName'), '.Miners.Nodes')]",
     "dMinerProperties": "[concat(variables('rootName'), '.MinerProperties')]",
@@ -386,11 +386,7 @@
               "subnet": {
                 "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets[0].id]"
               },
-              "loadBalancerBackendAddressPools": [
-                {
-                  "id": "[reference(variables('dNetworkName')).outputs.network.value.poolId]"
-                }
-              ]
+              "loadBalancerBackendAddressPools": "[reference(variables('dNetworkName')).outputs.network.value.backendPools]"
             }
           }
         }

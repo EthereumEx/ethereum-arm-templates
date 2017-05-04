@@ -224,11 +224,7 @@
               "subnet": {
                 "id": "[reference(variables('dNetworkName')).outputs.network.value.subnets[0].id]"
               },
-              "loadBalancerBackendAddressPools": [
-                {
-                  "id": "[reference(variables('dNetworkName')).outputs.network.value.poolId]"
-                }
-              ]
+              "loadBalancerBackendAddressPools": "[reference(variables('dNetworkName')).outputs.network.value.backendPools]"
             }
           }
         }
