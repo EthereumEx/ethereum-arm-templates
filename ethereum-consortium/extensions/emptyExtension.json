@@ -11,6 +11,7 @@
                 "Commands": [],
                 "NsgRules": [],
                 "Exports" : [],
+                "InternalExports" : [],
                 "RuleSeed" : 100
             }
         }

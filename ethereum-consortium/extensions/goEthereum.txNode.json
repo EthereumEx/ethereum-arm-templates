@@ -30,6 +30,10 @@
     },
     "contentRoot": {
       "type": "string"
+    },
+    "internalExports" :{
+      "type" : "array",
+      "defaultValue": []
     }
   },
   "variables": {
@@ -80,14 +84,16 @@
         "Source": 30303,
         "Destination": 30303,
         "Protocol": "TCP"
-      },
+      }
+    ],
+    "internalExports" : [
       {
         "Name": "Ethereum-RPC",
         "Source": 8545,
         "Destination": 8545,
         "Protocol": "TCP"
       }
-    ],
+    ],    
     "templateName": "[concat(parameters('parentName'), '.Tx')]"
   },
   "resources": [
@@ -125,6 +131,7 @@
         "Commands": "[reference(variables('templateName')).outputs.result.value.commands]",
         "NsgRules": "[concat(parameters('nsgRules'), reference(variables('templateName')).outputs.result.value.nsgRules)]",
         "Exports": "[concat(parameters('exports'), variables('exports'))]",
+        "InternalExports": "[concat(parameters('internalExports'), variables('internalExports'))]",
         "RuleSeed": "[reference(variables('templateName')).outputs.result.value.ruleSeed]"
       }
     }

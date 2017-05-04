@@ -17,8 +17,7 @@
       "defaultValue": []
     },
     "internalExportRules": {
-      "type": "array",
-      "defaultValue": []
+      "type": "array"
     },
     "namingInfix": {
       "type": "string"
@@ -31,16 +30,8 @@
     "resourceLocation": "[parameters('location')]",
     "contentRoot": "[parameters('contentRoot')]",
     "namingInfix": "[parameters('namingInfix')]",
-    "networkName": "[concat(variables('namingInfix'), '.Network')]",
-    "defaultExportRules": [
-      {
-        "Name": "SSH",
-        "Source": 22,
-        "Destination": 22,
-        "Protocol": "Tcp"
-      }
-    ],
-    "loadBalancerTemplate": "[concat(variables('namingInfix'), '-lb-t')]"
+    "networkName": "[concat(variables('namingInfix'), '.Network.Template')]",
+    "internalLoadBalancerTemplate": "[concat(variables('namingInfix'), '-ilb-t')]"
   },
   "resources": [
     {
@@ -50,33 +41,36 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/template.network.json')]"
+          "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/template.network.loadBalanced.json')]"
         },
         "mode": "Incremental",
         "parameters": {
-          "namingInfix": {
-            "value": "[variables('namingInfix')]"
-          },
           "location": {
-            "value": "[variables('resourceLocation')]"
+            "value": "[parameters('location')]"
           },
           "subnets": {
             "value": "[parameters('subnets')]"
           },
+          "exportRules": {
+            "value": "[parameters('exportRules')]"
+          },
+          "namingInfix": {
+            "value": "[parameters('namingInfix')]"
+          },
           "contentRoot": {
-            "value": "[variables('contentRoot')]"
+            "value": "[parameters('contentRoot')]"
           }
         }
       }
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "[variables('loadBalancerTemplate')]",
+      "name": "[variables('internalLoadBalancerTemplate')]",
       "apiVersion": "2015-01-01",
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/template.network.loadBalancer.public.json')]"
+          "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/template.network.loadBalancer.internal.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -87,24 +81,34 @@
             "value": "[variables('resourceLocation')]"
           },
           "rules": {
-            "value": "[concat(variables('defaultExportRules'), parameters('exportRules'))]"
+            "value": "[parameters('internalExportRules')]"
+          },
+          "subnetId": {
+            "value": "[reference(variables('networkName')).outputs.Network.value.subnets[0].id]"
           },
           "contentRoot": {
             "value": "[variables('contentRoot')]"
           }
         }
-      }
+      },
+      "dependsOn": [
+        "[variables('networkName')]"
+      ]
     }
   ],
   "outputs": {
     "Network": {
       "type": "object",
       "value": {
-        "id": "[reference(variables('networkName')).outputs.Result.value.id]",
-        "ip": "[reference(variables('loadBalancerTemplate')).outputs.LoadBalancer.value.ip]",
-        "backendPools": "[reference(variables('loadBalancerTemplate')).outputs.LoadBalancer.value.backendPools]",
-        "subnets": "[reference(variables('networkName')).outputs.Result.value.network.subnets]"
+        "id": "[reference(variables('networkName')).outputs.Network.value.id]",
+        "ip": "[reference(variables('networkName')).outputs.Network.value.ip]",
+        "backendPools": "[concat(reference(variables('networkName')).outputs.Network.value.backendPools,reference(variables('internalLoadBalancerTemplate')).outputs.loadBalancer.value.backendPools)]",
+        "subnets": "[reference(variables('networkName')).outputs.Network.value.subnets]"
       }
+    },
+    "IlbPool2" : {
+      "type" : "object",
+      "value" : "[reference(variables('internalLoadBalancerTemplate')).outputs.loadBalancer.value.backendPools]"
     }
   }
 }
