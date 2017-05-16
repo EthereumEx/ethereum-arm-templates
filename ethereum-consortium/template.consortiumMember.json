@@ -215,10 +215,7 @@
         "data": {
           "dockerImage": "[parameters('minerNodeDockerImage')]",
           "arguments": [
-            "-e ENABLE_MINER=1",
-            "-e MINER_ADDRESS=${MINER_ADDRESS}",
-            "-e MINER_THREADS=${MINER_THREADS}"
-          ]
+           ]
         }
       }
     ]
@@ -444,6 +441,7 @@
                 "BOOTNODE_URL": "[variables('bootNodeUrl')]",
                 "BOOTNODE_NETWORK": "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
                 "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.ip]",
+                "ENABLE_MINER" : "1",
                 "MINER_ADDRESS" : "[parameters('minerAddress')]",
                 "MINER_THREADS" : "[string(reference(variables('dMinerProperties')).outputs.result.value.cores)]"
               },

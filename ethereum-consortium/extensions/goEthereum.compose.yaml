@@ -1,0 +1,28 @@
+version: '3'
+services:
+  ethereum-node:
+    image: ${DOCKER_IMAGE}
+    hostname: ${HOST_NAME}-c
+    restart: always
+    ipc: host
+    privileged: true
+    environment:
+      - INSTANCE_NAME=${HOST_NAME}
+      - NODE_NAME=${HOST_NAME}
+      - HOST_IP=${HOST_IP}
+      - NETWORKID=${NETWORK_ID}
+      - WS_SERVER=${WS_SERVER}
+      - WS_SECRET=${WS_SECRET}
+      - BOOTNODE_URL=${BOOTNODE_URL}
+      - BOOTNODE_NETWORK=${BOOTNODE_NETWORK}
+      - BOOTNODE_PUBLIC_IP=${BOOTNODE_PUBLIC_IP}
+      - ENABLE_MINER=${ENABLE_MINER}
+      - MINER_ADDRESS=${MINER_ADDRESS}
+      - MINER_THREADS=${MINER_THREADS}
+    volumes:
+      - /home/${USERNAME}/eth-node/genesis.json:/home/eth-node/genesis.json
+    ports:
+      - "30303:30303"
+      - "30303:30303/udp"
+      - "8545:8545"
+      - "8546:8546"
