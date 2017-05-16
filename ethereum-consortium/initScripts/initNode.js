@@ -15,14 +15,8 @@ function deployDocker(item) {
     console.log("Deploy Docker - " + item.name);
     exec("docker pull " + item.image);
 
-    var hostName = ("" + execSync('hostname')).trim();
-    var hostIp = ("" + execSync("ifconfig eth0 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://'")).trim();
+    var env =  {};
     
-    var env = {
-        "HOST_IP" : hostIp,
-        "HOST_NAME" : hostName
-    }
-
     for (var envName in item.environment) {
         env[envName] = item.environment[envName];
     }
@@ -66,7 +60,13 @@ function updateEnvironment(item, globalEnv)
 
 function orchestrateCommands()
 {
-    var globalEnvironment = {};
+    var hostName = ("" + execSync('hostname')).trim();
+    var hostIp = ("" + execSync("ifconfig eth0 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://'")).trim();
+    
+    var globalEnvironment = {
+        "HOST_IP" : hostIp,
+        "HOST_NAME" : hostName
+    }
 
     for (var index in data) {
         var item = data[index];
