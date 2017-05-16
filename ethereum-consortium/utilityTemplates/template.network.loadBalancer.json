@@ -18,6 +18,13 @@
     "ipConfiguration" : {
       "type" : "object"
     },
+    "loadDistribution" : {
+      "defaultValue": "Default",
+      "type": "string",
+      "allowedValues": [
+        "Default", "SourceIp"
+      ]
+    },
     "contentRoot": {
       "type": "string"
     }
@@ -76,7 +83,7 @@
                   "enableFloatingIP": false,
                   "idleTimeoutInMinutes": 4,
                   "protocol": "[parameters('rules')[copyIndex()].Protocol]",
-                  "loadDistribution": "Default",
+                  "loadDistribution": "[parameters('loadDistribution')]",
                   "backendAddressPool": {
                     "id": "[variables('backendPoolId')]"
                   },
