@@ -79,25 +79,21 @@
                 "Protocol": "TCP"
             }
         ],
+        "localDocker": "/root/docker-compose.yaml",
+        "dockerFile": "[concat(parameters('contentRoot'), '/extensions/ethStats.compose.yaml')]",
+        "curl": "curl -S -s --connect-timeout 5 --retry 15",
         "commands": [
+            
             {
-                "name": "dashboard",
-                "image": "[parameters('data').dockerImage]",
-                "ports": [
-                    {
-                        "port": 3000,
-                        "protocol": "tcp"
-                    },
-                    {
-                        "port": 3001,
-                        "protocol": "tcp"
-                    }
-                ],
-                "arguments": [
-                    "-td --restart always",
-                    "--hostname ${HOST_NAME}-d",
-                    "-e WS_SECRET=${WS_SECRET}"
-                ]
+                "name": "DownloadCompose",
+                "command": "[concat(variables('curl'), ' -o ', variables('localDocker'), ' ', variables('dockerFile'))]"
+            },
+            {
+                "name": "ComposeDashboard",
+                "command": "[concat('docker-compose -f ', variables('localDocker'), ' up -d')]",
+                "environment": {
+                    "DOCKER_IMAGE": "[parameters('data').dockerImage]"
+                }
             }
         ]
     },

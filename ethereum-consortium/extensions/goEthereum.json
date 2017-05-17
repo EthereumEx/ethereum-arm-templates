@@ -25,13 +25,16 @@
         "arguments": []
       }
     },
-    "internalExports" :{
-      "type" : "array",
+    "internalExports": {
+      "type": "array",
       "defaultValue": []
+    },
+    "contentRoot": {
+      "type": "string"
     }
   },
   "variables": {
-    "internalExports" : [],
+    "internalExports": [],
     "defaultNsgRules": [
       {
         "name": "allow-dashboard",
@@ -61,20 +64,9 @@
       }
     ],
     "nsgRules": "[concat(parameters('nsgRules'), variables('defaultNsgRules'))]",
-    "defaultArguments": [
-      "[concat('-v /home/${USERNAME}/eth-node/genesis.json:/home/eth-node/genesis.json')]",
-      "-td --restart always",
-      "--hostname ${HOST_NAME}-c",
-      "-e INSTANCE_NAME=${HOST_NAME}",
-      "-e NODE_NAME=${HOST_NAME}",
-      "-e HOST_IP=${HOST_IP}",
-      "-e NETWORKID=${NETWORK_ID}",
-      "-e WS_SERVER=${WS_SERVER}",
-      "-e WS_SECRET=${WS_SECRET}",
-      "-e BOOTNODE_URL=${BOOTNODE_URL}",
-      "-e BOOTNODE_NETWORK=${BOOTNODE_NETWORK}",
-      "-e BOOTNODE_PUBLIC_IP=${BOOTNODE_PUBLIC_IP}"
-    ],
+    "localDocker": "/root/docker-compose.yaml",
+    "dockerFile": "[concat(parameters('contentRoot'), '/extensions/goEthereum.compose.yaml')]",
+    "curl": "curl -S -s --connect-timeout 5 --retry 15",
     "commands": [
       {
         "name": "WriteGeth",
@@ -85,27 +77,15 @@
         "command": "chown -R ${USERNAME} /home/${USERNAME}/eth-node"
       },
       {
-        "name": "eth-node",
-        "image": "[parameters('data').dockerImage]",
-        "ports": [
-          {
-            "port": 8545,
-            "protocol": "tcp"
-          },
-          {
-            "port": 8546,
-            "protocol": "tcp"
-          },
-          {
-            "port": 30303,
-            "protocol": "tcp"
-          },
-          {
-            "port": 30303,
-            "protocol": "udp"
-          }
-        ],
-        "arguments": "[concat(variables('defaultArguments'), parameters('data').arguments)]"
+        "name": "DownloadCompose",
+        "command": "[concat(variables('curl'), ' -o ', variables('localDocker'), ' ', variables('dockerFile'))]"
+      },
+      {
+        "name": "ComposeDashboard",
+        "command": "[concat('docker-compose -f ', variables('localDocker'), ' up -d')]",
+        "environment": {
+          "DOCKER_IMAGE": "[parameters('data').dockerImage]"
+        }
       }
     ]
   },

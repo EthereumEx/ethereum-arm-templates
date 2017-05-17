@@ -1,0 +1,18 @@
+version: '3'
+services:
+  boot-node:
+    image: ethereumex/bootnode-registrar:node
+    hostname: ${HOST_NAME}-d
+    restart: always
+    environment:
+      - PORT=3001
+    ports:
+      - "3001:3001"
+  dashboard:
+    image: ethereumex/eth-netstats:node
+    hostname: ${HOST_NAME}-d
+    restart: always
+    environment:
+      - WS_SECRET=${WS_SECRET}
+    ports:
+      - "3000:3000"

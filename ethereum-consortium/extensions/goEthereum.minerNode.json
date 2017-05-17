@@ -104,6 +104,9 @@
           },
           "data": {
             "value": "[parameters('data')]"
+          },
+          "contentRoot": {
+            "value": "[parameters('contentRoot')]"
           }
         }
       }
