@@ -103,7 +103,7 @@
       ]
     },
     "contentVersion": {
-      "defaultValue": "Release-v2.0.5",
+      "defaultValue": "Release-v2.0.6",
       "type": "string",
       "metadata": {
         "description": "The version of the templates to use. This refers to a git branch. This parameter is ignored if contentRootOverride is provided"
