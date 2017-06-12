@@ -10,21 +10,19 @@
     * Replace the 0x0000000000000000000000000000000000000000 in the alloc section of the json below with the address that you copied above.
     * Update the nonce with a valid hex value
 
-            {
-                "coinbase": "0x0",
-                "difficulty": "0x20000",
-                "extraData": "0x0",
+{
+                "nonce": "0x0",
+                "timestamp": "0x0",
                 "gasLimit": "0x493E00",
-                "mixhash": "0x0",
-                "nonce": "0x0000",
-                "parentHash": "0x0",
-                "timestamp": "0x00",
+                "difficulty": "0x2000",
+                "config": {
+                },
                 "alloc": {
-                    "0x0000000000000000000000000000000000000000":{
-                        "balance":"1000000000000000000000000"
+                    "0x0000000000000000000000000000000000000000": {
+                        "balance": "1000000000000000000000000"
                     }
                 }
-            }
+            }            
 
 3. **Author the member json**  
     The json below will be used when deploying the template in Azure. It describes each member in the
