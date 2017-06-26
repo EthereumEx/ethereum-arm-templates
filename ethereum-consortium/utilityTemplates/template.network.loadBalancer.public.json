@@ -32,7 +32,7 @@
       "apiVersion": "2016-03-30",
       "location": "[variables('resourceLocation')]",
       "properties": {
-        "publicIPAllocationMethod": "Static",
+        "publicIPAllocationMethod": "Dynamic",
         "idleTimeoutInMinutes": 4
       },
       "dependsOn": []
