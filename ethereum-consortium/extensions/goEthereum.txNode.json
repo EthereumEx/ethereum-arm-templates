@@ -22,6 +22,7 @@
       "type": "object",
       "defaultValue": {
         "dockerImage": "ethereumex/geth-node:latest",
+        "allowPublicRPC": "true",
         "arguments": []
       }
     },
@@ -31,12 +32,30 @@
     "contentRoot": {
       "type": "string"
     },
-    "internalExports" :{
-      "type" : "array",
+    "internalExports": {
+      "type": "array",
       "defaultValue": []
     }
   },
   "variables": {
+    "rpcValue" : "[toLower(parameters('data')['allowPublicRPC'])]",
+    "rpcConfig": {
+      "true": {
+        "sourceAddress": "*",
+        "exports": [
+          {
+            "Name": "Ethereum-RPC",
+            "Source": 8545,
+            "Destination": 8545,
+            "Protocol": "TCP"
+          }
+        ]
+      },
+      "false" : {
+        "sourceAddress" : "VirtualNetwork",
+        "exports" : []
+      }
+    },
     "nsgRules": [
       {
         "name": "SSH",
@@ -57,7 +76,7 @@
           "protocol": "Tcp",
           "sourcePortRange": "*",
           "destinationPortRange": "8545",
-          "sourceAddressPrefix": "VirtualNetwork",
+          "sourceAddressPrefix": "[variables('rpcConfig')[variables('rpcValue')].sourceAddress]",
           "destinationAddressPrefix": "*",
           "access": "Allow",
           "priority": "[add(parameters('ruleSeed'), 2)]",
@@ -78,7 +97,7 @@
         }
       }
     ],
-    "exports": [
+    "deafultExports": [
       {
         "Name": "GethP2P",
         "Source": 30303,
@@ -86,14 +105,15 @@
         "Protocol": "TCP"
       }
     ],
-    "internalExports" : [
+    "exports" : "[concat(variables('deafultExports'), variables('rpcConfig')[variables('rpcValue')].exports)]",
+    "internalExports": [
       {
         "Name": "Ethereum-RPC",
         "Source": 8545,
         "Destination": 8545,
         "Protocol": "TCP"
       }
-    ],    
+    ],
     "templateName": "[concat(parameters('parentName'), '.Tx')]"
   },
   "resources": [

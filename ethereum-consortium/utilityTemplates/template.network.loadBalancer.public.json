@@ -64,6 +64,9 @@
               }
             }
           },
+          "loadDistribution" : {
+            "value" : "SourceIp"
+          },
           "loadBalancerName": {
             "value": "[variables('loadBalancerName')]"
           },

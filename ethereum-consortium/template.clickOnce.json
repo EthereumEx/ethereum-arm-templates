@@ -36,6 +36,17 @@
       "type": "int",
       "defaultValue": 2
     },
+    "allowPublicRPC": {
+      "defaultValue": "false",
+      "type": "string",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "A flag used to determine if RPC should be enabled for public access"
+      }
+    },
     "username": {
       "type": "string",
       "defaultValue": "azureuser",
@@ -135,6 +146,9 @@
           },
           "contentRootOverride": {
             "value": "[parameters('contentRootOverride')]"
+          },
+          "allowPublicRPC" : {
+            "value" : "[parameters('allowPublicRPC')]"
           },
           "locationOverride": {
             "value": "[variables('resourceLocation')]"

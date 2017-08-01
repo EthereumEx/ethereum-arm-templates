@@ -121,6 +121,17 @@
       "defaultValue": "ethereumex/geth-node:latest",
       "type": "string"
     },
+    "allowPublicRPC": {
+      "defaultValue": "false",
+      "type": "string",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "A flag used to determine if RPC should be enabled for public access"
+      }
+    },
     "minerNodeDockerImage": {
       "defaultValue": "ethereumex/geth-node:latest",
       "type": "string"
@@ -253,6 +264,9 @@
           },
           "txNodeDockerImage":{
             "value" :"[parameters('txNodeDockerImage')]"
+          },
+          "allowPublicRPC" : {
+            "value" : "[parameters('allowPublicRPC')]"
           },
           "minerNodeDockerImage":{
             "value" :"[parameters('minerNodeDockerImage')]"

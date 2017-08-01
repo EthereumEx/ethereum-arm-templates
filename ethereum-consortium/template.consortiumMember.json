@@ -123,6 +123,17 @@
         "description": "The tag of the docker image to download"
       }
     },
+    "allowPublicRPC": {
+      "defaultValue": "false",
+      "type": "string",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "A flag used to determine if RPC should be enabled for public access"
+      }
+    },
     "minerNodeDockerImage": {
       "defaultValue": "ethereumex/geth-node:latest",
       "type": "string",
@@ -203,6 +214,7 @@
         "extension": "goEthereum.txNode.json",
         "data": {
           "dockerImage": "[parameters('txNodeDockerImage')]",
+          "allowPublicRPC" : "[parameters('allowPublicRPC')]",
           "arguments" : []
         }
       }
