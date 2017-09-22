@@ -117,7 +117,7 @@
       "type": "int"
     },
     "txNodeDockerImage": {
-      "defaultValue": "ethereumex/geth-node:latest",
+      "defaultValue": "ethereumex/geth-node:latest-alpine",
       "type": "string",
       "metadata": {
         "description": "The tag of the docker image to download"
@@ -135,7 +135,7 @@
       }
     },
     "minerNodeDockerImage": {
-      "defaultValue": "ethereumex/geth-node:latest",
+      "defaultValue": "ethereumex/geth-node:latest-alpine",
       "type": "string",
       "metadata": {
         "description": "The tag of the docker image to download"

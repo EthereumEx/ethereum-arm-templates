@@ -80,15 +80,16 @@
     "contentRoot": "[variables('contentRoots')[length(take(parameters('contentRootOverride'),1))]]",
     "resourceLocation": "[resourceGroup().location]",
     "dConsortiumName": "[concat('Consortium.', parameters('consortiumName'))]",
+    "dockerImage" : "ethereumex/geth-node:alpine-latest",
     "genesisJson": {
-      "coinbase": "0x0",
+      "config": {
+        "homesteadBlock": 0,
+        "eip155Block": 0,
+        "eip158Block": 0,
+        "eip150Block": 0
+      },
       "difficulty": "0x20000",
-      "extraData": "0x0",
       "gasLimit": "0x493E00",
-      "mixhash": "0x0",
-      "nonce": "0x0000",
-      "parentHash": "0x0",
-      "timestamp": "0x00",
       "alloc": {
         "[parameters('genesisAccount')]": {
           "balance": "1000000000000000000000000"
@@ -147,11 +148,17 @@
           "contentRootOverride": {
             "value": "[parameters('contentRootOverride')]"
           },
-          "allowPublicRPC" : {
-            "value" : "[parameters('allowPublicRPC')]"
+          "allowPublicRPC": {
+            "value": "[parameters('allowPublicRPC')]"
           },
           "locationOverride": {
             "value": "[variables('resourceLocation')]"
+          },
+          "txNodeDockerImage" : {
+            "value" : "[variables('dockerImage')]"
+          },
+          "minerNodeDockerImage" : {
+            "value" : "[variables('dockerImage')]"
           }
         }
       }

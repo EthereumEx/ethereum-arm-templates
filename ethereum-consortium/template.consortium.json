@@ -121,12 +121,10 @@
       ]
     },
     "txNodeDockerImage": {
-      "defaultValue": "ethereumex/geth-node:v1.5.9",
+      "defaultValue": "ethereumex/geth-node:latest-alpine",
       "type": "string",
       "allowedValues": [
-        "ethereumex/geth-node:latest",
-        "ethereumex/geth-node:v1.5.9",
-        "ethereumex/parity-node:latest"
+        "ethereumex/geth-node:latest-alpine",
       ]
       
     },
@@ -142,11 +140,10 @@
       }
     },
     "minerNodeDockerImage": {
-      "defaultValue": "ethereumex/geth-node:v1.5.9",
+      "defaultValue": "ethereumex/geth-node:latest-alpine",
       "type": "string",
       "allowedValues": [
-        "ethereumex/geth-node:latest",
-        "ethereumex/geth-node:v1.5.9"
+        "ethereumex/geth-node:latest-alpine"
       ]
     },
     "locationOverride": {
