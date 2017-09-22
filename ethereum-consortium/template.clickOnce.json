@@ -80,7 +80,7 @@
     "contentRoot": "[variables('contentRoots')[length(take(parameters('contentRootOverride'),1))]]",
     "resourceLocation": "[resourceGroup().location]",
     "dConsortiumName": "[concat('Consortium.', parameters('consortiumName'))]",
-    "dockerImage" : "ethereumex/geth-node:alpine-latest",
+    "dockerImage": "ethereumex/geth-node:alpine-latest",
     "genesisJson": {
       "config": {
         "homesteadBlock": 0,
@@ -154,11 +154,17 @@
           "locationOverride": {
             "value": "[variables('resourceLocation')]"
           },
-          "txNodeDockerImage" : {
-            "value" : "[variables('dockerImage')]"
+          "txNodeDockerImage": {
+            "value": "[variables('dockerImage')]"
           },
-          "minerNodeDockerImage" : {
-            "value" : "[variables('dockerImage')]"
+          "minerNodeDockerImage": {
+            "value": "[variables('dockerImage')]"
+          },
+          "txNodeArguments": {
+            "value": ""
+          },
+          "minerNodeArguments": {
+            "value": "--targetgaslimit 8000000"
           }
         }
       }
