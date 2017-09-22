@@ -53,6 +53,14 @@
         "description": "A unique string to used to ensure only machines with the secret can post to the dashboard"
       }
     },
+    "txNodeArguments" : {
+      "type" : "string",
+      "defaultValue": ""
+    },
+    "minerNodeArguments" : {
+      "type" : "string",
+      "defaultValue": ""
+    },
     "configOms" :{
       "type" : "secureObject",
       "defaultValue": {},
@@ -282,6 +290,12 @@
           },
           "configOms" : { 
             "value":"[parameters('configOms')]"
+          },
+          "txNodeArguments" : {
+            "value" : "[parameters('txNodeArguments')]"
+          },
+          "minerNodeArguments" : {
+            "value" : "[parameters('minerNodeArguments')]"
           }
         }
       },

@@ -124,9 +124,8 @@
       "defaultValue": "ethereumex/geth-node:latest-alpine",
       "type": "string",
       "allowedValues": [
-        "ethereumex/geth-node:latest-alpine",
+        "ethereumex/geth-node:latest-alpine"
       ]
-      
     },
     "allowPublicRPC": {
       "defaultValue": "false",
@@ -138,6 +137,14 @@
       "metadata": {
         "description": "A flag used to determine if RPC should be enabled for public access"
       }
+    },
+    "txNodeArguments" : {
+      "type" : "string",
+      "defaultValue": ""
+    },
+    "minerNodeArguments" : {
+      "type" : "string",
+      "defaultValue": ""
     },
     "minerNodeDockerImage": {
       "defaultValue": "ethereumex/geth-node:latest-alpine",
@@ -233,6 +240,12 @@
           },
           "configOms": {
             "value":"[parameters('configOms')]"
+          },
+          "txNodeArguments" : {
+            "value" : "[parameters('txNodeArguments')]"
+          },
+          "minerNodeArguments" : {
+            "value" : "[parameters('minerNodeArguments')]"
           }
         }
       }

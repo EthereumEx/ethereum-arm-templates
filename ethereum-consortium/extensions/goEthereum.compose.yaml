@@ -50,6 +50,7 @@ services:
       - ENABLE_MINER=${ENABLE_MINER}
       - MINER_ADDRESS=${MINER_ADDRESS}
       - MINER_THREADS=${MINER_THREADS}
+      - EXTERNAL_ARGS=${EXTERNAL_ARGS}
     volumes:
       - /home/${USERNAME}/eth-node/.geth:/home/eth-node/.geth
       - /home/${USERNAME}/eth-node/genesis.json:/home/eth-node/genesis.json
