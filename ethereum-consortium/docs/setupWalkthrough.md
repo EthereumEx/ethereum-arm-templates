@@ -11,17 +11,17 @@
     * Update the nonce with a valid hex value
 
             {
-                "coinbase": "0x0",
+                "config": {
+                    "homesteadBlock": 0,
+                    "eip155Block": 0,
+                    "eip158Block": 0,
+                    "eip150Block": 0
+                },
                 "difficulty": "0x20000",
-                "extraData": "0x0",
-                "gasLimit": "0x5F5E100",
-                "mixhash": "0x0",
-                "nonce": "0x0000",
-                "parentHash": "0x0",
-                "timestamp": "0x00",
+                "gasLimit": "0x493E00",
                 "alloc": {
-                    "0x0000000000000000000000000000000000000000":{
-                        "balance":"1000000000000000000000000"
+                    "0x0000000000000000000000000000000000000000": {
+                    "balance": "1000000000000000000000000"
                     }
                 }
             }

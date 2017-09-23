@@ -103,7 +103,7 @@
       }
     },
     "contentVersion": {
-      "defaultValue": "Release-v2.1.1",
+      "defaultValue": "Release-v3.0.0",
       "type": "string",
       "metadata": {
         "description": "The version of the templates to use. This refers to a git branch. This parameter is ignored if contentRootOverride is provided"
@@ -121,14 +121,11 @@
       ]
     },
     "txNodeDockerImage": {
-      "defaultValue": "ethereumex/geth-node:v1.5.9",
+      "defaultValue": "ethereumex/geth-node:latest-alpine",
       "type": "string",
       "allowedValues": [
-        "ethereumex/geth-node:latest",
-        "ethereumex/geth-node:v1.5.9",
-        "ethereumex/parity-node:latest"
+        "ethereumex/geth-node:latest-alpine"
       ]
-      
     },
     "allowPublicRPC": {
       "defaultValue": "false",
@@ -141,12 +138,19 @@
         "description": "A flag used to determine if RPC should be enabled for public access"
       }
     },
+    "txNodeArguments" : {
+      "type" : "string",
+      "defaultValue": ""
+    },
+    "minerNodeArguments" : {
+      "type" : "string",
+      "defaultValue": ""
+    },
     "minerNodeDockerImage": {
-      "defaultValue": "ethereumex/geth-node:v1.5.9",
+      "defaultValue": "ethereumex/geth-node:latest-alpine",
       "type": "string",
       "allowedValues": [
-        "ethereumex/geth-node:latest",
-        "ethereumex/geth-node:v1.5.9"
+        "ethereumex/geth-node:latest-alpine"
       ]
     },
     "locationOverride": {
@@ -236,6 +240,12 @@
           },
           "configOms": {
             "value":"[parameters('configOms')]"
+          },
+          "txNodeArguments" : {
+            "value" : "[parameters('txNodeArguments')]"
+          },
+          "minerNodeArguments" : {
+            "value" : "[parameters('minerNodeArguments')]"
           }
         }
       }

@@ -117,11 +117,15 @@
       "type": "int"
     },
     "txNodeDockerImage": {
-      "defaultValue": "ethereumex/geth-node:latest",
+      "defaultValue": "ethereumex/geth-node:latest-alpine",
       "type": "string",
       "metadata": {
         "description": "The tag of the docker image to download"
       }
+    },
+    "txNodeArguments" : {
+      "type" : "string",
+      "defaultValue": ""
     },
     "allowPublicRPC": {
       "defaultValue": "false",
@@ -135,14 +139,18 @@
       }
     },
     "minerNodeDockerImage": {
-      "defaultValue": "ethereumex/geth-node:latest",
+      "defaultValue": "ethereumex/geth-node:latest-alpine",
       "type": "string",
       "metadata": {
         "description": "The tag of the docker image to download"
       }
     },
+    "minerNodeArguments" : {
+      "type" : "string",
+      "defaultValue": ""
+    },
     "contentVersion": {
-      "defaultValue": "Release-v2.1.1",
+      "defaultValue": "Release-v3.0.0",
       "type": "string",
       "metadata": {
         "description": "The version of the templates to use. This refers to a git branch. This parameter is ignored if contentRootOverride is provided"
@@ -388,7 +396,8 @@
                 "WS_SECRET": "[parameters('dashboardSecret')]",
                 "BOOTNODE_URL": "[variables('bootNodeUrl')]",
                 "BOOTNODE_NETWORK": "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
-                "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.ip]"
+                "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.ip]",
+                "EXTERNAL_ARGS" : "[parameters('txNodeArguments')]"
               },
               "commands": "[concat(reference(variables('txExtensionName')).outputs.result.value.commands, variables('omsCommand').Commands)]"
             }
@@ -455,7 +464,8 @@
                 "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.ip]",
                 "ENABLE_MINER" : "1",
                 "MINER_ADDRESS" : "[parameters('minerAddress')]",
-                "MINER_THREADS" : "[string(reference(variables('dMinerProperties')).outputs.result.value.cores)]"
+                "MINER_THREADS" : "[string(reference(variables('dMinerProperties')).outputs.result.value.cores)]",
+                "EXTERNAL_ARGS" : "[parameters('minerNodeArguments')]"                
               },
               "commands": "[concat(reference(variables('minerExtensionName')).outputs.result.value.commands, variables('omsCommand').Commands)]"
             }
