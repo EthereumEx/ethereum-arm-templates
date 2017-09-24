@@ -19,19 +19,6 @@ services:
     entrypoint:
       - node
       - client.js
-  eth-stats-api:
-    image: ethereumex/eth-net-intelligence-api:latest-node
-    hostname: ${HOST_NAME}-a
-    restart: always
-    depends_on:
-      - ethereum-node
-    environment:
-      - INSTANCE_NAME=${HOST_NAME}
-      - WS_SERVER=${WS_SERVER}
-      - WS_SECRET=${WS_SECRET}
-      - RPC_HOST=ethereum-node
-      - RPC_PORT=8545
-      - LISTENING_PORT=30303
   ethereum-node:
     image: ${DOCKER_IMAGE}
     hostname: ${HOST_NAME}-c
@@ -43,14 +30,12 @@ services:
       - NODE_NAME=${HOST_NAME}
       - HOST_IP=${HOST_IP}      
       - NETWORKID=${NETWORK_ID}
-      - WS_SERVER=${WS_SERVER}
-      - WS_SECRET=${WS_SECRET}
       - BOOTNODE_URL=${BOOTNODE_URL}
       - BOOTNODE_NETWORK=${BOOTNODE_NETWORK}
       - ENABLE_MINER=${ENABLE_MINER}
       - MINER_ADDRESS=${MINER_ADDRESS}
       - MINER_THREADS=${MINER_THREADS}
-      - EXTERNAL_ARGS=${EXTERNAL_ARGS}
+      - EXTERNAL_ARGS=--ethstats ${HOST_NAME}:${WS_SECRET}@${WS_SERVER} ${EXTERNAL_ARGS}
     volumes:
       - /home/${USERNAME}/eth-node/.geth:/home/eth-node/.geth
       - /home/${USERNAME}/eth-node/genesis.json:/home/eth-node/genesis.json
