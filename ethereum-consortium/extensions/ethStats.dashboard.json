@@ -89,6 +89,13 @@
                 "command": "[concat(variables('curl'), ' -o ', variables('localDocker'), ' ', variables('dockerFile'))]"
             },
             {
+                "name": "Remove prior configuration",
+                "command": "[concat('docker-compose -f ', variables('localDocker'), ' down')]",
+                "environment": {
+                    "DOCKER_IMAGE": "[parameters('data').dockerImage]"
+                }
+            },
+            {
                 "name": "ComposeDashboard",
                 "command": "[concat('docker-compose -f ', variables('localDocker'), ' up -d')]",
                 "environment": {
