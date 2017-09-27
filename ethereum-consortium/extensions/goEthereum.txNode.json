@@ -95,6 +95,19 @@
           "priority": "[add(parameters('ruleSeed'), 3)]",
           "direction": "Inbound"
         }
+      },
+      {
+        "name": "allow-explorer",
+        "properties": {
+          "protocol": "Tcp",
+          "sourcePortRange": "*",
+          "destinationPortRange": "80",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": "[add(parameters('ruleSeed'), 4)]",
+          "direction": "Inbound"
+        }
       }
     ],
     "deafultExports": [
@@ -102,6 +115,12 @@
         "Name": "GethP2P",
         "Source": 30303,
         "Destination": 30303,
+        "Protocol": "TCP"
+      },
+      {
+        "Name": "EthereumExplorer",
+        "Source": 80,
+        "Destination": 80,
         "Protocol": "TCP"
       }
     ],

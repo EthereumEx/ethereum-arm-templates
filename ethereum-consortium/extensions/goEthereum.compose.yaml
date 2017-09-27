@@ -19,6 +19,14 @@ services:
     entrypoint:
       - node
       - client.js
+  ethereum-explorer:
+    image: jpoon/etherchain-light:0.0.1
+    depends_on:
+      - ethereum-node
+    environment:
+      - blockchain_address=http://ethereum-node:8545
+    ports:
+      - 80:3000
   ethereum-node:
     image: ${DOCKER_IMAGE}
     hostname: ${HOST_NAME}-c
