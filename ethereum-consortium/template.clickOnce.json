@@ -68,7 +68,7 @@
   },
   "variables": {
     "contentVersions": [
-      "Release-v3.0.1",
+      "Release-v3.0.2",
       "[parameters('contentVersionOverride')]"
     ],
     "contentVersion": "[variables('contentVersions')[length(take(parameters('contentVersionOverride'),1))]]",
