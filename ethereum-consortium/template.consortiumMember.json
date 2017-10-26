@@ -172,6 +172,8 @@
     }
   },
   "variables": {
+    "utilityContentVersion" : "Release-v1.0.0",
+    "utilityContentRoot": "[concat('https://raw.githubusercontent.com/EthereumEx/arm-template-utilities/', variables('utilityContentVersion'))]",
     "contentRootUrl": "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium')]",
     "contentRoots": [
       "[variables('contentRootUrl')]",
@@ -248,7 +250,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.extensions.json')]"
+          "uri": "[concat(variables('utilityContentRoot'), '/template.extensions.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -256,7 +258,10 @@
             "value": "[variables('txExtensionName')]"
           },
           "contentRoot": {
-            "value": "[variables('contentRoot')]"
+            "value": "[variables('utilityContentRoot')]"
+          },
+          "extensionsRoot": {
+            "value": "[concat(variables('contentRoot'), '/extensions')]"
           },
           "extensions": {
             "value": "[variables('txExtensions')]"
@@ -271,7 +276,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.extensions.json')]"
+          "uri": "[concat(variables('utilityContentRoot'), '/template.extensions.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -279,7 +284,10 @@
             "value": "[variables('minerExtensionName')]"
           },
           "contentRoot": {
-            "value": "[variables('contentRoot')]"
+            "value": "[variables('utilityContentRoot')]"
+          },
+          "extensionsRoot": {
+            "value": "[concat(variables('contentRoot'), '/extensions')]"
           },
           "extensions": {
             "value": "[variables('minerExtensions')]"
@@ -294,7 +302,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.network.loadBalanced.switch.json')]"
+          "uri": "[concat(variables('utilityContentRoot'), '/template.network.loadBalanced.switch.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -325,7 +333,7 @@
             "value": "[concat(reference(variables('minerExtensionName')).outputs.result.value.internalExports, reference(variables('txExtensionName')).outputs.result.value.internalExports)]"
           },
           "contentRoot": {
-            "value": "[variables('contentRoot')]"
+            "value": "[variables('utilityContentRoot')]"
           }
         }
       },
@@ -341,7 +349,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.vmProperties.json')]"
+          "uri": "[concat(variables('utilityContentRoot'), '/template.vmProperties.json')]"
         },
         "mode": "Incremental",
         "parameters": {

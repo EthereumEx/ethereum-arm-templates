@@ -80,7 +80,7 @@
             }
         ],
         "localDocker": "/root/docker-compose.yaml",
-        "dockerFile": "[concat(parameters('contentRoot'), '/extensions/ethStats.compose.yaml')]",
+        "dockerFile": "[concat(parameters('contentRoot'), '/ethStats.compose.yaml')]",
         "curl": "curl -S -s --connect-timeout 5 --retry 15",
         "commands": [
             

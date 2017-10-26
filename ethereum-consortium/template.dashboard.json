@@ -68,6 +68,8 @@
     }
   },
   "variables": {
+    "utilityContentVersion" : "Release-v1.0.0",
+    "utilityContentRoot": "[concat('https://raw.githubusercontent.com/EthereumEx/arm-template-utilities/', variables('utilityContentVersion'))]",
     "contentRootUrl": "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium')]",
     "contentRoots": [
       "[variables('contentRootUrl')]",
@@ -125,7 +127,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.extensions.json')]"
+          "uri": "[concat(variables('utilityContentRoot'), '/template.extensions.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -133,7 +135,10 @@
             "value": "[variables('extensionName')]"
           },
           "contentRoot": {
-            "value": "[variables('contentRoot')]"
+            "value": "[variables('utilityContentRoot')]"
+          },
+          "extensionsRoot": {
+            "value": "[concat(variables('contentRoot'), '/extensions')]"
           },
           "extensions": {
             "value": "[variables('extensions')]"
@@ -148,7 +153,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.network.loadBalanced.switch.json')]"
+          "uri": "[concat(variables('utilityContentRoot'), '/template.network.loadBalanced.switch.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -171,7 +176,7 @@
             "value": "[reference(variables('extensionName')).outputs.result.value.exports]"
           },
           "contentRoot": {
-            "value": "[variables('contentRoot')]"
+            "value": "[variables('utilityContentRoot')]"
           }
         }
       },
@@ -186,7 +191,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(variables('contentRoot'), '/utilityTemplates/template.vmss.commands.json')]"
+          "uri": "[concat(variables('utilityContentRoot'), '/template.vmss.commands.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -194,7 +199,7 @@
             "value": "[variables('resourceLocation')]"
           },
           "contentRoot": {
-            "value": "[variables('contentRoot')]"
+            "value": "[variables('utilityContentRoot')]"
           },
           "vmssName": {
             "value": "[concat(variables('namingInfix'), '-n')]"

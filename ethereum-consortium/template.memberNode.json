@@ -62,6 +62,8 @@
     }
   },
   "variables": {
+    "utilityContentVersion" : "Release-v1.0.0",
+    "utilityContentRoot": "[concat('https://raw.githubusercontent.com/EthereumEx/arm-template-utilities/', variables('utilityContentVersion'))]",
     "resourceLocation": "[parameters('location')]",
     "initCommands": [
       {
@@ -79,7 +81,7 @@
       "properties": {
         "templateLink": {
           "contentVersion": "1.0.0.0",
-          "uri": "[concat(parameters('contentRoot'), '/utilityTemplates/template.vmss.commands.json')]"
+          "uri": "[concat(variables('utilityContentRoot'), '/template.vmss.commands.json')]"
         },
         "mode": "Incremental",
         "parameters": {
@@ -87,7 +89,7 @@
             "value": "[variables('resourceLocation')]"
           },
           "contentRoot": {
-            "value": "[parameters('contentRoot')]"
+            "value": "[variables('utilityContentRoot')]"
           },
           "vmssName": {
             "value": "[parameters('vmssName')]"

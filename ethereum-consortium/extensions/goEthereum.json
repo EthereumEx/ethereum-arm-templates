@@ -65,7 +65,7 @@
     ],
     "nsgRules": "[concat(parameters('nsgRules'), variables('defaultNsgRules'))]",
     "localDocker": "/root/docker-compose.yaml",
-    "dockerFile": "[concat(parameters('contentRoot'), '/extensions/goEthereum.compose.yaml')]",
+    "dockerFile": "[concat(parameters('contentRoot'), '/goEthereum.compose.yaml')]",
     "curl": "curl -S -s --connect-timeout 5 --retry 15",
     "commands": [
       {
