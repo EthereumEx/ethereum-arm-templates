@@ -68,7 +68,7 @@
     }
   },
   "variables": {
-    "utilityContentVersion" : "Release-v1.0.0",
+    "utilityContentVersion" : "Release-v2.0.0",
     "utilityContentRoot": "[concat('https://raw.githubusercontent.com/EthereumEx/arm-template-utilities/', variables('utilityContentVersion'))]",
     "contentRootUrl": "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', parameters('contentVersion'), '/ethereum-consortium')]",
     "contentRoots": [
