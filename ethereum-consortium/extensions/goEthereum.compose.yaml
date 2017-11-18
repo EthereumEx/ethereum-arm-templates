@@ -43,6 +43,7 @@ services:
       - ENABLE_MINER=${ENABLE_MINER}
       - MINER_ADDRESS=${MINER_ADDRESS}
       - MINER_THREADS=${MINER_THREADS}
+      - SEALER_KEY=${SEALER_KEY}
       - EXTERNAL_ARGS=--ethstats ${HOST_NAME}:${WS_SECRET}@${WS_SERVER} ${EXTERNAL_ARGS}
     volumes:
       - /home/${USERNAME}/eth-node/.geth:/home/eth-node/.geth

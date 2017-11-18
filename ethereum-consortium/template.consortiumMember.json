@@ -59,6 +59,10 @@
         "description": "If miners is more than 0, then an address must be specified"
       }
     },
+    "sealerKey" : {
+      "type" : "securestring",
+      "defaultValue": ""
+    },
     "configOms": {
       "type": "secureObject",
       "defaultValue": {},
@@ -471,6 +475,7 @@
                 "BOOTNODE_NETWORK": "[substring(uniqueString(reference(variables('dNetworkName')).outputs.network.value.id),0,10)]",
                 "BOOTNODE_PUBLIC_IP": "[reference(variables('dNetworkName')).outputs.network.value.ip]",
                 "ENABLE_MINER" : "1",
+                "SEALER_KEY" : "[parameters('sealerKey')]",
                 "MINER_ADDRESS" : "[parameters('minerAddress')]",
                 "MINER_THREADS" : "[string(reference(variables('dMinerProperties')).outputs.result.value.cores)]",
                 "EXTERNAL_ARGS" : "[parameters('minerNodeArguments')]"                
