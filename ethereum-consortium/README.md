@@ -26,7 +26,8 @@ All of the nodes in the network are assembled by using docker containers from [E
 * [Deploy using custom docker images](docs/customDockerDeployment.md)
 
 ## Quick Deployments
-* [Preconfigured Deployment](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FEthereumEx%2Fethereum-arm-templates%2Fmaster%2Fethereum-consortium%2Ftemplate.clickOnce.json)
+* [Preconfigured Deployment - Proof of Work](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FEthereumEx%2Fethereum-arm-templates%2Fmaster%2Fethereum-consortium%2Ftemplate.clickOnce.json)
+* [Preconfigured Deployment - Proof of Authority](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FEthereumEx%2Fethereum-arm-templates%2Fmaster%2Fethereum-consortium%2Ftemplate.clickOnce.PoA.json)
 
 ## Example Parameters File
     {
@@ -43,6 +44,7 @@ All of the nodes in the network are assembled by using docker containers from [E
                     "minerCount" : 2,
                     "txNodeCount" : 3,
                     "minerAddress" : "0x0000000000000000000000000000000000000000",
+                    "sealerKey" : "",
                     "location" : "westus"
                 },
                 {
@@ -50,6 +52,7 @@ All of the nodes in the network are assembled by using docker containers from [E
                     "minerCount" : 2,
                     "txNodeCount" : 3,
                     "minerAddress" : "0x0000000000000000000000000000000000000000",
+                    "sealerKey" : "",
                     "location" : "eastus"
                 }
             ]

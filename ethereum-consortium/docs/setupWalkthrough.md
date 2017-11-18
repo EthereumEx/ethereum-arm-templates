@@ -46,6 +46,7 @@
                 "minerCount" : 2,
                 "txNodeCount" : 3,
                 "minerAddress" : "0x0000000000000000000000000000000000000000",
+                "sealerKey" : "",
                 "location" : "westus"
             },
             {
@@ -53,6 +54,7 @@
                 "minerCount" : 2,
                 "txNodeCount" : 3,
                 "minerAddress" : "0x0000000000000000000000000000000000000000",
+                "sealerKey" : "",
                 "location" : "eastus"
             }
         ]
