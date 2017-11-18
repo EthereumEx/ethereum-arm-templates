@@ -9,8 +9,8 @@
         "description": "A short identifier to distinguish machines in this membership"
       }
     },
-    "members": {
-      "type": "array",
+    "membersData": {
+      "type": "secureObject",
       "metadata": {
         "description": "An array of members to create { name : 'M1', minerCount : 1, txNodeCount : 3, minerAddress : '0x1234', location : 'westus' }"
       }
@@ -190,8 +190,8 @@
           "consortiumName": {
             "value": "[parameters('consortiumName')]"
           },
-          "members": {
-            "value": "[parameters('members')]"
+          "membersData": {
+            "value": "[parameters('membersData')]"
           },
           "username": {
             "value": "[parameters('username')]"

@@ -8,9 +8,12 @@
         "description": "ssh public key(s) for connecting to VMs."
       }
     },
-    "genesisAccount": {
-      "type": "string",
-      "defaultValue": "0xcd2051a37cdc02db5da21d61415de21af4058a5e"
+    "genesisPrivateAccount": {
+      "type": "secureObject",
+      "defaultValue": {
+        "privateKey": "e5951197abb61602fb6530fbae7220da964f52714dac95e0205cae0c28549671",
+        "publicKey": "9a1185655029f3f056a40de22387525f4dfe8f25"
+      }
     },
     "consortiumName": {
       "type": "string",
@@ -81,17 +84,27 @@
     "resourceLocation": "[resourceGroup().location]",
     "dConsortiumName": "[concat('Consortium.', parameters('consortiumName'))]",
     "dockerImage": "ethereumex/geth-node:alpine-latest",
+    "e32zeroBytes": "0000000000000000000000000000000000000000000000000000000000000000",
+    "e65zeroBytes": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "sealer": "[parameters('genesisPrivateAccount').publicKey]",
     "genesisJson": {
       "config": {
         "homesteadBlock": 0,
+        "eip150Block": 0,
         "eip155Block": 0,
         "eip158Block": 0,
-        "eip150Block": 0
+        "byzantiumBlock": 0,
+        "clique": {
+          "period": 5,
+          "epoch": 30000
+        }
       },
       "difficulty": "0x20000",
       "gasLimit": "0x493E00",
+
+      "extraData": "[concat('0x', variables('e32zeroBytes'), variables('sealer'), variables('e65zeroBytes'))]",
       "alloc": {
-        "[parameters('genesisAccount')]": {
+        "[variables('sealer')]": {
           "balance": "1000000000000000000000000"
         }
       }
@@ -101,8 +114,8 @@
         "name": "M1",
         "minerCount": "[parameters('miningNodes')]",
         "txNodeCount": "[parameters('txNodes')]",
-        "minerAddress": "[parameters('genesisAccount')]",
-        "sealerKey": "",
+        "sealerKey": "[parameters('genesisPrivateAccount').privateKey]",
+        "minerAddress": "[variables('sealer')]",
         "location": "[variables('resourceLocation')]"
       }]
     }
