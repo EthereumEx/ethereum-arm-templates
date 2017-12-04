@@ -37,25 +37,27 @@ All of the nodes in the network are assembled by using docker containers from [E
             "consortiumName": {
             "value": "Test"
             },
-            "members": {
-            "value": [
-                {
-                    "name":"M1",
-                    "minerCount" : 2,
-                    "txNodeCount" : 3,
-                    "minerAddress" : "0x0000000000000000000000000000000000000000",
-                    "sealerKey" : "",
-                    "location" : "westus"
-                },
-                {
-                    "name":"M2",
-                    "minerCount" : 2,
-                    "txNodeCount" : 3,
-                    "minerAddress" : "0x0000000000000000000000000000000000000000",
-                    "sealerKey" : "",
-                    "location" : "eastus"
+            "memberData": {
+                "value": {
+                    "members":[
+                        {
+                            "name":"M1",
+                            "minerCount" : 2,
+                            "txNodeCount" : 3,
+                            "minerAddress" : "0x0000000000000000000000000000000000000000",
+                            "sealerKey" : "",
+                            "location" : "westus"
+                        },
+                        {
+                            "name":"M2",
+                            "minerCount" : 2,
+                            "txNodeCount" : 3,
+                            "minerAddress" : "0x0000000000000000000000000000000000000000",
+                            "sealerKey" : "",
+                            "location" : "eastus"
+                        }
+                    ]
                 }
-            ]
             },
             "sshPublicKey": {
                 "value": ""
