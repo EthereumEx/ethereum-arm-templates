@@ -1,0 +1,156 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sshPublicKey": {
+      "type": "string",
+      "metadata": {
+        "description": "ssh public key(s) for connecting to VMs."
+      }
+    },
+    "minerRewardsAddress": {
+      "type": "string",
+      "defaultValue": "0xcd2051a37cdc02db5da21d61415de21af4058a5e"
+    },
+    "prefixName": {
+      "type": "string",
+      "maxLength": 10,
+      "defaultValue": "MAIN",
+      "metadata": {
+        "description": "A short identifier to distinguish machines in this membership"
+      }
+    },
+    "dashboardSecret": {
+      "type": "securestring",
+      "defaultValue": "12345"
+    },
+    "txNodes": {
+      "type": "int",
+      "defaultValue": 3
+    },
+    "miningNodes": {
+      "type": "int",
+      "defaultValue": 2
+    },
+    "allowPublicRPC": {
+      "defaultValue": "false",
+      "type": "string",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "A flag used to determine if RPC should be enabled for public access"
+      }
+    },
+    "username": {
+      "type": "string",
+      "defaultValue": "azureuser",
+      "metadata": {
+        "description": "Admin username on all VMs."
+      }
+    },
+    "contentVersionOverride": {
+      "defaultValue": "",
+      "type": "string",
+      "metadata": {
+        "description": "This parameter is ignored if contentRootOverride is provided"
+      }
+    },
+    "contentRootOverride": {
+      "defaultValue": "",
+      "type": "string"
+    }
+  },
+  "variables": {
+    "contentVersions": [
+      "Release-v4.0.2",
+      "[parameters('contentVersionOverride')]"
+    ],
+    "contentVersion": "[variables('contentVersions')[length(take(parameters('contentVersionOverride'),1))]]",
+    "contentRootUrl": "[concat('https://raw.githubusercontent.com/EthereumEx/ethereum-arm-templates/', variables('contentVersion'), '/ethereum-consortium')]",
+    "contentRoots": [
+      "[variables('contentRootUrl')]",
+      "[parameters('contentRootOverride')]"
+    ],
+    "contentRoot": "[variables('contentRoots')[length(take(parameters('contentRootOverride'),1))]]",
+    "resourceLocation": "[resourceGroup().location]",
+    "dConsortiumName": "[concat('Consortium.', parameters('prefixName'))]",
+    "dockerImage": "ethereumex/geth-node:alpine-latest", 
+    "networkId" : "1",
+    "genesisJson": {
+    },
+    "membersData": {
+      "members": [{
+        "name": "M1",
+        "minerCount": "[parameters('miningNodes')]",
+        "txNodeCount": "[parameters('txNodes')]",
+        "minerAddress": "[parameters('minerRewardsAddress')]",
+        "sealerKey": "",
+        "location": "[variables('resourceLocation')]"
+      }]
+    }
+  },
+  "resources": [{
+    "type": "Microsoft.Resources/deployments",
+    "name": "[variables('dConsortiumName')]",
+    "apiVersion": "2015-01-01",
+    "properties": {
+      "templateLink": {
+        "contentVersion": "1.0.0.0",
+        "uri": "[concat(variables('contentRoot'), '/template.consortium.custom.json')]"
+      },
+      "mode": "Incremental",
+      "parameters": {
+        "consortiumName": {
+          "value": "[parameters('prefixName')]"
+        },
+        "membersData": {
+          "value": "[variables('membersData')]"
+        },
+        "username": {
+          "value": "[parameters('username')]"
+        },
+        "sshPublicKey": {
+          "value": "[parameters('sshPublicKey')]"
+        },
+        "genesisJson": {
+          "value": "[variables('genesisJson')]"
+        },
+        "minerGenesisJsonOverride": {
+          "value": "[variables('genesisJson')]"
+        },
+        "gethNetworkId": {
+          "value": "[variables('networkId')]"
+        },
+        "dashboardSecret": {
+          "value": "[parameters('dashboardSecret')]"
+        },
+        "contentVersion": {
+          "value": "[variables('contentVersion')]"
+        },
+        "contentRootOverride": {
+          "value": "[parameters('contentRootOverride')]"
+        },
+        "allowPublicRPC": {
+          "value": "[parameters('allowPublicRPC')]"
+        },
+        "locationOverride": {
+          "value": "[variables('resourceLocation')]"
+        },
+        "txNodeDockerImage": {
+          "value": "[variables('dockerImage')]"
+        },
+        "minerNodeDockerImage": {
+          "value": "[variables('dockerImage')]"
+        },
+        "txNodeArguments": {
+          "value": ""
+        },
+        "minerNodeArguments": {
+          "value": ""
+        }
+      }
+    }
+  }]
+}
