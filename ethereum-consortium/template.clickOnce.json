@@ -83,6 +83,7 @@
     "dockerImage": "ethereumex/geth-node:alpine-latest",
     "genesisJson": {
       "config": {
+        "chainId": "[parameters('ethereumNetworkId')]",
         "homesteadBlock": 0,
         "eip155Block": 0,
         "eip158Block": 0,
