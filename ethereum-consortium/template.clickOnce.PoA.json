@@ -89,6 +89,7 @@
     "sealer": "[parameters('genesisPrivateAccount').address]",
     "genesisJson": {
       "config": {
+        "chainId" : "[int(parameters('ethereumNetworkId'))]",
         "homesteadBlock": 0,
         "eip150Block": 0,
         "eip155Block": 0,
