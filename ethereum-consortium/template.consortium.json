@@ -99,7 +99,7 @@
       "type" : "secureObject",
       "defaultValue": {},
       "metadata" : {
-        "description" : "If this value is defined then an OMS agent will be deployed to the machine. { KEY : \"\", WSID :\"\" }"
+        "description" : "If this value is defined then an OMS agent will be deployed to the machine. { \"KEY\" : \"\", \"WSID\" :\"\" }"
       }
     },
     "contentVersion": {
